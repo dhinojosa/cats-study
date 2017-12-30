@@ -2,8 +2,7 @@
 
 ## About
 
-Project housing various samples for typelevel cats.  Visit https://typelevel
-.org/cats for more information on the project
+Project housing various samples for typelevel cats. Visit https://typelevel.org/cats for more information on the project
 
 ## License
 
