@@ -48,7 +48,7 @@ class FunctorSpec extends FunSuite with Matchers {
       40 * 10
     }
     val result = Functor[Future].fmap(future)(x => x / 2)
-    result.foreach(println)
+    result.foreach(_ should be (200))
     Await.ready(result, 3 seconds)
   }
 
