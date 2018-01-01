@@ -63,4 +63,12 @@ class FunctorSpec extends FunSuite with Matchers {
     val result = Functor[Box].fmap(box)(x => x + 100)
     result should be(Box(200))
   }
+
+  test("Case 5: Composition for functors.  Functors can compose as one") {
+    val composedFunctor = Functor[List] compose Functor[Option]
+    var maybeInts = composedFunctor.map(List(Some(3), Some(2), Some(5)))(_ + 1)
+    //There is something wrong when you try to infer the type
+    //TODO: Figure out the type on the composedFunctor
+    pending
+  }
 }
