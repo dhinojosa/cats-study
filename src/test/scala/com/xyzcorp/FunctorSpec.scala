@@ -25,7 +25,7 @@ package com.xyzcorp
 import cats._
 import cats.data.Nested
 import cats.implicits._
-import cats.kernel._
+
 
 import scala.concurrent._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -75,7 +75,7 @@ class FunctorSpec extends FunSuite with Matchers {
   //Functor[List[Option[?]] is Functor[List[λ[α => Option[α]]]] which isn't
   // what you want. The type variable needs to range over the whole
   // type expression; i.e., Functor[λ[α => List[Option[α]]]]
-  
+
   test("Case 5: Composition for functors.  Functors can compose as one") {
     type ListOption[A] = List[Option[A]]
     val composedFunctor: Functor[ListOption] = Functor[List] compose Functor[Option]
@@ -86,6 +86,7 @@ class FunctorSpec extends FunSuite with Matchers {
   }
 
   test("""Case 6: Nested with map""") {
-    Nested(List(Some(3), Some(2), Some(5), None)).map(x => x + 1)
+    val result = Nested(List(Some(3), Some(2), Some(5), None)).map(x => x + 1)
+    result should be (List(Some(4), Some(2), Some(6)))
   }
 }
