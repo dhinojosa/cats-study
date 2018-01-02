@@ -23,8 +23,8 @@
 package com.xyzcorp
 
 import cats._
+import cats.data.Nested
 import cats.implicits._
-
 import org.scalatest.{FunSuite, Matchers}
 
 class ApplySpec extends FunSuite with Matchers {
@@ -54,4 +54,6 @@ class ApplySpec extends FunSuite with Matchers {
     val maybeInt = Apply[Option].ap(optionFunction)(None)
     maybeInt should be(None)
   }
+
+
 }

@@ -23,14 +23,16 @@
 package com.xyzcorp
 
 import cats._
+import cats.data.Nested
 import cats.implicits._
+import cats.kernel._
+
 import scala.concurrent._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
-
 import org.scalatest.{FunSuite, Matchers}
 
-import scala.language.postfixOps
+import scala.language.{postfixOps, reflectiveCalls}
 
 class FunctorSpec extends FunSuite with Matchers {
   test("Case 1: Functor for List") {
@@ -64,11 +66,26 @@ class FunctorSpec extends FunSuite with Matchers {
     result should be(Box(200))
   }
 
+  //These are the same
+  type fun1 = Functor[List]
+  //type fun2 = Functor[List[?]] Requires type-projector
+  //type fun3 = Functor[λ[α => List[α]]] Requires type-projector
+
+
+  //Functor[List[Option[?]] is Functor[List[λ[α => Option[α]]]] which isn't
+  // what you want. The type variable needs to range over the whole
+  // type expression; i.e., Functor[λ[α => List[Option[α]]]]
+  
   test("Case 5: Composition for functors.  Functors can compose as one") {
-    val composedFunctor = Functor[List] compose Functor[Option]
+    type ListOption[A] = List[Option[A]]
+    val composedFunctor: Functor[ListOption] = Functor[List] compose Functor[Option]
     var maybeInts = composedFunctor.map(List(Some(3), Some(2), Some(5)))(_ + 1)
-    //There is something wrong when you try to infer the type
-    //TODO: Figure out the type on the composedFunctor
-    pending
+    maybeInts should be (List(Some(4), Some(3), Some(6)))
+    val composedFunctor2: Functor[({ type λ[α] = List[Option[α]] })#λ]= Functor[List] compose Functor[Option]
+    val result2 =  composedFunctor2.map(List(Some(3), Some(2), Some(5)))(_ + 1)
+  }
+
+  test("""Case 6: Nested with map""") {
+    Nested(List(Some(3), Some(2), Some(5), None)).map(x => x + 1)
   }
 }
