@@ -24,34 +24,29 @@ package com.xyzcorp
 
 import cats._
 import cats.implicits._
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.{FunSpec, FunSuite, Matchers}
 
 import scala.language.postfixOps
 
-class ApplicativeSpec extends FunSuite with Matchers {
-  test("""Case 1: Applicative extends Functor with ap and pure""") {
-    val result = Applicative[List].ap(List((x: Int) => x + 1))(List(1, 2, 3))
-    result should be(List(2, 3, 4))
-  }
-
-  test(
-    """Case 2: Create an Applicative List with pure, pure places the
-      |function into an applicative""") {
-    val intApplicative = Applicative[List].pure((x: Int) => x + 1)
-    val result = intApplicative.ap(List(1, 2, 3))
-    result should be(List(2, 3, 4))
-  }
-
-  test("""Case 3: Create an Applicative with <*> operation with uses ap""") {
-    val result = Applicative[Option].<*>(Some[Int => Int](4 *))(Some(3))
-    result should be(Some(12))
-  }
-
-  test(
-    """Case 4: Create an Applicative and an alias for Applicative Option<*>
-      |operation with uses |ap""") {
-    val ao = Applicative[Option]
-    val result = ao.<*>(Some[Int => Int](4 *))(Some(3))
-    result should be(Some(12))
+class ApplicativeSpec extends FunSpec with Matchers {
+  describe ("Applicative") {
+    it ("extends Functor with ap") {
+      val result = Applicative[List].ap(List((x: Int) => x + 1))(List(1, 2, 3))
+      result should be(List(2, 3, 4))
+    }
+    it ("extends Functor with pure") {
+      val intApplicative = Applicative[List].pure((x: Int) => x + 1)
+      val result = intApplicative.ap(List(1, 2, 3))
+      result should be(List(2, 3, 4))
+    }
+    it ("introduces a <*> operation that is ap") {
+      val result = Applicative[Option].<*>(Some[Int => Int](4 *))(Some(3))
+      result should be(Some(12))
+    }
+    it ("can be a variable that is extracted and used as an applicative") {
+      val ao = Applicative[Option]
+      val result = ao.<*>(Some[Int => Int](4 *))(Some(3))
+      result should be(Some(12))
+    }
   }
 }
