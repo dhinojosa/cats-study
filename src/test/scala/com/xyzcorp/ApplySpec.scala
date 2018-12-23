@@ -23,7 +23,6 @@
 package com.xyzcorp
 
 import cats._
-import cats.data.Nested
 import cats.implicits._
 import org.scalatest.{FunSuite, Matchers}
 
