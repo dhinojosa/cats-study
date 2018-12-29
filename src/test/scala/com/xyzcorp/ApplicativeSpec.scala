@@ -24,7 +24,7 @@ package com.xyzcorp
 
 import cats._
 import cats.implicits._
-import org.scalatest.{FunSpec, FunSuite, Matchers}
+import org.scalatest.{FunSpec, Matchers}
 
 import scala.language.postfixOps
 
