@@ -70,7 +70,8 @@ class FunctorSpec extends FunSpec with Matchers {
       case class Box[A](contents: A)
 
       implicit val boxFunctor: Functor[Box] = new Functor[Box] {
-        override def map[A, B](fa: Box[A])(f: A => B): Box[B] = Box(f(fa.contents))
+        override def map[A, B](fa: Box[A])(f: A => B): Box[B] = Box(
+          f(fa.contents))
       }
 
       val box = Box(100)
@@ -89,20 +90,26 @@ class FunctorSpec extends FunSpec with Matchers {
       // type expression; i.e., Functor[λ[α => List[Option[α]]]]
 
       type ListOption[A] = List[Option[A]]
-      val composedFunctor: Functor[ListOption] = Functor[List] compose Functor[Option]
-      var maybeInts = composedFunctor.map(List(Some(3), Some(2), Some(5)))(_ + 1)
-      maybeInts should be (List(Some(4), Some(3), Some(6)))
-      val composedFunctor2: Functor[({ type λ[α] = List[Option[α]] })#λ]=
+      val composedFunctor: Functor[ListOption] = Functor[List] compose
+        Functor[Option]
+      var maybeInts = composedFunctor
+        .map(List(Some(3), Some(2), Some(5)))(_ + 1)
+      maybeInts should be(List(Some(4), Some(3), Some(6)))
+      val composedFunctor2: Functor[({type λ[α] = List[Option[α]]})#λ] =
         Functor[List] compose Functor[Option]
-      val result2 =  composedFunctor2.map(List(Some(3), Some(2), Some(5)))(_ + 1)
+      val result2 = composedFunctor2.map(List(Some(3), Some(2), Some(5)))(_ + 1)
     }
 
 
-    it ("""can use Nested, represents a composition of two Monadic containers.
-      | So for this example , using a List[Option[A]] as an object
-      | with map""".stripMargin) {
+    it(
+      """can use Nested, represents a composition of two Monadic containers.
+        | So for this example , using a List[Option[A]] as an object
+        | with map""".stripMargin) {
       val result = Nested(List(Some(3), Some(2), Some(5), None)).map(x => x + 1)
-      result should be (Nested(List(Some(4), Some(3), Some(6), None)))
+      result should be(Nested(List(Some(4), Some(3), Some(6), None)))
     }
   }
+
+
+
 }
