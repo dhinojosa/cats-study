@@ -1,84 +1,43 @@
 /*
  * Copyright 2018 Daniel Hinojosa
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without
+ * limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and
+ * to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+ * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 package com.xyzcorp
 
 import cats._
-import cats.implicits._
 import org.scalatest.{FunSpec, Matchers}
 
 import scala.language.{postfixOps, reflectiveCalls}
 
 
 class IdSpec extends FunSpec with Matchers {
-  describe("Monad") {
-    it ("is defined by the following typeclass") {
-      import scala.language.higherKinds
-      trait Monad[F[_]] {
-        def pure[A](value: A): F[A]
-        def flatMap[A, B](value: F[A])(func: A => F[B]): F[B]
-      }
+  describe("Id") {
+    it(
+      """wraps a primitive in a 'container' that can be used, by
+        | the variety of type classes, and is actually
+        | an alias for type Id[A] = A""".stripMargin) {
+
+        val num: Id[Int] = 4:Id[Int]
+        Functor[Id].fmap(num)(x => x + 3) should be (7:Id[Int])
     }
-
-    it ("is defined for an option") {
-      import cats.Monad
-      import cats.instances.option._ // for Monad
-
-      val opt1 = Monad[Option].pure(3)
-      val maybeInt = Monad[Option].flatMap(opt1)(x => Monad[Option].pure(2 * x))
-      maybeInt.foreach(_ should be(6))
-    }
-
-    it ("is also defined for a list") {
-      import cats.Monad
-      import cats.instances.list._ // for Monad
-      val list1 = Monad[List].pure(3)
-      val result = Monad[List].flatMap(list1)(x => List(-x, x, x+1))
-      result should be (List(-3, 3, 4))
-    }
-
-    it ("is also defined for a future") {
-      import scala.concurrent.ExecutionContext.Implicits.global
-      import scala.concurrent._
-      import scala.concurrent.duration._
-
-      val fm: Future[Int] = Monad[Future]
-        .flatMap(Future.successful(5))(x => Future.successful(x * 3))
-
-      Await.ready(fm, 1 second).map(x => x should be (15))
-    }
-
-    it ("""has a pure that can be added implicitly to any type
-        |  as long as it matches""".stripMargin) {
-      import cats.instances.list._
-      import cats.instances.option._
-      import cats.syntax.applicative._ // for pure
-
-      1.pure[Option] should be (Some(1))
-      10.pure[List] should be (List(10))
-    }
-
-   it ("""can be used in a for comprehension, since flatmaps and
-       |  maps can convert""".stripMargin) {
-     import scala.language.higherKinds
-
-     def sumSquare[F[_]: Monad](a: F[Int], b: F[Int]): F[Int] =
-       for {
-         x <- a
-         y <- b
-       } yield x*x + y*y
-
-     sumSquare(List(1,2,3,4), List(5,6,7,8)) should be
-       List(26, 37, 50, 65, 29, 40, 53, 68, 34, 45, 58, 73, 41, 52, 65, 80)
-   }
-
-
   }
 }
