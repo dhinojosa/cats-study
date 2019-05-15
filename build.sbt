@@ -26,7 +26,7 @@ version := "1.0-SNAPSHOT"
 
 scalaVersion := "2.12.4"
 
-scalacOptions ++= Seq("-Ypartial-unification", "-Xfatal-warnings")
+scalacOptions ++= Seq("-Ypartial-unification", "-Xfatal-warnings", "-feature", "-deprecation")
 
 fork := true
 
