@@ -30,8 +30,8 @@ class ApplySpec extends FunSpec with Matchers {
   describe("Apply") {
     it(
       """extends Functor, with ap. Ap transforms a value in a
-        | context.  Except that instead of providing a A => B, you provide
-        | and F[A=>B] where F is the Apply or context""") {
+        |  context.  Except that instead of providing a A => B, you provide
+        |  and F[A=>B] where F is the Apply or context""".stripMargin) {
 
       val optionFunction: Option[Int => Int] = Some(x => x + 1)
       val maybeInt = Apply[Option].ap(optionFunction)(Some(4))
@@ -40,7 +40,7 @@ class ApplySpec extends FunSpec with Matchers {
 
     it(
       """should also work with failure, here the function,
-        | will be resolved to None, while the Option with a value is a Some""")
+        |  will be resolved to None, while the Option with a value is a Some""".stripMargin)
     {
       val optionFunction: Option[Int => Int] = None
       val maybeInt = Apply[Option].ap(optionFunction)(Some(4))
@@ -49,8 +49,8 @@ class ApplySpec extends FunSpec with Matchers {
 
     it(
       """should also work with failure, here the function,
-        | will be resolved to Some function while the Option with a value is a
-        | None""") {
+        |  will be resolved to Some function while the Option with a value is a
+        |  None""".stripMargin) {
       val optionFunction: Option[Int => Int] = Some(x => x + 1)
       val maybeInt = Apply[Option].ap(optionFunction)(None)
       maybeInt should be(None)
