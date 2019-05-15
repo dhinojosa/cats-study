@@ -29,23 +29,34 @@ import org.scalatest.{FunSpec, Matchers}
 import scala.language.postfixOps
 
 class ApplicativeSpec extends FunSpec with Matchers {
-  describe ("Applicative") {
-    it ("extends Functor with ap") {
+  describe("Applicative") {
+    it("extends Functor with ap") {
       val result = Applicative[List].ap(List((x: Int) => x + 1))(List(1, 2, 3))
       result should be(List(2, 3, 4))
     }
-    it ("extends Functor with pure") {
+    it("extends Functor with pure") {
       val intApplicative = Applicative[List].pure((x: Int) => x + 1)
       val result = intApplicative.ap(List(1, 2, 3))
       result should be(List(2, 3, 4))
     }
-    it ("introduces a <*> operation that is ap") {
+    it("introduces a <*> operation that is the same as ap") {
       val result = Applicative[Option].<*>(Some[Int => Int](4 *))(Some(3))
       result should be(Some(12))
     }
-    it ("can be a variable that is extracted and used as an applicative") {
+    it("can be a variable that is extracted and used as an applicative") {
       val ao = Applicative[Option]
       val result = ao.<*>(Some[Int => Int](4 *))(Some(3))
+      result should be(Some(12))
+    }
+    it("can also be imported so as to just include the operator") {
+      val ao = Applicative[Option]
+      import ao.<*>
+      val result = <*>(Option((x:Int) => 4 * x))(Some(3))
+      result should be(Some(12))
+    }
+    it("can also be applied in as an infix operator") {
+      val ao = Applicative[Option]
+      val result = Option((x: Int) => 4 * x) <*> Some(3)
       result should be(Some(12))
     }
   }
