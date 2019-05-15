@@ -10,6 +10,10 @@
 
 package com.xyzcorp
 
-class FreeMonadSpec {
+import org.scalatest.{FunSpec, Matchers}
 
+class FreeMonadSpec extends FunSpec with Matchers {
+  describe("A Free Monad") {
+
+  }
 }
