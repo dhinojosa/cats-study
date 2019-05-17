@@ -85,19 +85,49 @@ class FoldableSpec extends FunSpec with Matchers {
     }
   }
 
-  describe("FoldMap") {
+  describe("Foldable Composition") {
+    it("""can be composed with other Foldables for deep traverses""") {
+      val ints = List(Vector(1, 2, 3), Vector(4, 5, 6))
+      val result: Int = (Foldable[List] compose Foldable[Vector])
+        .combineAll(ints)
+      result should be(21)
+    }
+  }
+
+  describe("Implicit wrappers for Foldable") {
+    it (
+      """can use an implicit wrapper to include all the features
+        |  of a Foldable around the collection""".stripMargin) {
+      import cats.syntax.foldable._
+      val result: Int = List(1,2,3,4).combineAll
+      result should be (10)
+    }
+    it (
+      """will use the native method on std library and
+        |  not use cats' version to avoid any conflict""".stripMargin) {
+      import cats.syntax.foldable._ //useless import
+      val result  = List(1,2,3,4,5).foldRight(1)(_ + _)
+      result should be (16)
+    }
+    it ("""will not use the native standard library call in a case like
+        | the following where we are requiring a call that demands that
+        | a Foldable around a container is absolutely required""".stripMargin) {
+
+      import scala.language.higherKinds
+
+      def mySum[F[_]](values: F[Int])(implicit foldable: Foldable[F]): Int =
+        values.foldLeft(0)(_ + _)
+
+      mySum(List(10, 12, 19)) should be (41)
+    }
+  }
+
+  describe("foldMap") {
     it(
       """will apply a map to all the elements
         |  before folding them""".stripMargin) {
-
-      pending
-
-//      def caesarShift(w:String, shift:Int) = {
-//        Foldable[Char].foldMap(w)(c => c - 97 + ((shift % 26) + % 26) + 97)
-//      }
-      val result = Foldable[List]
-        .foldMap(List("a", "b", "c"))(s => (s.charAt(0) - 97 + (1 % 26)).toChar.toString)
-      result should be("bcd")
+      val result = Foldable[List].foldMap(List(1,2,3,4))(i => 2 * i)
+      result should be (20)
     }
   }
 }
