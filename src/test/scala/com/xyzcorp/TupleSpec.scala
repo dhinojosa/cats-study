@@ -31,7 +31,9 @@ class TupleSpec extends FunSpec with Matchers {
       |  functionality
     """.stripMargin) {
 
-    it ("""has mapN""")
+    it ("""has mapN""") {
+      pending
+    }
   }
 
 }
