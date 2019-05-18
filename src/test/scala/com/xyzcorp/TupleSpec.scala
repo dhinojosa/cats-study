@@ -31,9 +31,23 @@ class TupleSpec extends FunSpec with Matchers {
       |  functionality
     """.stripMargin) {
 
-    it ("""has mapN""") {
+    it ("""has >= which is probably not something involved with tuples per say""") {
+      import cats.implicits._
+      val tuple = (1, "Hello", 3.0)
+      val result = tuple >= tuple
+      result should be (true)
+    }
+
+    it ("""has another application""") {
+      import cats._
+      import cats.implicits._
+      val tuple = (1, "Hello")
+      tuple.map(_ + "!")
+    }
+
+    it ("""has another application with """) {
       pending
+      val tuple = (1, "Hello")
     }
   }
-
 }
