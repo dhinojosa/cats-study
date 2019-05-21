@@ -25,5 +25,5 @@ package com.xyzcorp.typeclasses
 import org.scalatest.{FunSpec, Matchers}
 
 class ReadSpec extends FunSpec with Matchers {
-   
+
 }
