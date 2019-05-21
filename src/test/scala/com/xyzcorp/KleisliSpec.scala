@@ -44,7 +44,7 @@ class KleisliSpec extends FunSpec with Matchers {
        val stringCaps : String => String = _.toUpperCase
 
        val f = takeFirst andThen substring3 andThen tryToSuccessOrEmpty andThen stringCaps
-       f("Consider", 90) should be ("CON")
+       f("Consider", 90) should be ("SIDER")
      }
 
      it ("can be used to wrap various elements to one type called Kleisli so as to efficiently manipulate it") {
