@@ -26,14 +26,17 @@ version := "1.0-SNAPSHOT"
 
 scalaVersion := "2.12.4"
 
-scalacOptions ++= Seq("-Ypartial-unification",
-  "-Xfatal-warnings",
-  "-feature",
-  "-deprecation")
+scalacOptions ++= Seq(
+  "-Ypartial-unification"
+  ,"-Xfatal-warnings"
+  ,"-feature"
+  ,"-deprecation"
+)
 
 fork := true
 
 libraryDependencies := Seq(
   "org.scalatest" %% "scalatest" % "3.0.4" % "test",
-  "org.typelevel" %% "cats-core" % "1.6.0" withSources() withJavadoc()
+  "org.typelevel" %% "cats-core" % "1.6.0" withSources() withJavadoc(),
+  "org.typelevel" %% "cats-effect" % "1.3.0" withSources() withJavadoc()
 )

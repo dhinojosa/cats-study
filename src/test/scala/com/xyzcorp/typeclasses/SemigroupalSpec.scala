@@ -8,7 +8,7 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.xyzcorp
+package com.xyzcorp.typeclasses
 
 import org.scalatest.{FunSpec, Matchers}
 
@@ -83,15 +83,14 @@ class SemigroupalSpec extends FunSpec with Matchers {
     it(
       """creating our own Semigroupal for
         |  Either but using an implicit conversion""".stripMargin) {
-      import cats._
-      import cats.implicits._
-
-      type RightOnly[A] = Either[String, A]
-      val opt1:Either[String, Int] = Right(40)
-      val opt2:Either[String, Float] = Right(10.0f)
-
-      val result = Semigroupal[RightOnly].product(opt1, opt2)
-      result should be(Right(40 -> 10.0f))
+//      import cats._
+//
+//      type RightOnly[A] = Either[String, A]
+//      val opt1:Either[String, Int] = Right(40)
+//      val opt2:Either[String, Float] = Right(10.0f)
+//
+//      val result = Semigroupal[RightOnly].product(opt1, opt2)
+//      result should be(Right(40 -> 10.0f))
     }
 
   }

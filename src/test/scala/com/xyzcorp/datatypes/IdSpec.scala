@@ -8,36 +8,23 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.xyzcorp
+package com.xyzcorp.datatypes
 
-import cats.data.State
-import org.scalatest.Matchers
+import cats._
+import org.scalatest.{FunSpec, Matchers}
 
-class StateMonadSpec extends FunctorSpec with Matchers {
-  describe(
-    """State Monad allows us to pass around state
-      |  and a description of that state. The state
-      |  is composed using map and flatMap. State[S, A] is the
-      |  type where S is the state, and A is the type of
-      |  the result. This allows us to manage
-      |  state in a functional way.
-      |  State[S, A] = S => (S,A)""".stripMargin) {
-
-    it("can run a state as a function") {
-      val count: State[Int, String] = State.pure[Int,String]("Initializing State")
-      val result = for (i <- count) yield i * 3
-      val value = result.runS(0).value
-      value should be (0)
-    }
-
-    it("pure just returns the pure identity for the state given the State monad") {
-      case class Account(name:String, password:String)
-      val account: State[Account, String] = State.pure[Account, String]("Initializing Account")
+import scala.language.{postfixOps, reflectiveCalls}
 
 
+class IdSpec extends FunSpec with Matchers {
+  describe("Id") {
+    it(
+      """wraps a primitive in a 'container' that can be used, by
+        | the variety of type classes, and is actually
+        | an alias for type Id[A] = A""".stripMargin) {
 
-
-
+        val num: Id[Int] = 4:Id[Int]
+        Functor[Id].fmap(num)(x => x + 3) should be (7:Id[Int])
     }
   }
 }

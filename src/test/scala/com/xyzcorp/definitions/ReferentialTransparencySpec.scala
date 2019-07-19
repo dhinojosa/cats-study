@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Daniel Hinojosa
+ * Copyright 2018 Daniel Hinojosa
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -19,34 +19,33 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
 package com.xyzcorp.definitions
 
 import org.scalatest.{FunSpec, Matchers}
 
-class HigherKindsSpec extends FunSpec with Matchers {
-
-  import scala.language.higherKinds
-
-  describe("Higher Kinds") {
-    it("""is a parameterized type that represents the container or
-        |  collection. List[A] means that I have a generic A (if the
-        |  the type is not found in the classpath.  Imagine in Java
-        |  if we have M[A]? Where M can either represent a List, a
-        |  Set, a Future. But not a Map or a Function why?""".stripMargin) {
-
-        trait MyFunctor[M[_]] {
-          def myMap[A,B](m:M[A])(f:A => B):M[B]
-        }
-
-        case class Box[A](value:A)
-
-        implicit val functorForBox:MyFunctor[Box] = new MyFunctor[Box] {
-          override def myMap[A, B](m: Box[A])(f: A => B): Box[B] = Box(f.apply(m.value))
-        }
-
-        val myBox = Box(200)
-        implicitly[MyFunctor[Box]].myMap(myBox)(x => "Hello" * 3)
+class ReferentialTransparencySpec extends FunSpec with Matchers {
+  describe("Referential Transparency") {
+    it("""is an expression that can replaced by it's evaluated value
+        |  without changing the behavior of the program""".stripMargin) {
+       val result = (2 * 3) + 5 * (2 * 3)
+       val result2 = 6 + 5 * 6
+       result should equal (result2)
+    }
+    it("""is also a function or a method that does not invoke a state change or a
+        |  side effect""".stripMargin) {
+      def fun(x:Int) = x * 2
+      val result = fun(12) + fun(12)
+      val result2 = 24 + 24
+      result should equal (result2)
+    }
+    it("""but it is not a function or a method that does invoke a state change or a
+         |  side effect""".stripMargin) {
+      var x = 10
+      def fun(x:Int) = x + 2
+      val result = fun(2) + fun(2)
+      val result2 = 12 + 14
+      result should equal (result2)
     }
   }
-
 }

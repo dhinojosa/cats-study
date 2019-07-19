@@ -1,27 +1,14 @@
 /*
- * Copyright 2018 Daniel Hinojosa
+ * Copyright 2019 Daniel Hinojosa
  *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
- * IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.xyzcorp
+package com.xyzcorp.datatypes
 
 import cats.Id
 import cats.data.{Writer, WriterT}
@@ -29,6 +16,28 @@ import org.scalatest.{FunSpec, Matchers}
 
 class WriterMonadSpec extends FunSpec with Matchers {
   describe("Writer Monad") {
+
+    it("is a way to carry log of information without quickly resorting to IO, it is also using a monoid to add items together") {
+      import cats.implicits._
+      def performOperation[B](x : => B): Writer[List[String], B] = {
+        for {
+          _ <- Writer.tell(List("perform operation before"))
+          r <- Writer(List("invoking the function"), x)
+          _ <- Writer.tell(List(s"received the answer $r"))
+          _ <- Writer.tell(List("perform operation done"))
+        } yield r
+      }
+
+      val writer = performOperation {
+        val a = 30
+        val b = 50
+        a * b
+      }
+      val result = writer.run
+      result._1 should be (List("perform operation before", "invoking the function", "received the answer 1500", "perform operation done"))
+      result._2 should be (1500)
+    }
+
     it("carries a log with a computation") {
       import cats.data.Writer
       import cats.instances.vector._
@@ -56,7 +65,7 @@ class WriterMonadSpec extends FunSpec with Matchers {
         |  where W is what is used to collect entries, and A is the state.
         |  To use with something like pure, you would have to define
         |  one of the types explicitly.""".stripMargin) {
-      import cats.instances.vector._ // for Monoid
+      import cats.instances.vector._
       import cats.syntax.applicative._ // for pure
 
       type Logged[A] = Writer[Vector[String], A]
@@ -97,9 +106,9 @@ class WriterMonadSpec extends FunSpec with Matchers {
       """is a monad afterall and therefore can be used with
         |  flatmap and for comprehensions.""".stripMargin) {
 
-      import cats.syntax.writer._ // for writer
-      import cats.instances.vector._ // for Monoid
-      import cats.syntax.applicative._ // for pure
+      import cats.instances.vector._
+      import cats.syntax.applicative._
+      import cats.syntax.writer._ // for pure
 
       type Logged[A] = Writer[Vector[String], A]
 
@@ -115,17 +124,16 @@ class WriterMonadSpec extends FunSpec with Matchers {
     }
 
     it("""contains a reset, that can erase the log""") {
-      import cats.syntax.writer._ // for writer
-      import cats.instances.vector._ // for Monoid
+      import cats.instances.vector._
+      import cats.syntax.writer._ // for Monoid
 
       val writer = 32.writer(Vector("Msg1", "Msg2", "Msg3"))
       writer.reset.written should be(Vector.empty[String])
     }
 
     it("""contains a swap which changes the log with the value""") {
-      import cats.syntax.writer._ // for writer
-      import cats.instances.vector._ // for Monoid
       import cats.instances.int._
+      import cats.syntax.writer._
 
       val writer = 32.writer(Vector("Msg1", "Msg2", "Msg3"))
       val result = writer.swap
@@ -139,9 +147,9 @@ class WriterMonadSpec extends FunSpec with Matchers {
 
     it("""can be used concurrently to maintain better logging""") {
 
-      import cats.syntax.writer._ // for writer
-      import cats.instances.vector._ // for Monoid
-      import cats.syntax.applicative._ // for pure
+      import cats.instances.vector._
+      import cats.syntax.applicative._
+      import cats.syntax.writer._ // for pure
 
       def slowly[A](body: => A) =
         try body finally Thread.sleep(100)
@@ -159,8 +167,8 @@ class WriterMonadSpec extends FunSpec with Matchers {
         } yield i
       }
 
-      import scala.concurrent._
       import scala.concurrent.ExecutionContext.Implicits.global
+      import scala.concurrent._
       import scala.concurrent.duration._
 
       val Vector((w1, v1), (w2, v2)) = Await.result(Future.sequence(Vector(

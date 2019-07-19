@@ -27,13 +27,13 @@ package com.xyzcorp
 import org.scalatest.{FunSpec, Matchers}
 
 class OptionSpec extends FunSpec with Matchers {
-   it ("has specialized methods that make it easy to make options") {
-     import cats.syntax.option._
-     val a = 3.some
-     val b  = none[Int]
+  it("has specialized methods that make it easy to make options") {
+    import cats.syntax.option._
+    val a = 3.some
+    val b = none[Int]
 
-     val result = for {i <- a
-                         j <- b} yield i + j
-     result should be (none[Int])
-   }
+    val result = for {i <- a
+                      j <- b} yield i + j
+    result should be(none[Int])
+  }
 }

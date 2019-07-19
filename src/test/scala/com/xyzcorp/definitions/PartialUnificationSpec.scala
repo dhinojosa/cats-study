@@ -25,17 +25,47 @@ package com.xyzcorp.definitions
 import org.scalatest.{FunSpec, Matchers}
 
 class PartialUnificationSpec extends FunSpec with Matchers {
-  describe("Partially Applied Parameterized Types") {
+  describe("Partial Unification") {
+    it(
+      """is supposed to work by default in Scala, note the following
+        |  where we have the following object with a method bar
+        |  that uses a higher kinded type M and type A, it works great
+        |  with List and Set as we discussed in
+        |  HigherKindedTypesSpec""".stripMargin) {
+
+      import scala.language.higherKinds
+
+      object Foo {
+        def bar[M[_], A](x: M[A]): M[A] = x
+      }
+
+      Foo.bar(List(1, 2, 3, 4)) should be(List(1, 2, 3, 4))
+    }
+
+    it(
+      """will work if we create a type with a right projection
+        |  for things that have two parameterized types like a
+        |  function and either types""".stripMargin) {
+
+      import scala.language.higherKinds
+
+      object Foo {
+        def bar[M[_], A](x: M[A]): M[A] = x
+      }
+
+      type ExceptionEither[A] = Either[Exception, A]
+
+      val e: ExceptionEither[String] = Either
+        .cond(10 > 40, "Great", new Exception("Sad"))
+
+      Foo.bar(e) should equal(e)
+    }
     it(
       """is an issue with regular scala is the inability
-        |  to partially applied parameterized types.
-        |  This is filed
+        |  to partially applied parameterized types of two
+        |  when inlined and this is stated here
         |  at https://github.com/scala/bug/issues/2712.
-        |
-        |  In the following a function cannot be mapped
-        |  into Higher Kinded type although a Function
-        |  can be Function[A,B] can be made into
-        |  Function[B] given that A is known.""".stripMargin) {
+      """.stripMargin) {
 
       import scala.language.higherKinds
 
@@ -46,41 +76,11 @@ class PartialUnificationSpec extends FunSpec with Matchers {
       info(
         """Note the return function, it was able to resolve
           |  to Int by partially
-          |  applying the function""".stripMargin)
+          |  applying the function, if we didn't turn on
+          |  -Ypartial-unification in sbt that would
+          |   not work""".stripMargin)
 
       val fun: Function1[Int, Int] = Foo.bar((x: Int) => x + 4)
-    }
-
-    it(
-      """must decide on a type and
-        |  it was doing so incorrectly. Given the following
-        |  functions, Scala was using partially applying arguments
-        |  differently than what was expected""".stripMargin) {
-
-      info("This is the correct type alias")
-      type G[A] = Int => A
-
-      info("This is now the correct type alias")
-      type F[A] = A => Double
-    }
-
-    it(
-      """is solved by partially applying from left to right,
-        |  fulfilling the types on the left first. Here it
-        |  is using a Functor with a definition that
-        |  has a concrete first type but leaves the
-        |  second one as generic""".stripMargin) {
-
-      import cats.Functor
-
-      type F[E] = Int => E
-
-      implicit val intToUnknownFunctor: Functor[F] = new Functor[F] {
-        override def map[A, B](fa: F[A])(f: A => B): F[B] = (x: Int) => f(fa(x))
-      }
-
-      val result: F[String] = Functor[F].fmap((x: Int) => "hello" * x)(_ + 8)
-      result.apply(2) should be ("hellohello8")
     }
   }
 }

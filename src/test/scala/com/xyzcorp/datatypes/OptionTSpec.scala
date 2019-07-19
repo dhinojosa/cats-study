@@ -8,12 +8,35 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.xyzcorp
+package com.xyzcorp.datatypes
 
+import cats.implicits._
 import org.scalatest.{FunSpec, Matchers}
 
-class FreeMonadSpec extends FunSpec with Matchers {
-  describe("A Free Monad") {
+class OptionTSpec extends FunSpec with Matchers {
 
+  import scala.concurrent.Future
+
+  case class Org(id: Int, name: String)
+
+  case class User(id: Int, name: String)
+
+  case class Property(name: String)
+
+  def getOrg: Future[Option[Org]] = Future
+    .successful(Some(Org(1, "Accounting")))
+
+  def getUser(orgId: Int): Future[Option[User]] = Future
+    .successful(Some(User(2, "danno")))
+
+  def getUserProps(userId: Int): Future[List[Property]] = Future
+    .successful(List(Property("read"), Property("write")))
+
+  alert("This needs to be defined better")
+  describe("OptionT is a transformer") {
+    it("Inverse Cats Implicits") {
+      Seq(Option(1), Option(2), Option(3)).toList.traverse[Option, Int](
+        identity).map(_.toSeq)
+    }
   }
 }
