@@ -36,16 +36,18 @@ class ReferentialTransparencySpec extends FunSpec with Matchers {
         |  side effect""".stripMargin) {
       def fun(x:Int) = x * 2
       val result = fun(12) + fun(12)
-      val result2 = 24 + 24
-      result should equal (result2)
+      result should equal (24 + 24)
     }
-    it("""but it is not a function or a method that does invoke a state change or a
+    it("""but it is not a function or a method that
+         |  does invoke a state change or a
          |  side effect""".stripMargin) {
-      var x = 10
-      def fun(x:Int) = x + 2
+      var y = 10
+      def fun(x:Int) = {
+        y = y + x
+        y
+      }
       val result = fun(2) + fun(2)
-      val result2 = 12 + 14
-      result should equal (result2)
+      result shouldNot equal (24 + 24)
     }
   }
 }
