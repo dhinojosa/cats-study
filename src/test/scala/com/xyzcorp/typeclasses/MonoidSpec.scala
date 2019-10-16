@@ -29,7 +29,7 @@ class MonoidSpec extends FunSpec with Matchers {
       r should be("FewBetween")
       r should be(s)
     }
-      
+
     it(
       """has a method `empty` with type A, What comes to your mind
         | when we say an empty String?
