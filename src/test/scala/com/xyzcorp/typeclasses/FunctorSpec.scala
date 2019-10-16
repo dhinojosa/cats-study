@@ -22,80 +22,130 @@ import scala.language.{postfixOps, reflectiveCalls}
 
 class FunctorSpec extends FunSpec with Matchers {
 
-  describe("Functor") {
-    it("is a map that uses a type class") {
-      val result = Functor[List].fmap(List(1, 2, 3, 4))(x => x + 30)
-      result should be(List(31, 32, 33, 34))
+    describe("Functor") {
+        it("is defined by the following typeclass") {
+            import scala.language.higherKinds
+            trait MyFunctor[M[_]] {
+                def myMap[A, B](m: M[A])(f: A => B): M[B]
+            }
+        }
+        it("is a map that uses a type class") {
+            val result = Functor[List].
+                fmap(List(1, 2, 3, 4))(x => x + 30)
+            result should be(List(31, 32, 33, 34))
+        }
+
+        it("can be used with an Option") {
+            val result = Functor[Option].fmap(Option(13))(x => x * 10)
+            result should be(Some(130))
+        }
+
+        it("can be used with an Option that is also a None") {
+            val result = Functor[Option].fmap(Option.empty[Int])(x => x * 10)
+            result should be(None)
+        }
+
+        it("can be used with a Function and used for composition") {
+            import cats.instances.function._
+            import cats.syntax.functor._
+
+            val func1 = (a: Int) => a + 1
+            val func2 = (a: Int) => a * 2
+            val func3 = (a: Int) => a + "!"
+            val func4 = func1.map(func2).map(func3)
+
+            func4(123)
+        }
+        it("can be used with Futures") {
+            val future: Future[Int] = Future {
+                40 * 10
+            }
+            val result = Functor[Future].fmap(future)(x => x / 2)
+            result.foreach(_ should be(200))
+            Await.ready(result, 3 seconds)
+        }
+
+
+        it("can be used with a type class of your choosing") {
+            case class Box[A](contents: A)
+
+            implicit val boxFunctor: Functor[Box] = new Functor[Box] {
+                override def map[A, B](fa: Box[A])(f: A => B): Box[B] = Box(
+                    f(fa.contents))
+            }
+
+            val box = Box(100)
+            val result = Functor[Box].fmap(box)(x => x + 100)
+            result should be(Box(200))
+        }
+        it("can be be composed with other Functors") {
+            //These are the same
+            type fun1 = Functor[List]
+            //type fun2 = Functor[List[?]] Requires type-projector
+            //type fun3 = Functor[λ[α => List[α]]] Requires type-projector
+
+
+            //Functor[List[Option[?]] is Functor[List[λ[α => Option[α]]]] which isn't
+            // what you want. The type variable needs to range over the whole
+            // type expression; i.e., Functor[λ[α => List[Option[α]]]]
+
+            type ListOption[A] = List[Option[A]]
+            val composedFunctor: Functor[ListOption] = Functor[List] compose
+                Functor[Option]
+            var maybeInts = composedFunctor
+                .map(List(Some(3), Some(2), Some(5)))(_ + 1)
+            maybeInts should be(List(Some(4), Some(3), Some(6)))
+            val composedFunctor2: Functor[({type λ[α] = List[Option[α]]})#λ] =
+                Functor[List] compose Functor[Option]
+            val result2 = composedFunctor2
+                .map(List(Some(3), Some(2), Some(5)))(_ + 1)
+        }
+
+
+        it(
+            """can use Nested, represents a composition of two Monadic containers.
+              | So for this example , using a List[Option[A]] as an object
+              | with map""".stripMargin) {
+            val result = Nested(List(Some(3), Some(2), Some(5), None))
+                .map(x => x + 1)
+            result should be(Nested(List(Some(4), Some(3), Some(6), None)))
+        }
+
+
     }
 
-    it("can be used with an Option") {
-      val result = Functor[Option].fmap(Some(13))(10 *)
-      result should be(Some(130))
+    describe("Functor Laws") {
+        it(
+            """must map the id function over a functor, and
+              |  the functor that we get back should
+              |  be the same as the original functor""".stripMargin) {
+            val original = List(1, 2, 3, 4)
+            val result = Functor[List].map(original)(identity)
+            original should be(result)
+        }
+
+        it(
+            """must compose two functions and then mapping the
+              |  resulting function over a functor should be the same as first mapping
+              |  one function over the functor and then mapping the other one,
+              |  In other words the following fmap should work
+              |  fmap (f . g) = fmap f . fmap g""".stripMargin) {
+
+            val addOne = (x: Int) => x + 1
+            val multiString = (x: Int) => "Hello" * x
+            val composition = addOne andThen multiString
+
+            val functor = Functor[List]
+            val f: List[Int] => List[Int] = functor.fmap(_: List[Int])(addOne)
+            val g: List[Int] => List[String] = functor
+                .fmap(_: List[Int])(multiString)
+
+            val rightCompose: List[Int] => List[String] = f andThen g
+            val leftCompose: List[Int] => List[String] = functor
+                .fmap(_: List[Int])(composition)
+
+            val xs = List(1, 2, 3, 4)
+            leftCompose(xs) should be(rightCompose(xs))
+        }
     }
-
-    it("can be used with a Function and used for composition") {
-      import cats.instances.function._
-      import cats.syntax.functor._
-
-      val func1 = (a: Int) => a + 1
-      val func2 = (a: Int) => a * 2
-      val func3 = (a: Int) => a + "!"
-      val func4 = func1.map(func2).map(func3)
-
-      func4(123)
-    }
-    it("can be used with Futures") {
-      val future = Future {
-        40 * 10
-      }
-      val result = Functor[Future].fmap(future)(x => x / 2)
-      result.foreach(_ should be(200))
-      Await.ready(result, 3 seconds)
-    }
-    it("can be used with a type class of your choosing") {
-      case class Box[A](contents: A)
-
-      implicit val boxFunctor: Functor[Box] = new Functor[Box] {
-        override def map[A, B](fa: Box[A])(f: A => B): Box[B] = Box(
-          f(fa.contents))
-      }
-
-      val box = Box(100)
-      val result = Functor[Box].fmap(box)(x => x + 100)
-      result should be(Box(200))
-    }
-    it("can be be composed with other Functors") {
-      //These are the same
-      type fun1 = Functor[List]
-      //type fun2 = Functor[List[?]] Requires type-projector
-      //type fun3 = Functor[λ[α => List[α]]] Requires type-projector
-
-
-      //Functor[List[Option[?]] is Functor[List[λ[α => Option[α]]]] which isn't
-      // what you want. The type variable needs to range over the whole
-      // type expression; i.e., Functor[λ[α => List[Option[α]]]]
-
-      type ListOption[A] = List[Option[A]]
-      val composedFunctor: Functor[ListOption] = Functor[List] compose
-        Functor[Option]
-      var maybeInts = composedFunctor
-        .map(List(Some(3), Some(2), Some(5)))(_ + 1)
-      maybeInts should be(List(Some(4), Some(3), Some(6)))
-      val composedFunctor2: Functor[({type λ[α] = List[Option[α]]})#λ] =
-        Functor[List] compose Functor[Option]
-      val result2 = composedFunctor2.map(List(Some(3), Some(2), Some(5)))(_ + 1)
-    }
-
-
-    it(
-      """can use Nested, represents a composition of two Monadic containers.
-        | So for this example , using a List[Option[A]] as an object
-        | with map""".stripMargin) {
-      val result = Nested(List(Some(3), Some(2), Some(5), None)).map(x => x + 1)
-      result should be(Nested(List(Some(4), Some(3), Some(6), None)))
-    }
-  }
-
-
-
 }
