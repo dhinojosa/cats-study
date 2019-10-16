@@ -1,11 +1,23 @@
 /*
  * Copyright 2019 Daniel Hinojosa
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+ * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 package com.xyzcorp.typeclasses
@@ -19,7 +31,9 @@ import scala.language.postfixOps
 class ApplicativeSpec extends FunSpec with Matchers {
   describe("Applicative") {
     it(
-      "extends Functor with ap, where the first argument is F[A=>B] and the second is F[A]")
+        """extends Functor with ap, where the first argument is F[A=>B]
+          | and the second is F[A]. It is distinctly different than a Functor
+          | in that we can wrap a function in a context""".stripMargin)
     {
       val result = Applicative[List].ap(List((x: Int) => x + 1))(List(1, 2, 3))
       result should be(List(2, 3, 4))
@@ -63,8 +77,9 @@ class ApplicativeSpec extends FunSpec with Matchers {
     it("""can do also with Function[A,B] where we can apply both sides""") {
       val axs = Applicative[List]
       val functions = List[(Int, Int) => Int](_ + _, _ * _)
-      val result = functions.ap2(List(1, 2, 3),List(4, 5, 6))
-      result should be(List(5, 4, 6, 5, 7, 6, 6, 8, 7, 10, 8, 12, 7, 12, 8, 15, 9, 18))
+      val result = functions.ap2(List(1, 2, 3), List(4, 5, 6))
+      result should
+        be(List(5, 4, 6, 5, 7, 6, 6, 8, 7, 10, 8, 12, 7, 12, 8, 15, 9, 18))
     }
   }
 }
