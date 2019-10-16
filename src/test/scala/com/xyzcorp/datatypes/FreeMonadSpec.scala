@@ -14,6 +14,8 @@ import org.scalatest.{FunSpec, Matchers}
 
 class FreeMonadSpec extends FunSpec with Matchers {
   describe("A Free Monad") {
+      it ("takes any functor and makes it a monad") {
 
+      }
   }
 }
