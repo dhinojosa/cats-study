@@ -40,13 +40,13 @@ class IOSpec extends FunSpec with Matchers {
 
     it("""can be rewritten using a flatMap for better clarity""".stripMargin) {
       import cats.effect.IO
-      def sayHelloWorldTwice(s: String): IO[Unit] = {
+      def printStringTwice(s: String): IO[Unit] = {
         for {_ <- IO(println(s))
              _ <- IO(println(s))
             } yield ()
       }
-      val container: IO[Unit] = sayHelloWorldTwice("Hello World")
-      container.unsafeRunSync()
+      val printHelloWorldTwice: IO[Unit] = printStringTwice("Hello World")
+      printHelloWorldTwice.unsafeRunSync()
     }
     it("""can be rewritten now using assignment since the invocation is lazy""".stripMargin) {
       import cats.effect.IO
