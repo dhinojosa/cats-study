@@ -17,11 +17,36 @@ class StateSpec extends FunSpec with Matchers {
   describe(
     """State Monad allows us to pass around state
       |  and a description of that state. The state
-      |  is composed using map and flatMap. State[S, A] is the
-      |  type where S is the state, and A is the type of
-      |  the result. This allows us to manage
+      |  is composed using map and flatMap.
+      |
+      |  State[S, A] is the type where:
+      |     * S is the state,
+      |     * A is the type of the result
+      |
+      |  This allows us to manage
       |  state in a functional way.
+      |
       |  State[S, A] = S => (S,A)""".stripMargin) {
+
+
+    it (
+      """can do something simple like manage something that
+        | a variable would handle, but since we do not like to
+        | use variables this is where the state monad
+        | can be used, int will be the state, and the String will
+        | be the result where the result will be something
+        | simple like adding two numbers together.
+      """.stripMargin) {
+
+      val s0: State[Int, String] = State.apply(s => (s, ""))
+      val s1 = s0.modify(i => i * 3)
+
+    }
+
+
+
+
+
 
     it("can run a state as a function") {
       val count: State[Int, String] = State.pure[Int,String]("Initializing State")
