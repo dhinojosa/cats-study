@@ -20,6 +20,7 @@ class EqSpec extends FunSpec with Matchers {
         def eqv(a: A, b: A): Boolean
       }
     }
+
     it("is available with Cats via import") {
       import cats.Eq
       import cats.instances.int._
@@ -27,9 +28,12 @@ class EqSpec extends FunSpec with Matchers {
       eqInt.eqv(4, 5) should be(false)
       eqInt.eqv(4, 4) should be(true)
     }
+
     it("has specialized functions === and =!=") {
-      (4 === 5) should be(false) //This is lying, it is using ScalaTest ===
+      info("This === is lying but it just shows what is possible")
+      (4 === 5) should be(false)
     }
+
     it("can also obviously be used for custom types") {
       import cats.Eq
       case class Employee(firstName: String, lastName: String, salary: Int)
@@ -39,11 +43,13 @@ class EqSpec extends FunSpec with Matchers {
         import cats.instances.string._
 
         implicit val eqFirstNameOnly: Eq[Employee] = (x: Employee, y: Employee) => {
-          implicitly[Eq[String]].eqv(x.firstName, y.firstName)
+            implicitly[Eq[String]].eqv(x.firstName, y.firstName)
         }
+
         implicit val eqLastNameOnly: Eq[Employee] = (x: Employee, y: Employee) => {
           implicitly[Eq[String]].eqv(x.lastName, y.lastName)
         }
+
         implicit val eqSalaryOnly: Eq[Employee] = (x: Employee,
                                           y: Employee) => implicitly[Eq[Int]]
           .eqv(x.salary, y.salary)
@@ -60,9 +66,18 @@ class EqSpec extends FunSpec with Matchers {
       val duvall = Employee("Robert","Duvall", 17000)
       val downeyJr = Employee("Robert","Downey Jr", 17000)
 
-      import Employee.eqAll
-      implicitly[Eq[Employee]].eqv(duvall, downeyJr) should be (false)
-      implicitly[Eq[Employee]].eqv(deNiro1, deNiro2) should be (true)
+      {
+        import Employee.eqFirstNameOnly
+        implicitly[Eq[Employee]].eqv(duvall, downeyJr) should be(true)
+        implicitly[Eq[Employee]].eqv(deNiro1, deNiro2) should be(true)
+      }
+
+      {
+        val x = 10;
+        import Employee.eqSalaryOnly
+        implicitly[Eq[Employee]].eqv(duvall, downeyJr) should be(true)
+        implicitly[Eq[Employee]].eqv(deNiro1, deNiro2) should be(true)
+      }
     }
   }
 }
