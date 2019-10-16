@@ -42,49 +42,36 @@ class KleisliSpec extends FunSpec with Matchers {
       final case class MyKleisli[F[_], A, B](run: A => F[B])
     }
 
-    it(
-      """is meant for composition, take the following functions that can compose,
-        | this is just using
-      """.stripMargin)
-    {
+    it("""is meant for composition, take the following functions that can compose,
+        |  this is the standard Scala function composition with `andThen`""".stripMargin) {
+
       val takeFirst: ((String, Int)) => String = t => t._1
       val substring3: String => Try[String] = s => Try(s.substring(3))
       val tryToSuccessOrEmpty: Try[String] => String = ts => ts.getOrElse("")
       val stringCaps: String => String = _.toUpperCase
 
-      val f = takeFirst andThen substring3 andThen tryToSuccessOrEmpty andThen stringCaps
+      val f = takeFirst andThen substring3 andThen tryToSuccessOrEmpty andThen
+        stringCaps
       f("Consider", 90) should be("SIDER")
     }
 
     it(
-      "can be used to wrap various elements to one type called Kleisli so as to efficiently manipulate it")
-    {
-      val kleisli1: Kleisli[Option, Int, String] = Kleisli(
-        (i: Int) => Option(i.toString))
-      val kleisli2: Kleisli[Option, String, URL] = Kleisli(
-        (s: String) => Option(new URL(s)))
-      val result: Kleisli[Option, Int, URL] = kleisli1.andThen(kleisli2)
+      """can be used to wrap various elements to one type
+        |  called Kleisli so as to
+        |  efficiently manipulate it""".stripMargin) {
+      val kleisliTakeFirst: Kleisli[List, (String, Int), String] =
+        Kleisli(t => List(t._1))
+      val kleisliSubstring3: Kleisli[List, String, Try[String]] =
+        Kleisli(s => List(Try(s.substring(3))))
+      val kleisliTryToSucessOrEmpty: Kleisli[List, Try[String], String] =
+        Kleisli(ts => List(ts.getOrElse("")))
+      val kleisliStringCaps: Kleisli[List, String, String] =
+        Kleisli(s => List(s.toUpperCase))
 
-      val option = result.run(20)
-      val value = option.getOrElse(new Object())
-
-    }
-
-
-    it(
-      "can use >>> to do the compose")
-    {
-      val kleisli1: Kleisli[Option, Int, String] = Kleisli(
-        (i: Int) => Option(i.toString))
-      val kleisli2: Kleisli[Option, String, URL] = Kleisli(
-        (s: String) => Option(new URL(s)))
-      val result: Kleisli[Option, Int, URL] =    kleisli1 >>> kleisli2
-
-      val option = result.run(20)
-      val value = option.getOrElse(new Object())
-
-
-      value should be("http://20")
+      val composition = kleisliTakeFirst >>> kleisliSubstring3 >>>
+                        kleisliTryToSucessOrEmpty >>> kleisliStringCaps
+      val result = composition.run("Consider" -> 90)
+      result should be (List("SIDER"))
     }
   }
 }
