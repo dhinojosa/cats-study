@@ -51,7 +51,7 @@ class FunctorSpec extends FunSpec with Matchers {
 
             val func1 = (a: Int) => a + 1
             val func2 = (a: Int) => a * 2
-            val func3 = (a: Int) => a + "!"
+            val func3 = (a: Int) => s"$a!"
             val func4 = func1.map(func2).map(func3)
 
             func4(123)
@@ -64,8 +64,6 @@ class FunctorSpec extends FunSpec with Matchers {
             result.foreach(_ should be(200))
             Await.ready(result, 3 seconds)
         }
-
-
         it("can be used with a type class of your choosing") {
             case class Box[A](contents: A)
 
@@ -110,8 +108,6 @@ class FunctorSpec extends FunSpec with Matchers {
                 .map(x => x + 1)
             result should be(Nested(List(Some(4), Some(3), Some(6), None)))
         }
-
-
     }
 
     describe("Functor Laws") {
