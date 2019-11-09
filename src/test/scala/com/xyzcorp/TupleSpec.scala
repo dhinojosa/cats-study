@@ -26,31 +26,38 @@ package com.xyzcorp
 import org.scalatest.{FunSpec, Matchers}
 
 class TupleSpec extends FunSpec with Matchers {
-  describe(
-    """Using cats.implicits._ utilities to give certain code more
-      |  functionality
-    """.stripMargin) {
+    describe(
+        """Using cats.implicits._ utilities to give certain code more
+          |  functionality.""".stripMargin) {
 
-    it(
-      """has >= which is probably not
-        |  something involved with tuples per say""".stripMargin)
-    {
-      import cats.implicits._
-      val tuple = (1, "Hello", 3.0)
-      val result = tuple >= tuple
-      result should be(true)
-    }
+        it(
+            """has >= which is probably not
+              |  something involved with tuples per say""".stripMargin) {
+            import cats.implicits._
+            val tuple = (1, "Hello", 3.0)
+            val result = tuple >= tuple
+            result should be(true)
+        }
 
-    it("""has another application""") {
-      import cats._
-      import cats.implicits._
-      val tuple = (1, "Hello")
-      tuple.map(_ + "!")
-    }
+        it("""has another application""") {
+            import cats._
+            import cats.implicits._
+            val tuple = (1, "Hello")
+            tuple.map(_ + "!")
+        }
 
-    it("""has another application with """) {
-      pending
-      val tuple = (1, "Hello")
+        it("""has another application with +++""") {
+            import cats._
+            import cats.implicits._
+            val widen = (1, "Hello").tupleLeft(90.0)
+            println(widen)
+        }
+
+        it("""has another application with tupleRight""") {
+            import cats._
+            import cats.implicits._
+            val widen = (1, "Hello").tupleRight(90.0)
+            println(widen)
+        }
     }
-  }
 }
