@@ -1,27 +1,14 @@
 /*
- * Copyright 2018 Daniel Hinojosa
+ * Copyright 2019 Daniel Hinojosa
  *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without
- * limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and
- * to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
- * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.xyzcorp
+package com.xyzcorp.typeclasses
 
 import org.scalatest.{FunSpec, Matchers}
 
@@ -61,8 +48,7 @@ class ContravariantFunctors extends FunSpec with Matchers {
     }
 
     it("can be summoned by use of imports") {
-      import cats.Contravariant
-      import cats.Show
+      import cats.{Contravariant, Show}
       import cats.instances.string._
 
       info("first we bring in the show typeclass")
@@ -73,7 +59,7 @@ class ContravariantFunctors extends FunSpec with Matchers {
           |  present a function that is to be applied before.""".stripMargin)
       val showSymbol = Contravariant[Show].
         contramap(showString)((sym: Symbol) => s"'${sym.name}")
-      showSymbol.show('dave) should be("'dave")
+      showSymbol.show(Symbol("dave")) should be("'dave")
     }
 
     it("""can be summoned by use of imports, and this time with the use of
@@ -90,7 +76,7 @@ class ContravariantFunctors extends FunSpec with Matchers {
           |  present a function that is to be applied before.""".stripMargin)
 
       val showSymbol  = showString
-        .contramap((sym: Symbol) => s"'${sym.name}").show('dave)
+        .contramap((sym: Symbol) => s"'${sym.name}").show(Symbol("dave"))
       showSymbol should be("'dave")
     }
 
@@ -107,8 +93,8 @@ class ContravariantFunctors extends FunSpec with Matchers {
         |  This can be implemented using `imap`""".stripMargin) {
 
       import cats.Monoid
-      import cats.instances.string._ // for Monoid
-      import cats.syntax.invariant._ // for imap
+      import cats.instances.string._
+      import cats.syntax.invariant._
       import cats.syntax.semigroup._ // for |+|
 
       implicit val symbolMonoid: Monoid[Symbol] =
@@ -117,7 +103,7 @@ class ContravariantFunctors extends FunSpec with Matchers {
       info("establish the empty Monoid")
       Monoid[String].empty
 
-      val result = 'hello |+| 'does |+| 'this |+| 'work
+      val result = Symbol("hello") |+| Symbol("does") |+| Symbol("this") |+| Symbol("work")
       result shouldEqual Symbol("hellodoesthiswork")
     }
   }
