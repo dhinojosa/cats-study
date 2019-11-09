@@ -30,9 +30,9 @@ class MonadSpec extends FunSpec with Matchers {
     it("is defined for an option") {
       import cats.Monad
       import cats.instances.option._ // for Monad
-      val opt1 = Monad[Option].pure(3)
-      val maybeInt = Monad[Option].flatMap(opt1)(x => Monad[Option].pure(2 * x))
-      maybeInt.foreach(_ should be(6))
+      val opt1 = Monad[Option].pure(3) //Some(3)
+      val maybeInt: Option[Int] = Monad[Option].flatMap(opt1)(x => Monad[Option].pure(2 * x))
+      maybeInt should be (Some(6))
     }
 
     it("is also defined for a list") {
