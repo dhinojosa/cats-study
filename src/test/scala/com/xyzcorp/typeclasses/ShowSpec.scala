@@ -85,8 +85,20 @@ class ShowSpec extends FunSpec with Matchers {
     val duvall = Employee("Robert","Duvall", 17000)
     val downeyJr = Employee("Robert","Downey Jr", 17000)
 
-    import Employee.showLastThenFirstAndMaskedSalary
-    implicitly[Show[Employee]].show(deNiro1) should be ("DeNiro, Robert : $XX,XXX.XX")
-    implicitly[Show[Employee]].show(downeyJr) should be ("Downey Jr, Robert : $XX,XXX.XX")
+    {
+        import Employee.showLastThenFirstAndMaskedSalary
+        implicitly[Show[Employee]].show(deNiro1) should
+            be("DeNiro, Robert : $XX,XXX.XX")
+        implicitly[Show[Employee]].show(downeyJr) should
+            be("Downey Jr, Robert : $XX,XXX.XX")
+    }
+
+      {
+          import Employee.showLastThenFirstAndSalary
+          implicitly[Show[Employee]].show(deNiro1) should
+              be("DeNiro, Robert : $30,000.00")
+          implicitly[Show[Employee]].show(downeyJr) should
+              be("Downey Jr, Robert : $17,000.00")
+      }
   }
 }
