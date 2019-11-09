@@ -24,11 +24,11 @@ name := "cats-study"
 
 version := "1.0-SNAPSHOT"
 
-scalaVersion := "2.12.4"
+scalaVersion := "2.13.1"
 
 scalacOptions ++= Seq(
-  "-Ypartial-unification"
-  ,"-Xfatal-warnings"
+  //"-Ypartial-unification"
+  "-Xfatal-warnings"
   ,"-feature"
   ,"-deprecation"
 )
@@ -36,8 +36,8 @@ scalacOptions ++= Seq(
 fork := true
 
 libraryDependencies := Seq(
-  "org.scalatest" %% "scalatest" % "3.0.4" % "test",
+  "org.scalatest" %% "scalatest" % "3.0.8" % "test",
   "org.typelevel" %% "cats-core" % "2.0.0" withSources() withJavadoc(),
   "org.typelevel" %% "cats-effect" % "2.0.0" withSources() withJavadoc(),
-  "org.typelevel" %% "cats-free" % "2.0.0" withSources() withJavadoc()
+  "org.typelevel" %% "cats-free" % "2.0.0" withSources() withJavadoc(),
 )
