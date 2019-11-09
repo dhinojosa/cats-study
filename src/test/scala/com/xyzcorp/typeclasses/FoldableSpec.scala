@@ -99,11 +99,11 @@ class FoldableSpec extends FunSpec with Matchers {
         | the following where we are requiring a call that demands that
         | a Foldable around a container is absolutely required""".stripMargin) {
 
-      import scala.language.higherKinds
+      def mySum[F[_]](values: F[Int])
+                     (implicit foldable: Foldable[F],
+                      monoid: Monoid[Int]): Int =
 
-      def mySum[F[_]](values: F[Int])(implicit foldable: Foldable[F]): Int =
-        values.foldLeft(0)(_ + _)
-
+          foldable.foldLeft(values, 0)(monoid.combine)
       mySum(List(10, 12, 19)) should be (41)
     }
   }
