@@ -21,32 +21,38 @@
  */
 package com.xyzcorp.definitions
 
+import cats.Functor
 import org.scalatest.{FunSpec, Matchers}
 
 class HigherKindsSpec extends FunSpec with Matchers {
 
-  import scala.language.higherKinds
+    import scala.language.higherKinds
 
-  describe("Higher Kinds") {
-    it(
-      """is a parameterized type that represents the container or
-        |  collection. List[A] means that I have a generic A (if the
-        |  the type is not found in the classpath.  Imagine in Java
-        |  if we have M[A]? Where M can either represent a List, a
-        |  Set, a Future. But not a Map or a Function why?""".stripMargin) {
+    describe("Higher Kinds") {
+        it(
+            """is a parameterized type that represents the container or
+              |  collection. List[A] means that I have a generic A (if the
+              |  the type is not found in the classpath.  Imagine in Java
+              |  if we have M[A]? Where M can either represent a List, a
+              |  Set, a Future. But not a Map or a Function why?""".stripMargin)
+        {
+            case class Box[A](value: A)
 
-      trait MyFunctor[M[_]] {
-        def myMap[A, B](m: M[A])(f: A => B): M[B]
-      }
+            trait MyFunctor[M[_]] {
+                def myMap[A, B](m: M[A])(f: A => B): M[B]
+            }
 
-      case class Box[A](value: A)
+            object MyFunctor {
+                def apply[T[_]](implicit f: MyFunctor[T]): MyFunctor[T] = f
+            }
 
-      implicit val functorForBox: MyFunctor[Box] = new MyFunctor[Box] {
-        override def myMap[A, B](m: Box[A])(f: A => B): Box[B] = Box(f(m.value))
-      }
+            implicit val functorForBox: MyFunctor[Box] = new MyFunctor[Box] {
+                override def myMap[A, B](m: Box[A])(f: A => B): Box[B] = Box(
+                    f(m.value))
+            }
 
-      val myBox = Box(200)
-      implicitly[MyFunctor[Box]].myMap(myBox)(x => "Hello" * 3)
+            val myBox = Box(200)
+            MyFunctor.apply[Box].myMap(myBox)(x => "Hello" * 3)
+        }
     }
-  }
 }
