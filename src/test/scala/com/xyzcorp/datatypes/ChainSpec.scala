@@ -25,13 +25,40 @@ package com.xyzcorp.datatypes
 import org.scalatest.{FunSpec, Matchers}
 
 class ChainSpec extends FunSpec with Matchers {
-  describe("A Chain") {
-    it("is a chain collection made by chaining elements with on another") {
-      pending
-    }
+    describe(
+        """A Chain is a data structure of constant
+          |  time prepending and appending. To be used where List and
+          |  Vector incur a performance penalty. It supports both
+          |  constant O(1) time append and prepend. It has four members of
+          |  its ADT. Empty, Singleton, Append, Wrap""".stripMargin) {
+        it("has an easy API using NonEmptyChain to create NonEmptyChains") {
+            import cats.data._
+            NonEmptyChain(1, 2, 3, 4)
+        }
+        it("can be created from a NonEmptyList") {
+            import cats.data._
+            NonEmptyChain.fromNonEmptyList(NonEmptyList(3, List(1, 2)))
+        }
+        it(
+            """can be created using fromChainPrepend that
+              |  prepends to an already created Chain""".stripMargin) {
+            import cats.data._
+            NonEmptyChain.fromChainPrepend(40, Chain.empty)
+        }
+        it(
+            """can be created using fromChainAppend that
+              |  appends to an already created Chain""".stripMargin) {
+            import cats.data._
+            NonEmptyChain.fromChainAppend(Chain.one(2), 4)
+        }
+        it("can be pattern matched?") {
+            pending
+            //Can an NEC be pattern matched?
+        }
 
-    it ("can be pattern matched?") {
-      //Can an NEC be pattern matched?
+        //TODO:
+        //Without checking, I'd guess that it's a newtyped wrapper
+        // around NEL providing "zip" Applicative behavior instead
+        // of the standard cartesian product behavior
     }
-  }
 }
