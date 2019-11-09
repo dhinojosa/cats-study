@@ -35,6 +35,8 @@ class IOSpec extends FunSpec with Matchers {
         IO[Unit](println(s)).flatMap(_ => IO[Unit](println(s)))
       }
       val container: IO[Unit] = sayHelloWorldTwice("Hello World")
+
+      println("Nothing has happened yet!")
       container.unsafeRunSync()
     }
 
