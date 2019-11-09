@@ -42,8 +42,9 @@ class EqSpec extends FunSpec with Matchers {
         import cats.instances.int._
         import cats.instances.string._
 
-        implicit val eqFirstNameOnly: Eq[Employee] = (x: Employee, y: Employee) => {
-            implicitly[Eq[String]].eqv(x.firstName, y.firstName)
+        implicit val eqFirstNameOnly: Eq[Employee] = new Eq[Employee] {
+            override def eqv(x: Employee, y: Employee): Boolean =
+                implicitly[Eq[String]].eqv(x.firstName, y.firstName)
         }
 
         implicit val eqLastNameOnly: Eq[Employee] = (x: Employee, y: Employee) => {
@@ -51,8 +52,8 @@ class EqSpec extends FunSpec with Matchers {
         }
 
         implicit val eqSalaryOnly: Eq[Employee] = (x: Employee,
-                                          y: Employee) => implicitly[Eq[Int]]
-          .eqv(x.salary, y.salary)
+                                          y: Employee) =>
+            implicitly[Eq[Int]].eqv(x.salary, y.salary)
 
         implicit val eqAll: Eq[Employee] = (x: Employee, y: Employee) => {
             implicitly[Eq[String]].eqv(x.firstName, y.firstName) &&
@@ -73,7 +74,6 @@ class EqSpec extends FunSpec with Matchers {
       }
 
       {
-        val x = 10;
         import Employee.eqSalaryOnly
         implicitly[Eq[Employee]].eqv(duvall, downeyJr) should be(true)
         implicitly[Eq[Employee]].eqv(deNiro1, deNiro2) should be(true)
