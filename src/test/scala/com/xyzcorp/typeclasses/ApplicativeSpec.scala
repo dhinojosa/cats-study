@@ -36,10 +36,13 @@ class ApplicativeSpec extends FunSpec with Matchers {
           |  in that we can wrap a function in a context. As opposed to
           |  Apply, Applicative has pure""".stripMargin) {
 
+        //M[A]
+        //functor: [List(1,2,3,4)][x => x * 2]
+        //applicative: [List(x => x * 2)][List[1,2,3,4]]
+
         it(
             """Applies an ap see Ap for more details""".stripMargin) {
-            val result = Applicative[List]
-                .ap(List((x: Int) => x + 1))(List(1, 2, 3))
+            val result = Applicative[List].ap(List((x: Int) => x + 1))(List(1, 2, 3))
             result should be(List(2, 3, 4))
         }
         it("extends Functor with pure that creates the Applicative") {
@@ -74,8 +77,7 @@ class ApplicativeSpec extends FunSpec with Matchers {
               | of applying a function from the left list to a value in the right one.
               |""".stripMargin) {
             val axs = Applicative[List]
-            val result = List[Int => String](_.toString, _.toHexString) <*>
-                List(1, 20, 30, 40)
+            val result = axs.ap(List[Int => String](_.toString, _.toHexString))(List(1,20,30,40))
             result should be(List("1", "20", "30", "40", "1", "14", "1e", "28"))
         }
         it("""can do also with Function[A,B] where we can apply both sides""") {
