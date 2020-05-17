@@ -26,13 +26,13 @@ import org.scalatest.{FunSpec, Matchers}
 
 class IOSpec extends FunSpec with Matchers {
   describe("IO Monad") {
-    it(
-      """ captures an IO Effect, something
+    it(""" captures an IO Effect, something
         | that happens to the outside world and does so lazily
       """.stripMargin) {
       import cats.effect.IO
       def sayHelloWorldTwice(s: String): IO[Unit] = {
-        IO[Unit](println(s)).flatMap(_ => IO[Unit](println(s)))
+        val value1 = IO[Unit](println(s))
+        value1.flatMap(_ => value1)
       }
       val container: IO[Unit] = sayHelloWorldTwice("Hello World")
 
@@ -43,25 +43,30 @@ class IOSpec extends FunSpec with Matchers {
     it("""can be rewritten using a flatMap for better clarity""".stripMargin) {
       import cats.effect.IO
       def printStringTwice(s: String): IO[Unit] = {
-        for {_ <- IO(println(s))
-             _ <- IO(println(s))
-            } yield ()
+        for {
+          _ <- IO(println(s))
+          _ <- IO(println(s))
+        } yield ()
       }
       val printHelloWorldTwice: IO[Unit] = printStringTwice("Hello World")
       printHelloWorldTwice.unsafeRunSync()
     }
-    it("""can be rewritten now using assignment since the invocation is lazy""".stripMargin) {
+    it(
+      """can be rewritten now using assignment
+          |  since the invocation is lazy""".stripMargin
+    ) {
       import cats.effect.IO
       def sayHelloWorldTwice(s: String): IO[Unit] = {
         val printString = IO(println(s))
-        for {_ <- printString
-             _ <- printString
+        for {
+          _ <- printString
+          _ <- printString
         } yield ()
       }
       val container: IO[Unit] = sayHelloWorldTwice("Hello World")
       container.unsafeRunSync()
     }
-    it ("""can be used to program interaction of events""") {
+    it("""can be used to program interaction of events""") {
       import cats.effect.IO
 
       def putStrLn(value: String) = IO(println(value))

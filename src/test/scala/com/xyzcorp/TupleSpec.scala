@@ -23,41 +23,46 @@
 
 package com.xyzcorp
 
+import cats.Functor
 import org.scalatest.{FunSpec, Matchers}
 
 class TupleSpec extends FunSpec with Matchers {
-    describe(
-        """Using cats.implicits._ utilities to give certain code more
+  describe("""Using cats.implicits._ utilities to give certain code more
           |  functionality.""".stripMargin) {
 
-        it(
-            """has >= which is probably not
-              |  something involved with tuples per say""".stripMargin) {
-            import cats.implicits._
-            val tuple = (1, "Hello", 3.0)
-            val result = tuple >= tuple
-            result should be(true)
-        }
-
-        it("""has another application""") {
-            import cats._
-            import cats.implicits._
-            val tuple = (1, "Hello")
-            tuple.map(_ + "!")
-        }
-
-        it("""has another application with +++""") {
-            import cats._
-            import cats.implicits._
-            val widen = (1, "Hello").tupleLeft(90.0)
-            println(widen)
-        }
-
-        it("""has another application with tupleRight""") {
-            import cats._
-            import cats.implicits._
-            val widen = (1, "Hello").tupleRight(90.0)
-            println(widen)
-        }
+    it("""has >=, greater than or equal to from PartialOrder which
+              |  is probably not
+              |  something involved with tuples per say, but
+              |  it still works""".stripMargin) {
+      import cats.implicits._
+      val tuple = (1, "Hello", 3.0)
+      val result = tuple >= tuple
+      result should be(true)
     }
+
+    it("""has functional applications like map, which is a bit odd
+              |  It seems to only to operate on the last tuple element.
+              |  There is a functor implementation of Tuple2. This
+              |  comes from catsStdInstancesForTuple2""".stripMargin) {
+      import cats.implicits._
+      val tuple = (1, "Hello")
+      tuple.map(_ + "!") should be(1 -> "Hello!")
+    }
+
+    it(
+        """has tuple left which creates a tuple on the left hand side,
+          |  this comes from Functor""".stripMargin) {
+      import cats.implicits._
+      val widen = (1, "Hello").tupleLeft(90.0)
+      widen should be ((1, (90.0, "Hello")))
+    }
+
+    it(
+        """has tupleRight, with changes the right element and leaves what it was
+          |  previously on the left this comes from Functor""".stripMargin) {
+      import cats.implicits._
+      val widen = (1, "Hello").tupleRight(90.0)
+      widen should be ((1, ("Hello", 90.0)))
+    }
+  }
 }
