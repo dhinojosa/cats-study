@@ -22,17 +22,25 @@
 
 package com.xyzcorp.typeclasses
 
+import cats.Id
+import cats.data.{Kleisli, Reader}
 import org.scalatest.{FunSpec, Matchers}
-import cats._
-import cats.data.Reader
-import cats.implicits._
 
-class ReadSpec extends FunSpec with Matchers {
-   describe("Reader Monad brings items in lazily to be constructed after the fact") {
-     it ("uses the Read") {
-       val reader = Reader[String, String](s => s.toUpper)
+class ReaderSpec extends FunSpec with Matchers {
+  describe(
+    "Reader Monad brings items in lazily to be constructed after the fact"
+  ) {
+    it("uses the Read") {
+      val upper: Reader[String, String] =
+        Reader[String, String](s => s.toUpperCase)
+      val exclaim = Reader[String, String](s => s + "!")
 
-     }
+      val value2: Kleisli[Id, String, String] = for {
+        i <- upper
+        l <- Reader((s: String) => i + s + "!")
+      } yield l
 
-   }
+      println(value2.apply("Hello"))
+    }
+  }
 }

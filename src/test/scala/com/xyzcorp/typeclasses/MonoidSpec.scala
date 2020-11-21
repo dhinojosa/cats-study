@@ -17,8 +17,7 @@ import org.scalatest.{FunSpec, Matchers}
 import scala.language.reflectiveCalls
 
 class MonoidSpec extends FunSpec with Matchers {
-  describe(
-    """A Monoid is a type class that combines two things.
+  describe("""A Monoid is a type class that combines two things.
       | What do we naturally do when we combine two Strings together?
       | What do we do when we combine two Integers together?
     """.stripMargin) {
@@ -30,8 +29,7 @@ class MonoidSpec extends FunSpec with Matchers {
       r should be(s)
     }
 
-    it(
-      """has a method `empty` with type A, What comes to your mind
+    it("""has a method `empty` with type A, What comes to your mind
         | when we say an empty String?
         | when we say an empty Int?
         | when we say an empty Float?
@@ -44,8 +42,11 @@ class MonoidSpec extends FunSpec with Matchers {
       Monoid[List[String]].empty should be(List.empty[String])
     }
 
-    it(
-      """contains a |+| operator that is a synonym of combine from the
+    it("""What is a Monoid of an empty Set of String?""") {
+      Monoid[Set[String]].empty should be(Set.empty[String])
+    }
+
+    it("""contains a |+| operator that is a synonym of combine from the
         |  Semigroup type class.""".stripMargin) {
       val total = 1 |+| 2 |+| Monoid[Int].empty
       total should be(3)
@@ -54,9 +55,14 @@ class MonoidSpec extends FunSpec with Matchers {
     it("""can combine lists of strings""") {
       val monoidListString = Monoid[List[String]]
       val result = List("One", "Two") |+|
-                   List("Three", "Four") |+|
-                   monoidListString.empty
+        List("Three", "Four") |+|
+        monoidListString.empty
       result should be(List("One", "Two", "Three", "Four"))
+    }
+
+    it("""can combine anything including tuples""") {
+        val a = (1, "Two")
+        val b = (5.0, Symbol("Livid"))
     }
   }
 }

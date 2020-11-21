@@ -70,8 +70,7 @@ class OptionTSpec extends FunSpec with Matchers {
                 Await.ready(res.value, 3 seconds).onComplete {
                     case Success(o) =>
                         o.fold(fail("empty option"))(xs =>
-                            xs should contain inOrder
-                                (Property("read"), Property("write")))
+                            xs should contain (Property("read"), Property("write")))
 
                     case Failure(exception) =>
                         exception.printStackTrace()

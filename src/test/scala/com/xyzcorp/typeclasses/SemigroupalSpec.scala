@@ -30,7 +30,7 @@ class SemigroupalSpec extends FunSpec with Matchers {
       """combines two containers F[A] and F[B] and brings together using
         |  F[(A,B)] which uses a tuple and is defined with the
         |  following type class.""".stripMargin) {
-      import scala.language.higherKinds
+
       trait Semigroupal[F[_]] {
         def product[A, B](fa: F[A], fb: F[B]): F[(A, B)]
       }

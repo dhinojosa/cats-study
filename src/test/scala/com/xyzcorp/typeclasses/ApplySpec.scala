@@ -15,40 +15,41 @@ import cats.implicits._
 import org.scalatest.{FunSpec, Matchers}
 
 class ApplySpec extends FunSpec with Matchers {
-    describe("""Apply extends Functor, with ap. Ap transforms a value in a
+  describe("""Apply extends Functor, with ap. Ap transforms a value in a
                |  context.  Except that instead of providing a A => B, you provide
                |  and F[A=>B] where F is the Apply or context""".stripMargin) {
 
-        it("""can be used with an option and
+    it("""can be used with an option and
               |  application of that function""".stripMargin) {
-            val optionFunction: Option[Int => Int] = Some(x => x + 1)
-            val maybeInt = Apply[Option].ap(optionFunction)(Some(4))
-            maybeInt should be (Some(5))
-        }
+      val optionFunction: Option[Int => Int] = Some(x => x + 1)
+      val maybeInt = Apply[Option].ap(optionFunction)(Some(4))
+      maybeInt should be(Some(5))
+    }
 
-        it("""should also work with failure, here the function,
-              |  will be resolved to None, while the Option with a value is a Some"""
-                .stripMargin) {
-            val optionFunction: Option[Int => Int] = None
-            val maybeInt = Apply[Option].ap(optionFunction)(Some(4))
-            maybeInt should be (None)
-        }
+    it(
+      """should also work with failure, here the function,
+              |  will be resolved to None, while the Option with a value is a Some""".stripMargin
+    ) {
+      val optionFunction: Option[Int => Int] = None
+      val maybeInt = Apply[Option].ap(optionFunction)(Some(4))
+      maybeInt should be(None)
+    }
 
-        it("""should also work with failure, here the function,
+    it("""should also work with failure, here the function,
               |  will be resolved to Some function while the Option with a value is a
               |  None""".stripMargin) {
-            val optionFunction: Option[Int => Int] = Some(x => x + 1)
-            val maybeInt = Apply[Option].ap(optionFunction)(None)
-            maybeInt should be(None)
-        }
-
-        it("""can also be used with a bi-function
-              |  and be applied in parts using ap2""".stripMargin) {
-            import cats._
-            import cats.implicits._
-            val subtractFunction = (x:Int, y:Int) => x - y
-            val result = Apply[Option].ap2(Option(subtractFunction))(3.some, 2.some)
-            result should be (1.some)
-        }
+      val optionFunction: Option[Int => Int] = Some(x => x + 1)
+      val maybeInt = Apply[Option].ap(optionFunction)(None)
+      maybeInt should be(None)
     }
+
+    it("""can also be used with a bi-function
+              |  and be applied in parts using ap2""".stripMargin) {
+      import cats._
+      import cats.implicits._
+      val subtractFunction = (x: Int, y: Int) => x - y
+      val result = Apply[Option].ap2(Option(subtractFunction))(3.some, 2.some)
+      result should be(1.some)
+    }
+  }
 }

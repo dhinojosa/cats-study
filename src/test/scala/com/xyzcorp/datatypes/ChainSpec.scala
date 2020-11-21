@@ -22,43 +22,59 @@
 
 package com.xyzcorp.datatypes
 
+import cats.data.NonEmptyChain
 import org.scalatest.{FunSpec, Matchers}
 
 class ChainSpec extends FunSpec with Matchers {
-    describe(
-        """A Chain is a data structure of constant
-          |  time prepending and appending. To be used where List and
-          |  Vector incur a performance penalty. It supports both
-          |  constant O(1) time append and prepend. It has four members of
-          |  its ADT. Empty, Singleton, Append, Wrap""".stripMargin) {
-        it("has an easy API using NonEmptyChain to create NonEmptyChains") {
-            import cats.data._
-            NonEmptyChain(1, 2, 3, 4)
-        }
-        it("can be created from a NonEmptyList") {
-            import cats.data._
-            NonEmptyChain.fromNonEmptyList(NonEmptyList(3, List(1, 2)))
-        }
-        it(
-            """can be created using fromChainPrepend that
-              |  prepends to an already created Chain""".stripMargin) {
-            import cats.data._
-            NonEmptyChain.fromChainPrepend(40, Chain.empty)
-        }
-        it(
-            """can be created using fromChainAppend that
-              |  appends to an already created Chain""".stripMargin) {
-            import cats.data._
-            NonEmptyChain.fromChainAppend(Chain.one(2), 4)
-        }
-        it("can be pattern matched?") {
-            pending
-            //Can an NEC be pattern matched?
-        }
+  describe("""A Chain is a data structure of constant
+             |  time prepending and appending. To be used where List and
+             |  Vector incur a performance penalty. It supports both
+             |  constant O(1) time append and prepend. It has four members of
+             |  its ADT. Empty, Singleton, Append, Wrap""".stripMargin) {
 
-        //TODO:
-        //Without checking, I'd guess that it's a newtyped wrapper
-        // around NEL providing "zip" Applicative behavior instead
-        // of the standard cartesian product behavior
+    describe("The Creator Operations") {
+      it("has an easy API using NonEmptyChain to create NonEmptyChains") {
+        import cats.data._
+        NonEmptyChain(1, 2, 3, 4)
+      }
+      it("can be created from a NonEmptyList") {
+        import cats.data._
+        NonEmptyChain.fromNonEmptyList(NonEmptyList(3, List(1, 2)))
+      }
+      it("""can be created using fromChainPrepend that
+           |    prepends to an already created Chain""".stripMargin) {
+        import cats.data._
+        NonEmptyChain.fromChainPrepend(40, Chain.empty)
+      }
+      it("""can be created using fromChainAppend that
+           |    appends to an already created Chain""".stripMargin) {
+        import cats.data._
+        NonEmptyChain.fromChainAppend(Chain.one(2), 4)
+      }
     }
+
+    describe("member operations") {
+      it("has uncons returns the head and the tail of the chain") {
+        import cats.data._
+        val uncons = NonEmptyChain(1, 2, 3, 4).uncons
+        uncons._1 should be(1)
+        uncons._2 should be(NonEmptyChain(2, 3, 4))
+      }
+      it("has collect which is combined map and filter given a partial function") {
+        import cats.data._
+        val uncons = NonEmptyChain(1, 2, 3, 4).collect { case x: Int if x % 2 == 0 => x * 2 }
+        uncons should be(NonEmptyChain(4, 8))
+      }
+      it("another operation that collects the first element of a list") {
+          val result = NonEmptyChain(3, 10, 12)
+              .collectFirst { case x: Int if x % 2 == 0 => x * 10 }
+          result should be (Some(100))
+      }
+    }
+
+    //TODO:
+    //Without checking, I'd guess that it's a newtyped wrapper
+    // around NEL providing "zip" Applicative behavior instead
+    // of the standard cartesian product behavior
+  }
 }

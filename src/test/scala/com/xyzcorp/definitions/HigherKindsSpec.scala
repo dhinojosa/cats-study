@@ -21,12 +21,9 @@
  */
 package com.xyzcorp.definitions
 
-import cats.Functor
 import org.scalatest.{FunSpec, Matchers}
 
 class HigherKindsSpec extends FunSpec with Matchers {
-
-    import scala.language.higherKinds
 
     describe("Higher Kinds") {
         it(
