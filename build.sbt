@@ -27,17 +27,24 @@ version := "1.0-SNAPSHOT"
 scalaVersion := "2.13.3"
 
 scalacOptions ++= Seq(
-  //"-Ypartial-unification"
-  "-Xfatal-warnings"
-  ,"-feature"
-  ,"-deprecation"
+  "-Xfatal-warnings",
+  "-feature",
+  "-deprecation"
 )
 
+val kindProjectorVersion = "0.11.0"
+
 fork := true
+//autoCompilerPlugins := true
 
 libraryDependencies := Seq(
   "org.scalatest" %% "scalatest" % "3.0.8" % "test",
-  "org.typelevel" %% "cats-core" % "2.0.0" withSources() withJavadoc(),
-  "org.typelevel" %% "cats-effect" % "2.0.0" withSources() withJavadoc(),
-  "org.typelevel" %% "cats-free" % "2.0.0" withSources() withJavadoc(),
+  "org.scalameta" %% "munit" % "0.7.10" % Test,
+  compilerPlugin(("org.typelevel" %% "kind-projector" % kindProjectorVersion).cross(CrossVersion.full)),
+  ("org.typelevel" %% "cats-core" % "2.0.0").withSources().withJavadoc(),
+  ("org.typelevel" %% "cats-effect" % "2.0.0").withSources().withJavadoc(),
+  ("org.typelevel" %% "cats-free" % "2.0.0").withSources().withJavadoc()
 )
+
+// Use %%% for non-JVM projects.
+testFrameworks += new TestFramework("munit.Framework")
