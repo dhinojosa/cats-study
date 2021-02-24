@@ -28,6 +28,7 @@ import cats.data._
 
 import org.scalatest.{FunSpec, Matchers}
 
+
 class TupleSpec extends FunSpec with Matchers {
   describe("""Using cats.implicits._ utilities to give certain code more
              |  functionality.""".stripMargin) {
@@ -101,6 +102,11 @@ class TupleSpec extends FunSpec with Matchers {
       import cats.implicits._
       val result: (Int, Double, String) = (1, 6.0, "Sparkling").combineN(3)
       result should be(3, 18.0, "SparklingSparklingSparkling")
+    }
+
+    it ("""Has much of the same collections, as list, like forall""".stripMargin) {
+        val bool = ("Foo", "Bar").forall(_.length == 3)
+        bool should be (true)
     }
   }
 }
