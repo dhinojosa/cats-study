@@ -26,13 +26,13 @@ version := "1.0-SNAPSHOT"
 
 scalaVersion := "2.13.3"
 
+val kindProjectorVersion = "0.11.0"
+
 scalacOptions ++= Seq(
   "-Xfatal-warnings",
   "-feature",
   "-deprecation"
 )
-
-val kindProjectorVersion = "0.11.0"
 
 fork := true
 //autoCompilerPlugins := true
@@ -41,9 +41,9 @@ libraryDependencies := Seq(
   "org.scalatest" %% "scalatest" % "3.0.8" % "test",
   "org.scalameta" %% "munit" % "0.7.10" % Test,
   compilerPlugin(("org.typelevel" %% "kind-projector" % kindProjectorVersion).cross(CrossVersion.full)),
-  ("org.typelevel" %% "cats-core" % "2.0.0").withSources().withJavadoc(),
-  ("org.typelevel" %% "cats-effect" % "2.0.0").withSources().withJavadoc(),
-  ("org.typelevel" %% "cats-free" % "2.0.0").withSources().withJavadoc()
+  ("org.typelevel" %% "cats-core" % "2.4.2").withSources().withJavadoc(),
+  ("org.typelevel" %% "cats-effect" % "2.3.3").withSources().withJavadoc(),
+  ("org.typelevel" %% "cats-free" % "2.4.2").withSources().withJavadoc()
 )
 
 // Use %%% for non-JVM projects.
