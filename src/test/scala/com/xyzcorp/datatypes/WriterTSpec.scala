@@ -8,26 +8,25 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.xyzcorp.typeclasses
+package com.xyzcorp.datatypes
 
 import org.scalatest.{FunSpec, Matchers}
+import cats._
+import cats.data._
+import cats.implicits._
 
-class PartialOrderSpec extends FunSpec with Matchers {
-  import cats._
-  import cats.implicits._
-  describe("PartialOrderSpec is a type class with comparison operators") {
-    describe("Tuple implementation that comes from catsSyntaxPartialOrder") {
-      it("contains less than") {
-        (3, 1.0, "Hello") < (2, 2.0, "Scout")
-      }
-    }
-    describe("Can be applied generically with a method") {
-      def operate[A: PartialOrder](x: A, y: A) = {
-        x < y
-      }
+import scala.concurrent.Future
 
-      operate("Hello", "Indigo") should be (true)
-      operate(Option(4), Option(10)) should be (true)
+class WriterTSpec extends FunSpec with Matchers {
+  describe("""WriterT is a writer transformer so that it can be
+             |  combined in a flatMap style""".stripMargin) {
+    describe("Creation") {
+      it("can be created with apply") {
+        val w1: WriterT[Option, List[String], Int] = WriterT(Option(List.empty[String], 31))
+        val w2: WriterT[Option, List[String], Int] = WriterT(Option(List("We have another item"), 31))
+        val w3: WriterT[Option, List[String], Int] = w1.tell(List("We have no sense of logic"))
+        println(w3)
+      }
     }
   }
 }

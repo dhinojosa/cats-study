@@ -69,8 +69,9 @@ class OptionTSpec extends FunSpec with Matchers {
             List(withFlatMap, withForComprehension).foreach { res =>
                 Await.ready(res.value, 3 seconds).onComplete {
                     case Success(o) =>
-                        o.fold(fail("empty option"))(xs =>
-                            xs should contain (Property("read"), Property("write")))
+                        o.fold(fail("empty option")){xs =>
+                            println(xs)
+                            xs should be (List(Property("read"), Property("write")))}
 
                     case Failure(exception) =>
                         exception.printStackTrace()

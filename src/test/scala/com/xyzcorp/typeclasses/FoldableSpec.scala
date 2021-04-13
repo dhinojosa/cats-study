@@ -16,31 +16,27 @@ import org.scalatest.{FunSpec, Matchers}
 
 class FoldableSpec extends FunSpec with Matchers {
 
-  describe("Foldable abstracts the familiar foldLeft and foldRight operations")
-  {
-    it(
-      """folds elements like fold in the standard library,
-        |  but uses a type class for it.
-        |  Here is a fold with a list. It also uses a Monoid
-        |  to combine the elements""".stripMargin) {
+  describe("Foldable abstracts the familiar foldLeft and foldRight operations") {
+    it("""folds elements like fold in the standard library,
+         |  but uses a type class for it.
+         |  Here is a fold with a list. It also uses a Monoid
+         |  to combine the elements""".stripMargin) {
       val result = Foldable[List].fold(List("a", "b", "c"))
       result should be("abc")
     }
 
-    it(
-      """folds elements like fold in the standard library,
-        |  but uses a type class for it.
-        |  Here is a fold with a list. It also uses a Monoid
-        |  to combine the elements, here it uses the Monoid[Int]
-        |  which is of course is addition""".stripMargin) {
+    it("""folds elements like fold in the standard library,
+         |  but uses a type class for it.
+         |  Here is a fold with a list. It also uses a Monoid
+         |  to combine the elements, here it uses the Monoid[Int]
+         |  which is of course is addition""".stripMargin) {
       val result = Foldable[List].fold(List(1, 2, 3))
       result should be(6)
     }
 
-    it(
-      """can be used to fold left using a show method (not related to the
-        |  show method to
-        |  print out what happens in a fold""".stripMargin) {
+    it("""can be used to fold left using a show method (not related to the
+         |  show method to
+         |  print out what happens in a fold""".stripMargin) {
       def show[A](list: List[A]): String =
         list.foldLeft("nil")((accum, item) => s"($item then $accum)")
 
@@ -48,10 +44,9 @@ class FoldableSpec extends FunSpec with Matchers {
         be("(4 then (3 then (2 then (1 then nil))))")
     }
 
-    it(
-      """can be used to fold right using a show method (not related to the
-        |  show method to
-        |  print out what happens in a fold""".stripMargin) {
+    it("""can be used to fold right using a show method (not related to the
+         |  show method to
+         |  print out what happens in a fold""".stripMargin) {
 
       def show[A](list: List[A]): String =
         list.foldRight("nil")((item, accum) => s"($item then $accum)")
@@ -67,53 +62,57 @@ class FoldableSpec extends FunSpec with Matchers {
     }
 
     it("""can be used to implement a map using a fold right""") {
-      Foldable[List].foldRight(List(1, 2, 3, 4), Later.apply(List.empty[Int]))(
-        (next, evalB) => evalB.map(xs => next :: xs))
+      Foldable[List].foldRight(List(1, 2, 3, 4), Later.apply(List.empty[Int]))((next, evalB) =>
+        evalB.map(xs => next :: xs)
+      )
     }
   }
 
   describe("Foldable Composition") {
     it("""can be composed with other Foldables for deep traverses""") {
       val ints = List(Vector(1, 2, 3), Vector(4, 5, 6))
-      val result: Int = (Foldable[List] compose Foldable[Vector])
+      val result: Int = Foldable[List]
+        .compose(Foldable[Vector])
         .combineAll(ints)
       result should be(21)
     }
   }
 
   describe("Implicit wrappers for Foldable") {
-    it (
-      """can use an implicit wrapper to include all the features
-        |  of a Foldable around the collection""".stripMargin) {
+    it("""can use an implicit wrapper to include all the features
+         |  of a Foldable around the collection""".stripMargin) {
       import cats.syntax.foldable._
-      val result: Int = List(1,2,3,4).combineAll
-      result should be (10)
+      val result: Int = List(1, 2, 3, 4).combineAll
+      result should be(10)
     }
-    it (
-      """will use the native method on std library and
-        |  not use cats' version to avoid any conflict""".stripMargin) { //useless import
-      val result  = List(1,2,3,4,5).foldRight(1)(_ + _)
-      result should be (16)
+    it("""will use the native method on std library and
+         |  not use cats' version to avoid any conflict""".stripMargin) { //useless import
+      val result = List(1, 2, 3, 4, 5).foldRight(1)(_ + _)
+      result should be(16)
     }
-    it ("""will not use the native standard library call in a case like
-        | the following where we are requiring a call that demands that
-        | a Foldable around a container is absolutely required""".stripMargin) {
-
-      def mySum[F[_]](values: F[Int])
-                     (implicit foldable: Foldable[F],
-                      monoid: Monoid[Int]): Int =
-
-          foldable.foldLeft(values, 0)(monoid.combine)
-      mySum(List(10, 12, 19)) should be (41)
+    it("""will not use the native standard library call in a case like
+         | the following where we are requiring a call that demands that
+         | a Foldable around a container is absolutely required""".stripMargin) {
+      def mySum[F[_]](values: F[Int])(implicit foldable: Foldable[F], monoid: Monoid[Int]): Int =
+        foldable.foldLeft(values, 0)(monoid.combine)
+      mySum(List(10, 12, 19)) should be(41)
     }
   }
 
   describe("foldMap") {
-    it(
-      """will apply a map to all the elements
-        |  before folding them""".stripMargin) {
-      val result = Foldable[List].foldMap(List(1,2,3,4))(i => 2 * i)
-      result should be (20)
+    it("""will apply a map to all the elements
+         |  before folding them""".stripMargin) {
+      val result = Foldable[List].foldMap(List(1, 2, 3, 4))(i => 2 * i)
+      result should be(20)
+    }
+  }
+
+  describe("maximumOption") {
+    it ("""will also calculate the maximum option of a foldable,
+          |  as long as there is a number""".stripMargin) {
+      info("order for ints are already established")
+      Foldable[List].maximumOption(List(1,2,3,4,5)) should be (Some(5))
     }
   }
 }
+

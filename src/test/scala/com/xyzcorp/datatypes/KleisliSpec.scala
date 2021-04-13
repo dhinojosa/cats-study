@@ -27,7 +27,8 @@
 
 package com.xyzcorp.datatypes
 
-import cats.data.Kleisli
+import cats._
+import cats.data._
 import cats.implicits._
 import org.scalatest.{FunSpec, Matchers}
 
@@ -58,14 +59,13 @@ class KleisliSpec extends FunSpec with Matchers {
       val tryToSuccessOrEmpty: Try[String] => String = ts => ts.getOrElse("")
       val stringCaps: String => String = _.toUpperCase
 
-      val f = takeFirst andThen substring3 andThen tryToSuccessOrEmpty andThen
-        stringCaps
+      val f = takeFirst.andThen(substring3).andThen(tryToSuccessOrEmpty).andThen(stringCaps)
       f("Consider", 90) should be("SIDER")
     }
 
     it("""can be used to wrap various elements to one type
-        |  called Kleisli so as to
-        |  efficiently manipulate it""".stripMargin) {
+         |  called Kleisli so as to
+         |  efficiently manipulate it""".stripMargin) {
       val kleisliTakeFirst: Kleisli[List, (String, Int), String] =
         Kleisli(t => List(t._1))
       val kleisliSubstring3: Kleisli[List, String, Try[String]] =
@@ -82,7 +82,7 @@ class KleisliSpec extends FunSpec with Matchers {
     }
 
     it("""is used to handle error in a consistent way, in this example,
-          |  taking a substring, and applying a map.""".stripMargin) {
+         |  taking a substring, and applying a map.""".stripMargin) {
       val k1: Kleisli[Try, String, String] =
         Kleisli(s => Try(s.substring(0, 3)))
       val m = k1.map(s => s + "!")
@@ -90,8 +90,8 @@ class KleisliSpec extends FunSpec with Matchers {
     }
 
     it("""is used to handle error in a consistent way, in this example,
-           |  taking a substring, and applying a map
-           |  in a for-comprehension.""".stripMargin) {
+         |  taking a substring, and applying a map
+         |  in a for-comprehension.""".stripMargin) {
       val k1: Kleisli[Try, String, String] =
         Kleisli(s => Try(s.substring(0, 3)))
       val m = for (i <- k1) yield i + "!"
@@ -99,8 +99,8 @@ class KleisliSpec extends FunSpec with Matchers {
     }
 
     it("""is used to handle error in a consistent way, in this example,
-           |  taking a substring, and applying a flatMap, this will
-           |  result in a Failure.""".stripMargin) {
+         |  taking a substring, and applying a flatMap, this will
+         |  result in a Failure.""".stripMargin) {
       val k1: Kleisli[Try, String, String] =
         Kleisli(s => Try(s.substring(0, 3)))
       val k2: Kleisli[Try, String, Int] = Kleisli(s => Try(s.toInt))
@@ -111,8 +111,8 @@ class KleisliSpec extends FunSpec with Matchers {
     }
 
     it("""is used to handle error in a consistent way, in this example,
-           |  taking a substring, and applying a flatMap, this will
-           |  result in a Success of a tuple-2.""".stripMargin) {
+         |  taking a substring, and applying a flatMap, this will
+         |  result in a Success of a tuple-2.""".stripMargin) {
       val k1: Kleisli[Try, String, String] =
         Kleisli(s => Try(s.substring(0, 3)))
       val k2: Kleisli[Try, String, Int] = Kleisli(s => Try(s.toInt))
@@ -123,8 +123,8 @@ class KleisliSpec extends FunSpec with Matchers {
 
     it(
       """is used to handle error in a consistent way, in this example,
-           |  taking a substring, and applying a flatMap, this will
-           |  result in a Success of a tuple-2 using a for comprehension.""".stripMargin
+        |  taking a substring, and applying a flatMap, this will
+        |  result in a Success of a tuple-2 using a for comprehension.""".stripMargin
     ) {
       val k1: Kleisli[Try, String, String] =
         Kleisli(s => Try(s.substring(0, 3)))
@@ -138,8 +138,8 @@ class KleisliSpec extends FunSpec with Matchers {
     }
 
     it("""is used to handle error in a consistent way, in this example,
-           |  taking a substring, and applying a flatMap, this will
-           |  result in a Success.""".stripMargin) {
+         |  taking a substring, and applying a flatMap, this will
+         |  result in a Success.""".stripMargin) {
       val k1: Kleisli[Try, String, String] =
         Kleisli(s => Try(s.substring(0, 3)))
       val k2: Kleisli[Try, String, Int] = Kleisli(s => Try(s.toInt))
@@ -149,14 +149,11 @@ class KleisliSpec extends FunSpec with Matchers {
     }
 
     it("""can contain an ap, like Applicative, weird""") {
-      val kleisliTakeFirst: Kleisli[List, (String, Int), String] =
-        Kleisli(t => List(t._1))
-
-      val f: Kleisli[List, Int, String => String] =
-        Kleisli((x: Int) => List((s: String) => s * x))
-      val value1: Kleisli[List, Int with (String, Int), String] =
-        kleisliTakeFirst.ap(f)
-      value1
+      val kleisliTakeFirst: Kleisli[List, (String, Int), Int => String] =
+        Kleisli(t => List((x: Int) => s"$x${t._1}"))
+      val f: Kleisli[List, (String, Int), Int] = Kleisli(_ => List(40))
+      val result: Kleisli[List, (String, Int), String] = kleisliTakeFirst.ap(f)
+      println(result.apply("Hello" -> 34))
     }
   }
 }

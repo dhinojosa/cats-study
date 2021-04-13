@@ -10,10 +10,11 @@
 
 package com.xyzcorp.datatypes
 
-import org.scalatest.{FunSpec, Matchers}
-import cats._
 import cats.data._
+import cats.implicits._
+import org.scalatest.{FunSpec, Matchers}
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
@@ -51,6 +52,10 @@ class EitherTSpec extends FunSpec with Matchers {
       import cats.implicits._
       val value1: EitherT[List, String, Int] = EitherT.left[Int](xs)
       value1
+    }
+    it("""EitherT has rightT which is an alias for pure""") {
+      val result: EitherT[Option, Int, Int] = EitherT.rightT[Option, Int](30)
+      val result2: EitherT[Future, Int, Int] = EitherT.rightT[Future, Int](-3)
     }
   }
 }

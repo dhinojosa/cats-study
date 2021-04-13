@@ -11,20 +11,20 @@
 package com.xyzcorp.datatypes
 
 import cats._
+import cats.implicits._
+import cats.data._
 import org.scalatest.{FunSpec, Matchers}
 
 import scala.language.{postfixOps, reflectiveCalls}
 
-
 class IdSpec extends FunSpec with Matchers {
   describe("Id") {
-    it(
-      """wraps a primitive in a 'container' that can be used, by
-        | the variety of type classes, and is actually
-        | an alias for type Id[A] = A""".stripMargin) {
+    it("""wraps a primitive in a 'container' that can be used, by
+         | the variety of type classes, and is actually
+         | an alias for type Id[A] = A""".stripMargin) {
 
-        val num: Id[Int] = 4:Id[Int]
-        Functor[Id].fmap(num)(x => x + 3) should be (7:Id[Int])
+      val num: Id[Int] = 4
+      Functor[Id].fmap(num)(x => x + 3) should be(7: Id[Int])
     }
   }
 }

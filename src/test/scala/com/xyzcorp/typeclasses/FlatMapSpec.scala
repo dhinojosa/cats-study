@@ -31,14 +31,24 @@ class FlatMapSpec extends FunSpec with Matchers {
     }
 
     it("""has ifM which is if statement that runs within the monad""") {
-        val result = FlatMap[List]
-            .ifM(List(true, false))(List(3, 10), List(2, 20))
-        result should be (List(3, 10, 2, 20))
+      val result = FlatMap[List]
+        .ifM(List(true, false))(List(3, 10), List(2, 20))
+      result should be(List(3, 10, 2, 20))
     }
 
     it("""has product which combines the results in a tuple""") {
-        val maybeTuple = FlatMap[Option].product(Some(3), Some(10))
-        maybeTuple should be (Some(3 -> 10))
+      val maybeTuple = FlatMap[Option].product(Some(3), Some(10))
+      maybeTuple should be(Some(3 -> 10))
+    }
+
+    it("""has tailRecM which will perform tail recursion
+         |  from within a container, until it finds a Right""".stripMargin) {
+      val result: Seq[Int] = FlatMap[List].tailRecM(10) { i =>
+        println(">>>" + i)
+        if (i < 0) List(Right(i))
+        else List(Left(i - 1))
+      }
+      result should be(List(-1))
     }
   }
 }

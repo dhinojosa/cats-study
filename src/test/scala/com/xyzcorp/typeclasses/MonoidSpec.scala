@@ -18,9 +18,8 @@ import scala.language.reflectiveCalls
 
 class MonoidSpec extends FunSpec with Matchers {
   describe("""A Monoid is a type class that combines two things.
-      | What do we naturally do when we combine two Strings together?
-      | What do we do when we combine two Integers together?
-    """.stripMargin) {
+             | What do we naturally do when we combine two Strings together?
+             | What do we do when we combine two Integers together?""".stripMargin) {
 
     it("has an operation `combine` with type (A, A) => A") {
       val r = Monoid.apply[String].combine("Few", "Between")
@@ -30,12 +29,12 @@ class MonoidSpec extends FunSpec with Matchers {
     }
 
     it("""has a method `empty` with type A, What comes to your mind
-        | when we say an empty String?
-        | when we say an empty Int?
-        | when we say an empty Float?
+         | when we say an empty String?
+         | when we say an empty Int?
+         | when we say an empty Float?
       """.stripMargin) {
       Monoid[String].empty should be("")
-      Monoid[Float].empty should be(0F)
+      Monoid[Float].empty should be(0f)
     }
 
     it("""What is a Monoid of an empty List of String?""") {
@@ -47,7 +46,7 @@ class MonoidSpec extends FunSpec with Matchers {
     }
 
     it("""contains a |+| operator that is a synonym of combine from the
-        |  Semigroup type class.""".stripMargin) {
+         |  Semigroup type class.""".stripMargin) {
       val total = 1 |+| 2 |+| Monoid[Int].empty
       total should be(3)
     }
@@ -61,8 +60,8 @@ class MonoidSpec extends FunSpec with Matchers {
     }
 
     it("""can combine anything including tuples""") {
-        val a = (1, "Two")
-        val b = (5.0, Symbol("Livid"))
+      val a = (1, "Two")
+      val b = (5.0, Symbol("Livid"))
     }
   }
 }

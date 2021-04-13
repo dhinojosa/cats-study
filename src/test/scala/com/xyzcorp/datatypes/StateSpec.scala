@@ -156,10 +156,7 @@ class StateSpec extends FunSpec with Matchers {
       State { s => (s._1.nextState(s._2), ()) }
 
     def scoreForB: State[(TennisScore, TennisScore), Unit] =
-      State { s => (s._2.nextState(s._1).swap, ())}
-
-
-
+      State { s => (s._2.nextState(s._1).swap, ()) }
   }
 
 //

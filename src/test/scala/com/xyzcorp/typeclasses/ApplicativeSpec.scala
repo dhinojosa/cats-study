@@ -137,7 +137,9 @@ class ApplicativeSpec extends FunSpec with Matchers {
 
     it("process the errors of what has been entered") {
       val result: Validated[String, Person] = Applicative[Validated[String, *]]
-        .map3(validatePerson(""), validateSSN("123-44-3201"), validateDateOfBirth(LocalDate.of(1982, 10, 11)))(
+        .map3(validatePerson(""),
+              validateSSN("123-44-3201"),
+              validateDateOfBirth(LocalDate.of(1982, 10, 11)))(
           (p, s, b) => Person(p, s, b)
         )
       result should be(Invalid("Name cannot be blank"))
@@ -145,7 +147,9 @@ class ApplicativeSpec extends FunSpec with Matchers {
 
     it("falls apart when multiple items are added") {
       val result: Validated[String, Person] = Applicative[Validated[String, *]]
-        .map3(validatePerson(""), validateSSN("123-44-32013"), validateDateOfBirth(LocalDate.of(1982, 10, 11)))(
+        .map3(validatePerson(""),
+             validateSSN("123-44-32013"),
+              validateDateOfBirth(LocalDate.of(1982, 10, 11)))(
           (p, s, b) => Person(p, s, b)
         )
       result should be(Invalid("Name cannot be blankNot a valid format"))

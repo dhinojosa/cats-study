@@ -29,35 +29,40 @@ class TypeClassSpec extends FunSpec with Matchers {
   import scala.language.higherKinds
 
   describe("Type classes") {
-    it(
-      """takes an abstraction and offers varying
-        |  ways to implement that abstraction for
-        |  any kind of type that you wish to represent.""".stripMargin) {
+    it("""takes an abstraction and offers varying
+         |  ways to implement that abstraction for
+         |  any kind of type that you wish to represent.""".stripMargin) {
 
-        case class Employee(firstName:String, lastName:String, salary:Int)
-        
-        object Employee {
-            implicit val sortByFirstName: Ordering[Employee] = new Ordering[Employee] {
-                override def compare(x: Employee, y: Employee): Int =
-                x.firstName.compareTo(y.firstName)
-            }
+      case class Employee(firstName: String, lastName: String, salary: Int)
 
-            implicit val sortByLastName: Ordering[Employee] = new Ordering[Employee] {
-                override def compare(x: Employee, y: Employee): Int =
-                x.lastName.compareTo(y.lastName)
-            }
+      object Employee {
+        implicit val sortByFirstName: Ordering[Employee] = new Ordering[Employee] {
+          override def compare(x: Employee, y: Employee): Int =
+            x.firstName.compareTo(y.firstName)
         }
 
-        val employees = List(Employee("Dan", "Hinojosa", 40000),
-            Employee("Brian", "Sletten", 42000),
-            Employee("Venkat", "Subramaniam", 50000),
-            Employee("Jonathan", "Johnson", 20000),
-            Employee("Chris", "Maki", 35000)
-        )
+        implicit val sortByLastName: Ordering[Employee] = new Ordering[Employee] {
+          override def compare(x: Employee, y: Employee): Int =
+            x.lastName.compareTo(y.lastName)
+        }
+      }
 
+      val employees = List(
+        Employee("Dan", "Hinojosa", 40000),
+        Employee("Brian", "Sletten", 42000),
+        Employee("Venkat", "Subramaniam", 50000),
+        Employee("Jonathan", "Johnson", 20000),
+        Employee("Chris", "Maki", 35000)
+      )
 
-        import Employee.sortByLastName
-        println(employees.sorted)
+      import Employee.sortByLastName
+      (employees.sorted should contain).inOrder(
+        Employee("Dan", "Hinojosa", 40000),
+        Employee("Jonathan", "Johnson", 20000),
+        Employee("Chris", "Maki", 35000),
+        Employee("Brian", "Sletten", 42000),
+        Employee("Venkat", "Subramaniam", 50000)
+      )
     }
   }
 }
