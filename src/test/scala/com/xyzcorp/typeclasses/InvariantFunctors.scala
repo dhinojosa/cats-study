@@ -10,9 +10,11 @@
 
 package com.xyzcorp.typeclasses
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class InvariantFunctors extends FunSpec with Matchers {
+class InvariantFunctors extends AnyFunSpec with Matchers {
   describe("Invariant Functors") {
     trait Codec[A] {
       self =>

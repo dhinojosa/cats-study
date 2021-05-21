@@ -24,9 +24,11 @@
 package com.xyzcorp.datatypes
 
 import cats.implicits._
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class OptionSpec extends FunSpec with Matchers {
+class OptionSpec extends AnyFunSpec with Matchers {
   it("has specialized methods that make it easy to make options") {
     val a = 3.some
     val b = none[Int]

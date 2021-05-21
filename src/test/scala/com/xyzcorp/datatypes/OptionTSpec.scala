@@ -23,13 +23,15 @@ package com.xyzcorp.datatypes
 
 import cats.data.OptionT
 import cats.implicits._
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
 import scala.concurrent.{Await, ExecutionContext}
 import scala.language.postfixOps
 import scala.util.{Failure, Success}
 
-class OptionTSpec extends FunSpec with Matchers {
+class OptionTSpec extends AnyFunSpec with Matchers {
 
     import scala.concurrent.Future
 

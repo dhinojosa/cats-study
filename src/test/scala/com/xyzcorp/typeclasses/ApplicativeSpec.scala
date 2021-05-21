@@ -28,11 +28,13 @@ import java.time.temporal.{ChronoUnit, TemporalUnit}
 import cats._
 import cats.data.NonEmptyChain
 import cats.implicits._
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
 import scala.language.postfixOps
 
-class ApplicativeSpec extends FunSpec with Matchers {
+class ApplicativeSpec extends AnyFunSpec with Matchers {
 
   describe("""Applicative like Apply, extends Functor with ap,
              |  where the first argument is F[A=>B]
@@ -55,12 +57,12 @@ class ApplicativeSpec extends FunSpec with Matchers {
       result should be(List(2, 3, 4))
     }
     it("introduces a <*> operation that is the same as ap") {
-      val result = Applicative[Option].<*>(Some[Int => Int](4 *))(Some(3))
+      val result = Applicative[Option].<*>(Some[Int => Int](i => 4 * i))(Some(3))
       result should be(Some(12))
     }
     it("can be a variable that is extracted and used as an applicative") {
       val ao = Applicative[Option]
-      val result = ao.<*>(Some[Int => Int](4 *))(Some(3))
+      val result = ao.<*>(Some[Int => Int](i => 4 * i))(Some(3))
       result should be(Some(12))
     }
     it("can also be imported so as to just include the operator") {
@@ -127,7 +129,7 @@ class ApplicativeSpec extends FunSpec with Matchers {
     case class Person(s: String, ssn: String, dob: LocalDate)
 
     it("can process the above algebra to combine messages") {
-      val result: Validated[String, Person] = Applicative[Validated[String, *]]
+      val result: Validated[String, Person] = Applicative[[A] =>> Validated[String, A]]
         .map3(validatePerson("Boomer Clownface"),
               validateSSN("123-44-3201"),
               validateDateOfBirth(LocalDate.of(1982, 10, 11))
@@ -136,7 +138,7 @@ class ApplicativeSpec extends FunSpec with Matchers {
     }
 
     it("process the errors of what has been entered") {
-      val result: Validated[String, Person] = Applicative[Validated[String, *]]
+      val result: Validated[String, Person] = Applicative[[A] =>> Validated[String, A]]
         .map3(validatePerson(""),
               validateSSN("123-44-3201"),
               validateDateOfBirth(LocalDate.of(1982, 10, 11)))(
@@ -146,7 +148,7 @@ class ApplicativeSpec extends FunSpec with Matchers {
     }
 
     it("falls apart when multiple items are added") {
-      val result: Validated[String, Person] = Applicative[Validated[String, *]]
+      val result: Validated[String, Person] = Applicative[[A] =>> Validated[String, A]]
         .map3(validatePerson(""),
              validateSSN("123-44-32013"),
               validateDateOfBirth(LocalDate.of(1982, 10, 11)))(

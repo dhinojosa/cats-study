@@ -24,10 +24,11 @@ package com.xyzcorp.typeclasses
 
 import java.text.NumberFormat
 import java.util.Locale
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-import org.scalatest.{FunSpec, Matchers}
-
-class ShowSpec extends FunSpec with Matchers {
+class ShowSpec extends AnyFunSpec with Matchers {
   it("is a type class that has the following definition") {
     trait Show[T] {
       def show(t: T): String

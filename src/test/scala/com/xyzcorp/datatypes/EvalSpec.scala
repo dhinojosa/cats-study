@@ -11,11 +11,13 @@
 package com.xyzcorp.datatypes
 
 import cats._
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
 import scala.collection.mutable.ListBuffer
 
-class EvalSpec extends FunSpec with Matchers {
+class EvalSpec extends AnyFunSpec with Matchers {
   describe("Eval") {
     it(
       """has a now, which is eager and memoized, similar to val in

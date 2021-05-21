@@ -10,9 +10,11 @@
 
 package com.xyzcorp.typeclasses
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class ContravariantFunctors extends FunSpec with Matchers {
+class ContravariantFunctors extends AnyFunSpec with Matchers {
   describe("Contravariant Functors") {
     it(
       """represents prepending of an operation in a chain.

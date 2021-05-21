@@ -22,11 +22,14 @@
 
 package com.xyzcorp.typeclasses
 
-import cats.Id
+import cats._
+import cats.implicits._
 import cats.data.{Kleisli, Reader}
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class ReaderSpec extends FunSpec with Matchers {
+class ReaderSpec extends AnyFunSpec with Matchers {
   describe(
     "Reader Monad brings items in lazily to be constructed after the fact"
   ) {
@@ -37,10 +40,11 @@ class ReaderSpec extends FunSpec with Matchers {
 
       val value2: Kleisli[Id, String, String] = for {
         i <- upper
-        l <- Reader((s: String) => i + s + "!")
+        l <- exclaim
       } yield l
 
-      println(value2.apply("Hello"))
+      val result: Id[String] = value2.apply("Hello")
+      println(result)
     }
   }
 }

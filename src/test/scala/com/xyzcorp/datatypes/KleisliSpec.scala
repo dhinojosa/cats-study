@@ -30,11 +30,13 @@ package com.xyzcorp.datatypes
 import cats._
 import cats.data._
 import cats.implicits._
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
 import scala.util.{Failure, Success, Try}
 
-class KleisliSpec extends FunSpec with Matchers {
+class KleisliSpec extends AnyFunSpec with Matchers {
   describe("Kleisli Data Type") {
 
     it("is a wrapper around the function A => F[B]") {

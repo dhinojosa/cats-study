@@ -25,9 +25,11 @@ import cats._
 import cats.data.Ior.Both
 import cats.implicits._
 import cats.data._
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class BiFunctorSpec extends FunSpec with Matchers {
+class BiFunctorSpec extends AnyFunSpec with Matchers {
 
   describe("""A type class of types which give rise to two independent,
              |  covariant functors. The important is bimap""".stripMargin) {

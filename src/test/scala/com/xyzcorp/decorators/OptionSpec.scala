@@ -13,9 +13,11 @@ import cats._
 import cats.data._
 import cats.data.Validated.Valid
 import cats.implicits._
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class OptionSpec extends FunSpec with Matchers {
+class OptionSpec extends AnyFunSpec with Matchers {
   it("has specialized methods that make it easy to make options") {
     val a = 3.some
     val b = none[Int]
@@ -32,7 +34,7 @@ class OptionSpec extends FunSpec with Matchers {
       "Hello".some.toValid(new Throwable("Invalid")) should be(Valid("Hello"))
     }
     it("""has lift to fill in with other types""") {
-      val result = "Fun".some.liftTo[Either[String, *]]
+      val result = "Fun".some.liftTo[[A] =>> Either[String, A]]
       val value1 = result("Not Found")
       value1 should be(Right("Fun"))
     }

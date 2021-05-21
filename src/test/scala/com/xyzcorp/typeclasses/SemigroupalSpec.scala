@@ -22,9 +22,11 @@
 
 package com.xyzcorp.typeclasses
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class SemigroupalSpec extends FunSpec with Matchers {
+class SemigroupalSpec extends AnyFunSpec with Matchers {
   describe("Semigroupal combines contexts") {
     it(
       """combines two containers F[A] and F[B] and brings together using

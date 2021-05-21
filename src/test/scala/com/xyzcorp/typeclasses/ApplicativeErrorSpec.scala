@@ -15,9 +15,11 @@
 package com.xyzcorp.typeclasses
 
 import cats._
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class ApplicativeErrorSpec extends FunSpec with Matchers {
+class ApplicativeErrorSpec extends AnyFunSpec with Matchers {
 
   describe("""ApplicativeError is an Applicative (see Applicative) that
              |  can handle or raise errors.""".stripMargin) {
@@ -86,7 +88,7 @@ class ApplicativeErrorSpec extends FunSpec with Matchers {
 
       import cats.implicits._
       type OnError[A] = Either[String, A]
-      process[Either[String, *]](30, 0) should be(Left("divisor is zero"))
+      process[[A] =>> Either[String, A]](30, 0) should be(Left("divisor is zero"))
     }
 
     it("""Process an Applicative Error where F represents types

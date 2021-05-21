@@ -24,9 +24,11 @@ package com.xyzcorp.typeclasses
 
 import cats._
 import cats.implicits._
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class TraverseSpec extends FunSpec with Matchers {
+class TraverseSpec extends AnyFunSpec with Matchers {
 
   describe("""Traverse and Sequence in the Scala Standard Library""".stripMargin) {
     it("is used in the Scala Standard Library, like in the case of Future") {

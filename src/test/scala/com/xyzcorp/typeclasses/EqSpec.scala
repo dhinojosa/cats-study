@@ -10,9 +10,11 @@
 
 package com.xyzcorp.typeclasses
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class EqSpec extends FunSpec with Matchers {
+class EqSpec extends AnyFunSpec with Matchers {
 
   describe("Eq") {
     it("is a type class that has the following definition") {

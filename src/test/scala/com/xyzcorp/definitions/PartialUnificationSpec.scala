@@ -22,9 +22,11 @@
 
 package com.xyzcorp.definitions
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class PartialUnificationSpec extends FunSpec with Matchers {
+class PartialUnificationSpec extends AnyFunSpec with Matchers {
   describe("Partial Unification") {
     it(
       """is supposed to work by default in Scala, note the following

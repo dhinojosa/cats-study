@@ -24,9 +24,11 @@ package com.xyzcorp.datatypes
 
 import cats.{Eval, Monoid}
 import cats.data.State
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class StateSpec extends FunSpec with Matchers {
+class StateSpec extends AnyFunSpec with Matchers {
   describe("""State Monad allows us to pass around state
              |  and a description of that state. The state
              |  is composed using map and flatMap.

@@ -23,11 +23,13 @@ package com.xyzcorp.typeclasses
 
 import cats._
 import cats.implicits._
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
 import scala.language.{postfixOps, reflectiveCalls}
 
-class MonadSpec extends FunSpec with Matchers {
+class MonadSpec extends AnyFunSpec with Matchers {
   describe("Monad") {
     it("is defined by the following typeclass") {
       trait Monad[F[_]] {

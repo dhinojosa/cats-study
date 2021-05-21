@@ -13,14 +13,16 @@ package com.xyzcorp.typeclasses
 import cats._
 import cats.data.Nested
 import cats.implicits._
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
 import scala.concurrent.duration._
 import scala.language.{postfixOps, reflectiveCalls}
 
-class FunctorSpec extends FunSpec with Matchers {
+class FunctorSpec extends AnyFunSpec with Matchers {
 
     describe("Functor") {
         it("is defined by the following typeclass") {

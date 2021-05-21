@@ -22,9 +22,11 @@
 
 package com.xyzcorp.definitions
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class TypeClassSpec extends FunSpec with Matchers {
+class TypeClassSpec extends AnyFunSpec with Matchers {
 
   import scala.language.higherKinds
 

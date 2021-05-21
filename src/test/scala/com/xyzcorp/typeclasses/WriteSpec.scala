@@ -22,8 +22,10 @@
 
 package com.xyzcorp.typeclasses
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class WriteSpec extends FunSpec with Matchers {
+class WriteSpec extends AnyFunSpec with Matchers {
 
 }

@@ -10,9 +10,11 @@
 
 package com.xyzcorp.typeclasses
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class PartialOrderSpec extends FunSpec with Matchers {
+class PartialOrderSpec extends AnyFunSpec with Matchers {
   import cats._
   import cats.implicits._
   describe("PartialOrderSpec is a type class with comparison operators") {

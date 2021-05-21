@@ -12,14 +12,16 @@ package com.xyzcorp.datatypes
 
 import cats.data._
 import cats.implicits._
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 import scala.language.postfixOps
 
-class EitherTSpec extends FunSpec with Matchers {
+class EitherTSpec extends AnyFunSpec with Matchers {
   describe("""EitherT is a monad transformer for `Either`, allowing the
              | effect of an arbitrary type constructor `F` to be combined with the
              | fail-fast effect of `Either`. `EitherT[F, A, B]` wraps a value

@@ -22,10 +22,12 @@
 
 package com.xyzcorp.typeclasses
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 import cats.free.Free
 
-class FreeMonadSpec extends FunSpec with Matchers {
+class FreeMonadSpec extends AnyFunSpec with Matchers {
   case class Student(id: Long, firstName: String, lastName: String)
 
   trait StudentService[A]

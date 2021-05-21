@@ -10,9 +10,11 @@
 
 package com.xyzcorp.datatypes
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class EitherSpec extends FunSpec with Matchers {
+class EitherSpec extends AnyFunSpec with Matchers {
 
   describe("Either") {
     it(

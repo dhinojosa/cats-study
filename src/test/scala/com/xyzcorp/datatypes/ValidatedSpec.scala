@@ -21,9 +21,11 @@
  */
 package com.xyzcorp.datatypes
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class ValidatedSpec extends FunSpec with Matchers {
+class ValidatedSpec extends AnyFunSpec with Matchers {
   describe(
     """Doing Validation without the Validation type. Taken from
       |  https://typelevel.org/cats/datatypes/validated.html
@@ -259,7 +261,7 @@ class ValidatedSpec extends FunSpec with Matchers {
             validatePassword(password),
             validateFirstName(firstName),
             validateLastName(lastName),
-            validateAge(age)).mapN(RegistrationData)
+            validateAge(age)).mapN(RegistrationData.apply)
         }
       }
 

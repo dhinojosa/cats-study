@@ -12,9 +12,11 @@ package com.xyzcorp.typeclasses
 
 import cats._
 import cats.implicits._
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class MonadErrorSpec extends FunSpec with Matchers {
+class MonadErrorSpec extends AnyFunSpec with Matchers {
 
   describe("""Trait MonadError[F[_], E] can raise or handle an error value.
              |  It extends Monad, and ApplicativeError""".stripMargin) {
@@ -54,7 +56,7 @@ class MonadErrorSpec extends FunSpec with Matchers {
       ae.pure(78)
     }
 
-    def getTemperatureFromByCoordinates[F[_]: MonadError[*[_], String]](x: (Int, Int)): F[Int] = {
+    def getTemperatureFromByCoordinates[F[_]: [F[_]] =>> MonadError[F, String]](x: (Int, Int)): F[Int] = {
       for { c <- getCityClosestToCoordinate[F](x)
             t <- getTemperatureByCity[F](c) } yield t
     }

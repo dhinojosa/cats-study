@@ -22,9 +22,11 @@
 
 package com.xyzcorp.definitions
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class ReferentialTransparencySpec extends FunSpec with Matchers {
+class ReferentialTransparencySpec extends AnyFunSpec with Matchers {
     describe("Referential Transparency") {
         it(
             """is an expression that can replaced by it's evaluated value

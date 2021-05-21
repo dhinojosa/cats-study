@@ -22,11 +22,11 @@
 
 name := "cats-study"
 
-version := "1.0-SNAPSHOT"
+version := "1.2"
 
-scalaVersion := "2.13.3"
+scalaVersion := "3.0.0"
 
-val kindProjectorVersion = "0.11.0"
+val kindProjectorVersion = "0.13.0"
 
 javaOptions += "-Xmx1G"
 
@@ -40,12 +40,13 @@ fork := true
 //autoCompilerPlugins := true
 
 libraryDependencies := Seq(
-  "org.scalatest" %% "scalatest" % "3.0.8" % "test",
-  "org.scalameta" %% "munit" % "0.7.10" % Test,
-  compilerPlugin(("org.typelevel" %% "kind-projector" % kindProjectorVersion).cross(CrossVersion.full)),
-  ("org.typelevel" %% "cats-core" % "2.5.0").withSources().withJavadoc(),
-  ("org.typelevel" %% "cats-effect" % "3.0.0").withSources().withJavadoc(),
-  ("org.typelevel" %% "cats-free" % "2.5.0").withSources().withJavadoc()
+  "org.scalatest" %% "scalatest" % "3.2.9" % "test",
+  "org.scalatest" %% "scalatest-funspec" % "3.2.9" % "test",
+  "org.scalameta" %% "munit" % "0.7.26" % Test,
+  compilerPlugin("org.typelevel" % "kind-projector_2.13.6" % kindProjectorVersion),
+  ("org.typelevel" %% "cats-core" % "2.6.1").withSources().withJavadoc(),
+  ("org.typelevel" %% "cats-effect" % "3.1.1").withSources().withJavadoc(),
+  ("org.typelevel" % "cats-free_2.13" % "2.5.0").withSources().withJavadoc()
 )
 
 // Use %%% for non-JVM projects.

@@ -12,9 +12,11 @@ package com.xyzcorp.typeclasses
 
 import cats._
 import cats.implicits._
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class ApplySpec extends FunSpec with Matchers {
+class ApplySpec extends AnyFunSpec with Matchers {
   describe("""Apply extends Functor, with ap. Ap transforms a value in a
                |  context.  Except that instead of providing a A => B, you provide
                |  and F[A=>B] where F is the Apply or context""".stripMargin) {

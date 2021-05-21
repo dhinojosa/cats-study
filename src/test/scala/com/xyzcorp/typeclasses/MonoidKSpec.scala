@@ -10,18 +10,19 @@
 
 package com.xyzcorp.typeclasses
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 import cats._
 import cats.implicits._
 
-class MonoidKSpec extends FunSpec with Matchers {
+class MonoidKSpec extends AnyFunSpec with Matchers {
   describe("""MonoidK is for two containers""") {
     it("it has a combineK to combine two lists") {
-      val value1: List[Int] = MonoidK[List].combineK(List(1, 2, 3), List(4, 5, 6))
-      value1 should be (List(1,2,3,4,5,6))
+      MonoidK[List].combineK(List(1, 2, 3), List(4, 5, 6)) should be (List(1,2,3,4,5,6))
     }
-    it("has something else") {
-      pending
+    it("has empty which creates an empty of the type") {
+      MonoidK[List].empty[Int] should be (List.empty[Int])
     }
   }
 }

@@ -21,18 +21,17 @@
  */
 package com.xyzcorp.definitions
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class HigherKindsSpec extends FunSpec with Matchers {
-
+class HigherKindsSpec extends AnyFunSpec with Matchers {
     describe("Higher Kinds") {
-        it(
-            """is a parameterized type that represents the container or
+        it("""is a parameterized type that represents the container or
               |  collection. List[A] means that I have a generic A (if the
               |  the type is not found in the classpath.  Imagine in Java
               |  if we have M[A]? Where M can either represent a List, a
-              |  Set, a Future. But not a Map or a Function why?""".stripMargin)
-        {
+              |  Set, a Future. But not a Map or a Function why?""".stripMargin) {
             case class Box[A](value: A)
 
             trait MyFunctor[M[_]] {

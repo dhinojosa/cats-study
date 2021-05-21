@@ -22,11 +22,14 @@
 
 package com.xyzcorp.datatypes
 
-import cats.Id
+import cats._
+import cats.implicits._
 import cats.data.{Writer, WriterT}
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class WriterMonadSpec extends FunSpec with Matchers {
+class WriterMonadSpec extends AnyFunSpec with Matchers {
   describe("Writer Monad") {
 
     it("is a way to carry log of information without quickly resorting to IO, it is also using a monoid to add items together") {

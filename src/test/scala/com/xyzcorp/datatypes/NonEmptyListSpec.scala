@@ -28,9 +28,11 @@
 package com.xyzcorp.datatypes
 
 import cats.data.NonEmptyList
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class NonEmptyListSpec extends FunSpec with Matchers {
+class NonEmptyListSpec extends AnyFunSpec with Matchers {
     describe(
         """A NonEmptyList is a forever non-empty-list, because
           |  it is a non-empty-list there are some

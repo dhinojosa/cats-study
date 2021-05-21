@@ -23,9 +23,11 @@
 package com.xyzcorp.datatypes
 
 import cats.data.NonEmptyChain
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
-class ChainSpec extends FunSpec with Matchers {
+class ChainSpec extends AnyFunSpec with Matchers {
   describe("""A Chain is a data structure of constant
              |  time prepending and appending. To be used where List and
              |  Vector incur a performance penalty. It supports both

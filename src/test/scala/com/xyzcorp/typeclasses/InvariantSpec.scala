@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Daniel Hinojosa
+ * Copyright 2021 Daniel Hinojosa
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
@@ -10,26 +10,17 @@
 
 package com.xyzcorp.typeclasses
 
-import cats.data.NonEmptyList
+import cats.Invariant
 import org.scalatest._
 import matchers.should._
 import funspec.AnyFunSpec
+import cats._
+import cats.implicits._
 
-class ComonadSpec extends AnyFunSpec with Matchers {
-   describe(
-       """A Comonad in Haskell has three properties,
-         |  extract, duplicate, and extend:
-         |  extract :: w a -> a
-         |  duplicate :: w a -> w (w a)
-         |  extend :: (w a -> b) -> w a -> w b""".stripMargin) {
-
-       it (
-           """has an extract that for a list will return the
-             |  first element in a non-empty list""".stripMargin) {
-           import cats._
-           val nel = NonEmptyList.of(3, 1, 10, 40)
-           val result = Comonad.apply[NonEmptyList].extract(nel)
-           result should be (3)
-       }
-   }
+class InvariantSpec extends AnyFunSpec with Matchers {
+  describe("Invariant") {
+    it("has the following") {
+      Invariant[Id].imap(40)(i => String.valueOf(i))(s => s.toInt)
+    }
+  }
 }
