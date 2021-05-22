@@ -48,7 +48,7 @@ class TupleSpec extends AnyFunSpec with Matchers {
          |  There is a functor implementation of Tuple2. This
          |  comes from catsStdInstancesForTuple2""".stripMargin) {
       val tuple = (1, "Hello")
-      tuple.map(s => s + "!") should be(1 -> "Hello!")
+      tuple.fmap(s => s + "!") should be(1 -> "Hello!")
     }
 
     it("""has tuple left which creates a tuple on the left hand side,

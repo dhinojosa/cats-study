@@ -77,7 +77,7 @@ class ApplicativeErrorSpec extends AnyFunSpec with Matchers {
          |  There is no distinction on Either and we can use either
          |  of the Error types""".stripMargin) {
 
-      def process[F[_]](x: Int, y: Int)(implicit ae: ApplicativeError[F, String]): F[_] = {
+      def process[F[_]](x: Int, y: Int)(implicit ae: ApplicativeError[F, String]): F[Int] = {
         if (y == 0) ae.raiseError("divisor is zero")
         else {
           val fa = ae.pure(x)
@@ -94,7 +94,7 @@ class ApplicativeErrorSpec extends AnyFunSpec with Matchers {
     it("""Process an Applicative Error where F represents types
          |  that represent a applicative but with a type lambda""".stripMargin) {
       import cats.implicits._
-      def process[F[_]](x: Int, y: Int)(implicit ae: ApplicativeError[F, String]): F[_] = {
+      def process[F[_]](x: Int, y: Int)(implicit ae: ApplicativeError[F, String]): F[Int] = {
         if (y == 0) ae.raiseError("divisor is error")
         else {
           val fa = ae.pure(x)

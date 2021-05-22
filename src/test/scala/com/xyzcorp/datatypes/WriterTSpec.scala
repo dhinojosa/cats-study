@@ -10,7 +10,6 @@
 
 package com.xyzcorp.datatypes
 
-import org.scalatest.{FunSpec, Matchers}
 import cats._
 import cats.data._
 import cats.implicits._

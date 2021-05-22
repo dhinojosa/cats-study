@@ -26,8 +26,6 @@ version := "1.2"
 
 scalaVersion := "3.0.0"
 
-val kindProjectorVersion = "0.13.0"
-
 javaOptions += "-Xmx1G"
 
 scalacOptions ++= Seq(
@@ -43,7 +41,6 @@ libraryDependencies := Seq(
   "org.scalatest" %% "scalatest" % "3.2.9" % "test",
   "org.scalatest" %% "scalatest-funspec" % "3.2.9" % "test",
   "org.scalameta" %% "munit" % "0.7.26" % Test,
-  compilerPlugin("org.typelevel" % "kind-projector_2.13.6" % kindProjectorVersion),
   ("org.typelevel" %% "cats-core" % "2.6.1").withSources().withJavadoc(),
   ("org.typelevel" %% "cats-effect" % "3.1.1").withSources().withJavadoc(),
   ("org.typelevel" % "cats-free_2.13" % "2.5.0").withSources().withJavadoc()

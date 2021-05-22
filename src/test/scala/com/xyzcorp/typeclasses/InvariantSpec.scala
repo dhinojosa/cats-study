@@ -18,9 +18,9 @@ import cats._
 import cats.implicits._
 
 class InvariantSpec extends AnyFunSpec with Matchers {
-  describe("Invariant") {
-    it("has the following") {
-      Invariant[Id].imap(40)(i => String.valueOf(i))(s => s.toInt)
+    describe("Invariant") {
+        it("has the following") {
+            Invariant[Id].imap(40)(i => String.valueOf(i))(s => s.toInt)
+        }
     }
-  }
 }
