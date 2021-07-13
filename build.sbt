@@ -41,7 +41,6 @@ fork := true
 
 libraryDependencies := Seq(
   "org.scalatest" %% "scalatest" % "3.0.8" % "test",
-  "org.scalameta" %% "munit" % "0.7.10" % Test,
   compilerPlugin(("org.typelevel" %% "kind-projector" % kindProjectorVersion).cross(CrossVersion.full)),
   ("org.typelevel" %% "cats-core" % "2.5.0").withSources().withJavadoc(),
   ("org.typelevel" %% "cats-effect" % "3.0.0").withSources().withJavadoc(),
