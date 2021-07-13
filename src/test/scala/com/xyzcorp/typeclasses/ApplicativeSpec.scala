@@ -25,16 +25,16 @@ package com.xyzcorp.typeclasses
 import java.time.LocalDate
 import java.time.temporal.{ChronoUnit, TemporalUnit}
 
-import cats._
+import cats.*
 import cats.data.NonEmptyChain
-import cats.implicits._
-import org.scalatest._
-import matchers.should._
+import cats.implicits.*
+import org.scalatest.*
+import matchers.should.*
 import funspec.AnyFunSpec
 
 import scala.language.postfixOps
 
-class ApplicativeSpec extends AnyFunSpec with Matchers {
+class ApplicativeSpec extends AnyFunSpec with Matchers:
 
   describe("""Applicative like Apply, extends Functor with ap,
              |  where the first argument is F[A=>B]
@@ -111,20 +111,17 @@ class ApplicativeSpec extends AnyFunSpec with Matchers {
     import cats.data.Validated.{Invalid, Valid}
     import cats.data.Validated
 
-    def validatePerson(x: String): Validated[String, String] = {
-      if (x.isEmpty) Invalid("Name cannot be blank")
+    def validatePerson(x: String): Validated[String, String] =
+      if x.isEmpty then Invalid("Name cannot be blank")
       else Valid(x)
-    }
 
-    def validateDateOfBirth(localDate: LocalDate): Validated[String, LocalDate] = {
-      if (localDate.isBefore(LocalDate.now().minus(120, ChronoUnit.YEARS))) Invalid("Invalid Date")
+    def validateDateOfBirth(localDate: LocalDate): Validated[String, LocalDate] =
+      if localDate.isBefore(LocalDate.now().minus(120, ChronoUnit.YEARS)) then Invalid("Invalid Date")
       else Valid(localDate)
-    }
 
-    def validateSSN(s: String): Validated[String, String] = {
-      if ("""\d{3}-\d{2}-\d{4}""".r.matches(s)) Valid(s)
+    def validateSSN(s: String): Validated[String, String] =
+      if """\d{3}-\d{2}-\d{4}""".r.matches(s) then Valid(s)
       else Invalid("Not a valid format")
-    }
 
     case class Person(s: String, ssn: String, dob: LocalDate)
 
@@ -139,9 +136,7 @@ class ApplicativeSpec extends AnyFunSpec with Matchers {
 
     it("process the errors of what has been entered") {
       val result: Validated[String, Person] = Applicative[[A] =>> Validated[String, A]]
-        .map3(validatePerson(""),
-              validateSSN("123-44-3201"),
-              validateDateOfBirth(LocalDate.of(1982, 10, 11)))(
+        .map3(validatePerson(""), validateSSN("123-44-3201"), validateDateOfBirth(LocalDate.of(1982, 10, 11)))(
           (p, s, b) => Person(p, s, b)
         )
       result should be(Invalid("Name cannot be blank"))
@@ -149,12 +144,9 @@ class ApplicativeSpec extends AnyFunSpec with Matchers {
 
     it("falls apart when multiple items are added") {
       val result: Validated[String, Person] = Applicative[[A] =>> Validated[String, A]]
-        .map3(validatePerson(""),
-             validateSSN("123-44-32013"),
-              validateDateOfBirth(LocalDate.of(1982, 10, 11)))(
+        .map3(validatePerson(""), validateSSN("123-44-32013"), validateDateOfBirth(LocalDate.of(1982, 10, 11)))(
           (p, s, b) => Person(p, s, b)
         )
       result should be(Invalid("Name cannot be blankNot a valid format"))
     }
   }
-}

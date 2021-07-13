@@ -22,24 +22,22 @@
 
 package com.xyzcorp.typeclasses
 
-import org.scalatest._
-import matchers.should._
+import org.scalatest.*
+import matchers.should.*
 import funspec.AnyFunSpec
 
-class SemigroupalSpec extends AnyFunSpec with Matchers {
+class SemigroupalSpec extends AnyFunSpec with Matchers:
   describe("Semigroupal combines contexts") {
-    it(
-      """combines two containers F[A] and F[B] and brings together using
-        |  F[(A,B)] which uses a tuple and is defined with the
-        |  following type class.""".stripMargin) {
+    it("""combines two containers F[A] and F[B] and brings together using
+         |  F[(A,B)] which uses a tuple and is defined with the
+         |  following type class.""".stripMargin) {
 
-      trait Semigroupal[F[_]] {
+      trait Semigroupal[F[_]]:
         def product[A, B](fa: F[A], fb: F[B]): F[(A, B)]
-      }
     }
     it("""uses the product method to combine the containers, here is an Option""") {
-      import cats._
-      import cats.implicits._
+      import cats.*
+      import cats.implicits.*
 
       val opt1 = Option(3)
       val opt2 = Option("Player")
@@ -48,55 +46,52 @@ class SemigroupalSpec extends AnyFunSpec with Matchers {
     }
 
     it("""uses the product method to combine the containers, here is an List""") {
-      import cats._
-      import cats.implicits._
+      import cats.*
+      import cats.implicits.*
 
       val xs1 = List(3, 2, 1)
       val xs2 = List('a', 'b')
       val result = Semigroupal[List].product(xs1, xs2)
-      result should be(List((3,'a'), (3,'b'), (2,'a'), (2,'b'), (1,'a'), (1,'b')))
+      result should be(List((3, 'a'), (3, 'b'), (2, 'a'), (2, 'b'), (1, 'a'), (1, 'b')))
     }
 
     it("""will render None, for option, if any combination contains
-        |  a None""".stripMargin) {
-      import cats._
-      import cats.implicits._
+         |  a None""".stripMargin) {
+      import cats.*
+      import cats.implicits.*
 
       val opt1 = Option(3)
       val opt2 = Option.empty[String]
       val result = Semigroupal[Option].product(opt1, opt2)
       result should be(None)
     }
-    it(
-      """will render an empty List, for List, if any combination contains
-        |  an empty list """.stripMargin) {
-      import cats._
-      import cats.implicits._
+    it("""will render an empty List, for List, if any combination contains
+         |  an empty list """.stripMargin) {
+      import cats.*
+      import cats.implicits.*
 
-      val opt1 = List(1,2,3,4,5)
+      val opt1 = List(1, 2, 3, 4, 5)
       val opt2 = List.empty[String]
       val result = Semigroupal[List].product(opt1, opt2)
       result should be(List())
     }
     it("""creating our own Semigroupal for Either""".stripMargin) {
-      import cats._
+      import cats.*
       type RightOnly[A] = Either[String, A]
 
-      implicit val ro: Semigroupal[RightOnly] = new Semigroupal[RightOnly] {
-        override def product[A, B](fa: RightOnly[A],
-                                   fb: RightOnly[B]): RightOnly[(A, B)] = {
-          for {a <- fa
-               b <- fb} yield a -> b
-        }
-      }
-      val opt1:Either[String, Int] = Right(40)
-      val opt2:Either[String, Float] = Right(10.0f)
+      implicit val ro: Semigroupal[RightOnly] = new Semigroupal[RightOnly]:
+        override def product[A, B](fa: RightOnly[A], fb: RightOnly[B]): RightOnly[(A, B)] =
+          for
+            a <- fa
+            b <- fb
+          yield a -> b
+      val opt1: Either[String, Int] = Right(40)
+      val opt2: Either[String, Float] = Right(10.0f)
       val result = Semigroupal[RightOnly].product(opt1, opt2)
       result should be(Right(40 -> 10.0f))
     }
-    it(
-      """creating our own Semigroupal for
-        |  Either but using an implicit conversion""".stripMargin) {
+    it("""creating our own Semigroupal for
+         |  Either but using an implicit conversion""".stripMargin) {
 //      import cats._
 //
 //      type RightOnly[A] = Either[String, A]
@@ -108,4 +103,3 @@ class SemigroupalSpec extends AnyFunSpec with Matchers {
     }
 
   }
-}

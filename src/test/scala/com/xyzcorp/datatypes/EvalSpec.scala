@@ -10,18 +10,17 @@
 
 package com.xyzcorp.datatypes
 
-import cats._
-import org.scalatest._
-import matchers.should._
+import cats.*
+import org.scalatest.*
+import matchers.should.*
 import funspec.AnyFunSpec
 
 import scala.collection.mutable.ListBuffer
 
-class EvalSpec extends AnyFunSpec with Matchers {
+class EvalSpec extends AnyFunSpec with Matchers:
   describe("Eval") {
-    it(
-      """has a now, which is eager and memoized, similar to val in
-        |  core Scala""".stripMargin) {
+    it("""has a now, which is eager and memoized, similar to val in
+         |  core Scala""".stripMargin) {
 
       val listBuffer = ListBuffer[String]()
 
@@ -38,9 +37,8 @@ class EvalSpec extends AnyFunSpec with Matchers {
       listBuffer.mkString(",") should be("Start,Evaluating,Showing")
     }
 
-    it(
-      """has a later, which is lazy and memoized, similar to lazy val in
-        |  core Scala""".stripMargin) {
+    it("""has a later, which is lazy and memoized, similar to lazy val in
+         |  core Scala""".stripMargin) {
 
       val listBuffer = ListBuffer[String]()
 
@@ -55,9 +53,8 @@ class EvalSpec extends AnyFunSpec with Matchers {
       listBuffer.mkString(",") should be("Start,Showing,Evaluating")
     }
 
-    it(
-      """has an always, which is lazy and not memoized, similar to def in
-        |  core Scala""".stripMargin) {
+    it("""has an always, which is lazy and not memoized, similar to def in
+         |  core Scala""".stripMargin) {
 
       val listBuffer = ListBuffer[String]()
 
@@ -73,18 +70,22 @@ class EvalSpec extends AnyFunSpec with Matchers {
       listBuffer.mkString(",") should be("Start,Showing,Evaluating,Evaluating")
     }
 
-    it(
-      """can be then memoized permanently after a non-memoized operation
-        |  with memoize""".stripMargin) {
+    it("""can be then memoized permanently after a non-memoized operation
+         |  with memoize""".stripMargin) {
       val listBuffer = ListBuffer[String]()
       listBuffer += "Start"
-      val memoize = Eval.always {
-        listBuffer += "Evaluating";
-        4
-      }
-        .map { x => listBuffer += "Map1"; x }
+      val memoize = Eval
+        .always {
+          listBuffer += "Evaluating";
+          4
+        }
+        .map { x =>
+          listBuffer += "Map1"; x
+        }
         .memoize
-        .map { x => listBuffer += "Map2"; x }
+        .map { x =>
+          listBuffer += "Map2"; x
+        }
 
       listBuffer += "Showing"
       memoize.value should be(4)
@@ -93,17 +94,13 @@ class EvalSpec extends AnyFunSpec with Matchers {
       "Start,Showing,Evaluating,Map1,Map2,Map2"
     }
 
-    it(
-      """has a defer method which defers evaluation, and instead of
-        |  adding to the stack space,
-        |  it creates a function on the heap space and connect
-        |  when evaluated""".stripMargin) {
+    it("""has a defer method which defers evaluation, and instead of
+         |  adding to the stack space,
+         |  it creates a function on the heap space and connect
+         |  when evaluated""".stripMargin) {
       def factorial(n: BigInt): Eval[BigInt] =
-        if (n == 1) {
-          Eval.now(n)
-        } else {
-          Eval.defer(factorial(n - 1).map(_ * n))
-        }
+        if n == 1 then Eval.now(n)
+        else Eval.defer(factorial(n - 1).map(_ * n))
 
       factorial(5).value should be(120)
       factorial(25).value should be(BigInt("15511210043330985984000000"))
@@ -111,14 +108,12 @@ class EvalSpec extends AnyFunSpec with Matchers {
 
     it("can be used in a fold as well") {
       def foldRight[A, B](as: List[A], acc: B)(fn: (A, B) => B): Eval[B] =
-        as match {
+        as match
           case head :: tail =>
             Eval.defer(foldRight(tail, acc)(fn)).map(n => fn(head, n))
           case Nil =>
             Eval.now(acc)
-        }
 
-      foldRight(List(1,2,3,4), 0)(_+_).value should be (10)
+      foldRight(List(1, 2, 3, 4), 0)(_ + _).value should be(10)
     }
   }
-}

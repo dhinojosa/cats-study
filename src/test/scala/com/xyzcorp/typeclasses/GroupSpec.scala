@@ -10,19 +10,18 @@
 
 package com.xyzcorp.typeclasses
 
-import org.scalatest._
-import matchers.should._
+import org.scalatest.*
+import matchers.should.*
 import funspec.AnyFunSpec
 
-class GroupSpec extends AnyFunSpec with Matchers {
+class GroupSpec extends AnyFunSpec with Matchers:
 
-  import cats._
-  import cats.implicits._
+  import cats.*
+  import cats.implicits.*
 
   describe("Grouped is a Monoid where there is an inverse, which depends on the monoid instance") {
-    def operate[A: Group](x: A, y: A) = {
+    def operate[A: Group](x: A, y: A) =
       x.inverse().combine(y.inverse())
-    }
 
     it("has a Int instance") {
       operate(4, 10) should be(-14)
@@ -38,8 +37,7 @@ class GroupSpec extends AnyFunSpec with Matchers {
     }
 
     it("has Function 1 instance where it will inverse the result") {
-      val fun1 = operate((x:Int) => x + 10, (y:Int) => y + 20)
+      val fun1 = operate((x: Int) => x + 10, (y: Int) => y + 20)
       fun1(20) should be(-70)
     }
   }
-}

@@ -23,15 +23,15 @@
 
 package com.xyzcorp.typeclasses
 
-import cats._
-import cats.implicits._
-import org.scalatest._
-import matchers.should._
+import cats.*
+import cats.implicits.*
+import org.scalatest.*
+import matchers.should.*
 import funspec.AnyFunSpec
 
 import scala.util.{Failure, Success, Try}
 
-class AlternativeSpec extends AnyFunSpec with Matchers {
+class AlternativeSpec extends AnyFunSpec with Matchers:
   describe("""Alternative extends Applicative and MonoidK""".stripMargin) {
     it("""has a method called unite, which folds over the inner structure
          |  to combine all of the values with our combine method inherited
@@ -100,4 +100,3 @@ class AlternativeSpec extends AnyFunSpec with Matchers {
       result should be(Nil -> List(3))
     }
   }
-}

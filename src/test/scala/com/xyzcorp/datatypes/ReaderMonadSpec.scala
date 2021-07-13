@@ -21,13 +21,13 @@
  */
 package com.xyzcorp.datatypes
 
-import cats._
-import cats.implicits._
-import org.scalatest._
-import matchers.should._
+import cats.*
+import cats.implicits.*
+import org.scalatest.*
+import matchers.should.*
 import funspec.AnyFunSpec
 
-class ReaderMonadSpec extends AnyFunSpec with Matchers {
+class ReaderMonadSpec extends AnyFunSpec with Matchers:
   describe("Reader Monad") {
     it("""sequence operations that depend on input, and is created
          |  using an apply that takes a function which starts the chain
@@ -44,7 +44,7 @@ class ReaderMonadSpec extends AnyFunSpec with Matchers {
     it("""is great for configuration or dependency injection, and reading
          |  information from an outside source""".stripMargin) {
       import cats.data.Reader
-      import cats.syntax.applicative._ // for pure
+      import cats.syntax.applicative.* // for pure
 
       case class Db(
         usernames: Map[Int, String],
@@ -59,15 +59,14 @@ class ReaderMonadSpec extends AnyFunSpec with Matchers {
       def checkPassword(username: String, password: String): DbReader[Boolean] =
         Reader(_.passwords.exists(_ == (username, password)))
 
-      def checkLogin(userId: Int, password: String): DbReader[Boolean] = {
-        val result: DbReader[Boolean] = for {
+      def checkLogin(userId: Int, password: String): DbReader[Boolean] =
+        val result: DbReader[Boolean] = for
           o <- findUsername(userId)
           s <-
             o.map(un => checkPassword(un, password))
               .getOrElse(false.pure[DbReader])
-        } yield s
+        yield s
         result
-      }
 
       val users = Map(
         1 -> "dade",
@@ -81,4 +80,3 @@ class ReaderMonadSpec extends AnyFunSpec with Matchers {
       checkLogin(4, "davinci").run(db) should be(false)
     }
   }
-}

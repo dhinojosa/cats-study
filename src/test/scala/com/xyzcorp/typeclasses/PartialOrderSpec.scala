@@ -10,13 +10,13 @@
 
 package com.xyzcorp.typeclasses
 
-import org.scalatest._
-import matchers.should._
+import org.scalatest.*
+import matchers.should.*
 import funspec.AnyFunSpec
 
-class PartialOrderSpec extends AnyFunSpec with Matchers {
-  import cats._
-  import cats.implicits._
+class PartialOrderSpec extends AnyFunSpec with Matchers:
+  import cats.*
+  import cats.implicits.*
   describe("PartialOrderSpec is a type class with comparison operators") {
     describe("Tuple implementation that comes from catsSyntaxPartialOrder") {
       it("contains less than") {
@@ -24,12 +24,10 @@ class PartialOrderSpec extends AnyFunSpec with Matchers {
       }
     }
     describe("Can be applied generically with a method") {
-      def operate[A: PartialOrder](x: A, y: A) = {
+      def operate[A: PartialOrder](x: A, y: A) =
         x < y
-      }
 
-      operate("Hello", "Indigo") should be (true)
-      operate(Option(4), Option(10)) should be (true)
+      operate("Hello", "Indigo") should be(true)
+      operate(Option(4), Option(10)) should be(true)
     }
   }
-}

@@ -10,16 +10,16 @@
 
 package com.xyzcorp.datatypes
 
-import cats._
-import cats.implicits._
-import cats.data._
-import org.scalatest._
-import matchers.should._
+import cats.*
+import cats.implicits.*
+import cats.data.*
+import org.scalatest.*
+import matchers.should.*
 import funspec.AnyFunSpec
 
 import scala.language.{postfixOps, reflectiveCalls}
 
-class IdSpec extends AnyFunSpec with Matchers {
+class IdSpec extends AnyFunSpec with Matchers:
   describe("Id") {
     it("""wraps a primitive in a 'container' that can be used, by
          | the variety of type classes, and is actually
@@ -29,4 +29,3 @@ class IdSpec extends AnyFunSpec with Matchers {
       Functor[Id].fmap(num)(x => x + 3) should be(7: Id[Int])
     }
   }
-}

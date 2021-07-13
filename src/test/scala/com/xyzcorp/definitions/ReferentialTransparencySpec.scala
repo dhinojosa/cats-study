@@ -22,44 +22,39 @@
 
 package com.xyzcorp.definitions
 
-import org.scalatest._
-import matchers.should._
+import org.scalatest.*
+import matchers.should.*
 import funspec.AnyFunSpec
 
-class ReferentialTransparencySpec extends AnyFunSpec with Matchers {
-    describe("Referential Transparency") {
-        it(
-            """is an expression that can replaced by it's evaluated value
-              |  without changing the behavior
-              |  of the program""".stripMargin) {
-            val result = (2 * 3) + 5 * (2 * 3)
-            val result2 = 6 + 5 * 6
-            result should equal(result2)
-        }
-        it(
-            """is also a function or a method that does not
-              |  invoke a state change or a
-              |  side effect""".stripMargin) {
-            def fun(x: Int) = x * 2
-            val result = fun(12) + 24
-            val result2 = 24 + 24
-            result should equal(result2)
-        }
-        it(
-            """but it is not a function or a method that
-              |  does invoke a state change or a
-              |  side effect""".stripMargin) {
-            var y = 10
-
-            def fun(x: Int) = {
-                y = y + x
-                y
-            }
-
-            val result = fun(2) + fun(2)
-            val result2 = 12 + 12
-            info(s"result is actually $result")
-            result shouldNot equal(result2)
-        }
+class ReferentialTransparencySpec extends AnyFunSpec with Matchers:
+  describe("Referential Transparency") {
+    it("""is an expression that can replaced by it's evaluated value
+         |  without changing the behavior
+         |  of the program""".stripMargin) {
+      val result = (2 * 3) + 5 * (2 * 3)
+      val result2 = 6 + 5 * 6
+      result should equal(result2)
     }
-}
+    it("""is also a function or a method that does not
+         |  invoke a state change or a
+         |  side effect""".stripMargin) {
+      def fun(x: Int) = x * 2
+      val result = fun(12) + 24
+      val result2 = 24 + 24
+      result should equal(result2)
+    }
+    it("""but it is not a function or a method that
+         |  does invoke a state change or a
+         |  side effect""".stripMargin) {
+      var y = 10
+
+      def fun(x: Int) =
+        y = y + x
+        y
+
+      val result = fun(2) + fun(2)
+      val result2 = 12 + 12
+      info(s"result is actually $result")
+      result shouldNot equal(result2)
+    }
+  }

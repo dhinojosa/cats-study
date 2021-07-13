@@ -21,27 +21,26 @@
 
 package com.xyzcorp.typeclasses
 
-import cats._
-import cats.implicits._
-import org.scalatest._
-import matchers.should._
+import cats.*
+import cats.implicits.*
+import org.scalatest.*
+import matchers.should.*
 import funspec.AnyFunSpec
 
 import scala.language.{postfixOps, reflectiveCalls}
 
-class MonadSpec extends AnyFunSpec with Matchers {
+class MonadSpec extends AnyFunSpec with Matchers:
   describe("Monad") {
     it("is defined by the following typeclass") {
-      trait Monad[F[_]] {
+      trait Monad[F[_]]:
         def pure[A](value: A): F[A]
 
         def flatMap[A, B](value: F[A])(func: A => F[B]): F[B]
-      }
     }
 
     it("is defined for an option") {
       import cats.Monad
-      import cats.instances.option._ // for Monad
+      import cats.instances.option.* // for Monad
       val opt1 = Monad[Option].pure(3) //Some(3)
       val maybeInt: Option[Int] = Monad[Option]
         .flatMap(opt1)(x => Monad[Option].pure(2 * x))
@@ -50,7 +49,7 @@ class MonadSpec extends AnyFunSpec with Matchers {
 
     it("is also defined for a list") {
       import cats.Monad
-      import cats.instances.list._ // for Monad
+      import cats.instances.list.* // for Monad
       val list1 = Monad[List].pure(3)
       val result = Monad[List].flatMap(list1)(x => List(-x, x, x + 1))
       result should be(List(-3, 3, 4))
@@ -58,8 +57,8 @@ class MonadSpec extends AnyFunSpec with Matchers {
 
     it("is also defined for a future") {
       import scala.concurrent.ExecutionContext.Implicits.global
-      import scala.concurrent._
-      import scala.concurrent.duration._
+      import scala.concurrent.*
+      import scala.concurrent.duration.*
 
       val fm: Future[Int] = Monad[Future]
         .flatMap(Future.successful(5))(x => Future.successful(x * 3))
@@ -69,9 +68,9 @@ class MonadSpec extends AnyFunSpec with Matchers {
 
     it("""has a pure that can be added implicitly to any type
          |  as long as it matches""".stripMargin) {
-      import cats.instances.list._
-      import cats.instances.option._
-      import cats.syntax.applicative._ // for pure
+      import cats.instances.list.*
+      import cats.instances.option.*
+      import cats.syntax.applicative.* // for pure
 
       1.pure[Option] should be(Some(1))
       10.pure[List] should be(List(10))
@@ -82,10 +81,10 @@ class MonadSpec extends AnyFunSpec with Matchers {
       import scala.language.higherKinds
 
       def sumSquare[F[_]](a: F[Int], b: F[Int])(implicit mon: Monad[F]): F[Int] =
-        for {
+        for
           x <- a
           y <- b
-        } yield x * x + y * y
+        yield x * x + y * y
 
       sumSquare(List(1, 2, 3, 4), List(5, 6, 7, 8)) should be
       List(26, 37, 50, 65, 29, 40, 53, 68, 34, 45, 58, 73, 41, 52, 65, 80)
@@ -119,12 +118,11 @@ class MonadSpec extends AnyFunSpec with Matchers {
 
     it("""can be used in a method signature to ensure that a
          |  higher-kinded type has flatMap""".stripMargin) {
-      def process[M[_]: Monad, A](x: M[A], y: M[A])(implicit monoid: Monoid[A]): M[A] = {
-        for {
+      def process[M[_]: Monad, A](x: M[A], y: M[A])(implicit monoid: Monoid[A]): M[A] =
+        for
           i <- x
           j <- y
-        } yield (monoid.combine(i, j))
-      }
+        yield (monoid.combine(i, j))
 
       val maybeInt = process(Option(1), (Option(2)))
       maybeInt
@@ -154,11 +152,9 @@ class MonadSpec extends AnyFunSpec with Matchers {
     }
     it("can be brought into a method, through an implicit with a monad") {
       pending
-      def testIterate[F[_]: Monad, A: Eq](f: F[A], a: A) = {
+      def testIterate[F[_]: Monad, A: Eq](f: F[A], a: A) =
         f.iterateUntil(a.eqv)
-      }
 
       testIterate(List(1, 2, 3, 4, 5), 4) should be(List(1, 2, 3))
     }
   }
-}

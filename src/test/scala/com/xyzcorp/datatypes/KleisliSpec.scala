@@ -40,7 +40,7 @@ class KleisliSpec extends AnyFunSpec with Matchers {
   describe("Kleisli Data Type") {
 
     it("is a wrapper around the function A => F[B]") {
-      final case class MyKleisli[F[_], A, B](run: A => F[B])
+//      final case class MyKleisli[F[_], A, B](run: A => F[B])
     }
 
     /*

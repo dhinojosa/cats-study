@@ -11,16 +11,15 @@
 package com.xyzcorp.typeclasses
 
 import cats.Invariant
-import org.scalatest._
-import matchers.should._
+import org.scalatest.*
+import matchers.should.*
 import funspec.AnyFunSpec
-import cats._
-import cats.implicits._
+import cats.*
+import cats.implicits.*
 
-class InvariantSpec extends AnyFunSpec with Matchers {
-    describe("Invariant") {
-        it("has the following") {
-            Invariant[Id].imap(40)(i => String.valueOf(i))(s => s.toInt)
-        }
+class InvariantSpec extends AnyFunSpec with Matchers:
+  describe("Invariant") {
+    it("has the following") {
+      Invariant[Id].imap(40)(i => String.valueOf(i))(s => s.toInt)
     }
-}
+  }

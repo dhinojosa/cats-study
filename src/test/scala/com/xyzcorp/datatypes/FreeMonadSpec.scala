@@ -10,14 +10,13 @@
 
 package com.xyzcorp.datatypes
 
-import org.scalatest._
-import matchers.should._
+import org.scalatest.*
+import matchers.should.*
 import funspec.AnyFunSpec
 
-class FreeMonadSpec extends AnyFunSpec with Matchers {
+class FreeMonadSpec extends AnyFunSpec with Matchers:
   describe("A Free Monad") {
     it("takes any functor and makes it a monad") {
       pending
     }
   }
-}

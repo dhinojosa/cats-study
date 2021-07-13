@@ -21,15 +21,15 @@
  */
 
 package com.xyzcorp.typeclasses
-import cats._
+import cats.*
 import cats.data.Ior.Both
-import cats.implicits._
-import cats.data._
-import org.scalatest._
-import matchers.should._
+import cats.implicits.*
+import cats.data.*
+import org.scalatest.*
+import matchers.should.*
 import funspec.AnyFunSpec
 
-class BiFunctorSpec extends AnyFunSpec with Matchers {
+class BiFunctorSpec extends AnyFunSpec with Matchers:
 
   describe("""A type class of types which give rise to two independent,
              |  covariant functors. The important is bimap""".stripMargin) {
@@ -71,10 +71,10 @@ class BiFunctorSpec extends AnyFunSpec with Matchers {
     }
 
     it("""has a widen on both left and right to use a higher type""") {
-      trait Human {
+      trait Human:
         def firstName: String
         def lastName: String
-      }
+
       abstract class American extends Human
       case class NewMexican(firstName: String, lastName: String) extends American
 
@@ -83,4 +83,3 @@ class BiFunctorSpec extends AnyFunSpec with Matchers {
       result shouldBe an[Ior[American, Int]]
     }
   }
-}

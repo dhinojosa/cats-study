@@ -10,22 +10,21 @@
 
 package com.xyzcorp.typeclasses
 
-import org.scalatest._
-import matchers.should._
+import org.scalatest.*
+import matchers.should.*
 import funspec.AnyFunSpec
 
-class EqSpec extends AnyFunSpec with Matchers {
+class EqSpec extends AnyFunSpec with Matchers:
 
   describe("Eq") {
     it("is a type class that has the following definition") {
-      trait Eq[A] {
+      trait Eq[A]:
         def eqv(a: A, b: A): Boolean
-      }
     }
 
     it("is available with Cats via import") {
       import cats.Eq
-      import cats.instances.int._
+      import cats.instances.int.*
       val eqInt = Eq[Int]
       eqInt.eqv(4, 5) should be(false)
       eqInt.eqv(4, 4) should be(true)
@@ -39,35 +38,30 @@ class EqSpec extends AnyFunSpec with Matchers {
     it("can also obviously be used for custom types") {
       import cats.Eq
       case class Employee(firstName: String, lastName: String, salary: Int)
-      object Employee {
+      object Employee:
 
-        import cats.instances.int._
-        import cats.instances.string._
+        import cats.instances.int.*
+        import cats.instances.string.*
 
-        implicit val eqFirstNameOnly: Eq[Employee] = new Eq[Employee] {
-            override def eqv(x: Employee, y: Employee): Boolean =
-                implicitly[Eq[String]].eqv(x.firstName, y.firstName)
-        }
+        implicit val eqFirstNameOnly: Eq[Employee] = new Eq[Employee]:
+          override def eqv(x: Employee, y: Employee): Boolean =
+            implicitly[Eq[String]].eqv(x.firstName, y.firstName)
 
-        implicit val eqLastNameOnly: Eq[Employee] = (x: Employee, y: Employee) => {
-          implicitly[Eq[String]].eqv(x.lastName, y.lastName)
-        }
+        implicit val eqLastNameOnly: Eq[Employee] =
+          (x: Employee, y: Employee) => implicitly[Eq[String]].eqv(x.lastName, y.lastName)
 
-        implicit val eqSalaryOnly: Eq[Employee] = (x: Employee,
-                                          y: Employee) =>
-            implicitly[Eq[Int]].eqv(x.salary, y.salary)
+        implicit val eqSalaryOnly: Eq[Employee] =
+          (x: Employee, y: Employee) => implicitly[Eq[Int]].eqv(x.salary, y.salary)
 
-        implicit val eqAll: Eq[Employee] = (x: Employee, y: Employee) => {
-            implicitly[Eq[String]].eqv(x.firstName, y.firstName) &&
+        implicit val eqAll: Eq[Employee] = (x: Employee, y: Employee) =>
+          implicitly[Eq[String]].eqv(x.firstName, y.firstName) &&
             implicitly[Eq[String]].eqv(x.lastName, y.lastName) &&
             implicitly[Eq[Int]].eqv(x.salary, y.salary)
-        }
-      }
 
-      val deNiro1 = Employee("Robert","DeNiro", 30000)
-      val deNiro2 = Employee("Robert","DeNiro", 30000)
-      val duvall = Employee("Robert","Duvall", 17000)
-      val downeyJr = Employee("Robert","Downey Jr", 17000)
+      val deNiro1 = Employee("Robert", "DeNiro", 30000)
+      val deNiro2 = Employee("Robert", "DeNiro", 30000)
+      val duvall = Employee("Robert", "Duvall", 17000)
+      val downeyJr = Employee("Robert", "Downey Jr", 17000)
 
       {
         import Employee.eqFirstNameOnly
@@ -82,4 +76,3 @@ class EqSpec extends AnyFunSpec with Matchers {
       }
     }
   }
-}
