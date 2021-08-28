@@ -22,15 +22,15 @@
 package com.xyzcorp.datatypes
 
 import org.scalatest.{FunSpec, Matchers}
+import cats.data.Reader
 
 class ReaderMonadSpec extends FunSpec with Matchers {
   describe("Reader Monad") {
-    it(
-      """sequence operations that depend on input, and is created
-        |  using an apply that takes a function which starts the chain
-        |  of events
+    it("""sequence operations that depend on input, and is created
+         |  using an apply that takes a function which starts the chain
+         |  of events
       """.stripMargin) {
-      import cats.data.Reader
+
       case class Cat(name: String, favoriteFood: String)
       val catReader: Reader[Cat, String] = Reader(cat => cat.name)
 
@@ -39,30 +39,28 @@ class ReaderMonadSpec extends FunSpec with Matchers {
       catReader.run(Cat("Roger", "Tuna")) should be("Roger")
     }
     it("""is great for configuration or dependency injection, and reading
-        |  information from an outside source""".stripMargin) {
-      import cats.data.Reader
+         |  information from an outside source""".stripMargin) {
       import cats.syntax.applicative._ // for pure
 
       case class Db(
-                     usernames: Map[Int, String],
-                     passwords: Map[String, String]
-                   )
+        usernames: Map[Int, String],
+        passwords: Map[String, String]
+      )
 
       type DbReader[A] = Reader[Db, A]
 
       def findUsername(userId: Int): DbReader[Option[String]] =
-        Reader(_.usernames.find {case (k, v) => k == userId}.map(_._2))
+        Reader(_.usernames.find { case (k, v) => k == userId }.map(_._2))
 
-      def checkPassword(username: String,
-                         password: String): DbReader[Boolean] =
+      def checkPassword(username: String, password: String): DbReader[Boolean] =
         Reader(_.passwords.exists(_ == (username, password)))
 
-      def checkLogin(userId: Int,
-                      password: String): DbReader[Boolean] = {
+      def checkLogin(userId: Int, password: String): DbReader[Boolean] = {
         val result: DbReader[Boolean] = for {
           o <- findUsername(userId)
-          s <- o.map(un => checkPassword(un, password))
-                .getOrElse(false.pure[DbReader])
+          s <- o
+            .map(un => checkPassword(un, password))
+            .getOrElse(false.pure[DbReader])
         } yield s
         result
       }
@@ -72,14 +70,11 @@ class ReaderMonadSpec extends FunSpec with Matchers {
         2 -> "kate",
         3 -> "margo"
       )
-      val passwords = Map(
-        "dade" -> "zerocool",
-        "kate" -> "acidburn",
-        "margo" -> "secret")
+      val passwords = Map("dade" -> "zerocool", "kate" -> "acidburn", "margo" -> "secret")
 
       val db = Db(users, passwords)
-      checkLogin(1, "zerocool").run(db) should be (true)
-      checkLogin(4, "davinci").run(db) should be (false)
+      checkLogin(1, "zerocool").run(db) should be(true)
+      checkLogin(4, "davinci").run(db) should be(false)
     }
   }
 }
