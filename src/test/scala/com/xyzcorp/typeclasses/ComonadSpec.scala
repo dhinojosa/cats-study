@@ -12,6 +12,9 @@ package com.xyzcorp.typeclasses
 
 import cats.data.NonEmptyList
 import org.scalatest.{FunSpec, Matchers}
+import cats._
+import cats.implicits._
+
 
 class ComonadSpec extends FunSpec with Matchers {
    describe(
@@ -24,10 +27,9 @@ class ComonadSpec extends FunSpec with Matchers {
        it (
            """has an extract that for a list will return the
              |  first element in a non-empty list""".stripMargin) {
-           import cats._
            val nel = NonEmptyList.of(3, 1, 10, 40)
            val result = Comonad.apply[NonEmptyList].extract(nel)
-           result should be (3)
+           result should be(3)
        }
    }
 }
