@@ -28,7 +28,6 @@
 package com.xyzcorp.datatypes
 
 import cats.data._
-import cats._
 import cats.implicits._
 import org.scalatest.{FunSpec, Matchers}
 
@@ -51,40 +50,63 @@ class CokleisliSpec extends FunSpec with Matchers {
       function(List(1, 2, 3, 4)) should be(None)
     }
 
-    it(
-        """can perform a compose, in this compose we are performing:
-          |
-          |  a: (List[Int] => String)
-          |  b: (List[String] => Int)
-          |  where the compose is interestingly decomposes from the front
-          |
-          |  (List[String]
-          |""".stripMargin) {
+    it("""can perform a compose, in this compose we are performing:
+         |
+         |  a: (List[Int] => String)
+         |  b: (List[String] => Int)
+         |  where the compose is interestingly decomposes from the front
+         |
+         |  (List[String]
+         |""".stripMargin) {
 
-      val cokleisli = Cokleisli[List, Int, String]{xs =>
-          println("A:" + xs)
-          xs.mkString(",")
+      val cokleisli = Cokleisli[List, Int, String] { xs =>
+        println("A:" + xs)
+        xs.mkString(",")
       }
-      val function = cokleisli.compose(Cokleisli[List, String, Int]{xs =>
-          println("B:" + xs)
-          xs.mkString("").length
+      val function = cokleisli.compose(Cokleisli[List, String, Int] { xs =>
+        println("B:" + xs)
+        xs.mkString("").length
       })
       val result = function.run
       result(List("One", "Two", "Three")) should be("11,8,5")
     }
 
     it("""has a first method, that is used to get the first element""") {
-        val cokleisli = Cokleisli[NonEmptyList, Int, String](_.mkString_(","))
-        val f = cokleisli.first[Long].run
-        val result = f(NonEmptyList.of((1,2), (5, 4), (6, 9)))
-        result should be ("1,5,6" -> 2)
+      val cokleisli = Cokleisli[NonEmptyList, Int, String](_.mkString_(","))
+      val f = cokleisli.first[Long].run
+      val result = f(NonEmptyList.of((1, 2), (5, 4), (6, 9)))
+      result should be("1,5,6" -> 2)
     }
 
-      it("""has a second method, that is used to get the second element""") {
-          val cokleisli = Cokleisli[NonEmptyList, Int, String](_.mkString_(","))
-          val f = cokleisli.second[Long].run
-          val result = f(NonEmptyList.of((1,2), (5, 4), (6, 9)))
-          result should be (1 -> "2,4,9")
-      }
+    it("""has a second method, that is used to get the second element""") {
+      val cokleisli = Cokleisli[NonEmptyList, Int, String](_.mkString_(","))
+      val f = cokleisli.second[Long].run
+      val result = f(NonEmptyList.of((1, 2), (5, 4), (6, 9)))
+      result should be(1 -> "2,4,9")
+    }
+
+    it("""has a contramap value, which takes an initial F[_] and prepares it
+         | before applying to the Cokleisli""".stripMargin) {
+      val cokleisli = Cokleisli.apply[NonEmptyList, Int, String](_.mkString_(","))
+      val f: Cokleisli[NonEmptyList, Long, String] = cokleisli.contramapValue[Long](_.map(_.toInt))
+      val str = f.run.apply(NonEmptyList.of(120L, 400L, 300L, 100L))
+      str should be("120,400,300,100")
+    }
+
+    it("""lmap is the map that applies a transformation for each element
+         | coming in, and rmap applies the transformation coming out
+         | .""".stripMargin) {
+      val cokleisli = Cokleisli.apply[NonEmptyList, Int, String](_.mkString_(","))
+      val result = cokleisli.lmap[Long](g => g.toInt).rmap(s => s + "!")
+      val result2 = result.run(NonEmptyList.of(30L, 20L, 10L))
+      result2 should be("30,20,10!")
+    }
+
+    it("""dimap is the lmap and rmap in one.""".stripMargin) {
+      val cokleisli = Cokleisli.apply[NonEmptyList, Int, String](_.mkString_(","))
+      val result = cokleisli.dimap[Long, String](g => g.toInt)(s => s + "!")
+      val result2 = result.run(NonEmptyList.of(30L, 20L, 10L))
+      result2 should be("30,20,10!")
+    }
   }
 }
