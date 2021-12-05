@@ -22,12 +22,8 @@
 
 package com.xyzcorp.decorators
 
-import cats._
 import cats.implicits._
-import cats.data._
-
 import org.scalatest.{FunSpec, Matchers}
-
 
 class TupleSpec extends FunSpec with Matchers {
   describe("""Using cats.implicits._ utilities to give certain code more
@@ -81,9 +77,8 @@ class TupleSpec extends FunSpec with Matchers {
       result should be(3, (4, "Hi!"))
     }
 
-    it(
-        """has comparisons where it would perform a comparison by tuple.
-          |  This comes from catsSyntaxPartialOrder""".stripMargin) {
+    it("""has comparisons where it would perform a comparison by tuple.
+         |  This comes from catsSyntaxPartialOrder""".stripMargin) {
       import cats.implicits._
       val result = (1, 6.0, "Sparkling") < (2, 4.0, "Zebra")
       result should be(true)
@@ -96,17 +91,16 @@ class TupleSpec extends FunSpec with Matchers {
       result should be(4, 9.0, "SparklingWine")
     }
 
-    it(
-        """combineN uses Semigroup to join the elements.
-          |  This comes from catSyntaxSemigroup""".stripMargin) {
+    it("""combineN uses Semigroup to join the elements.
+         |  This comes from catSyntaxSemigroup""".stripMargin) {
       import cats.implicits._
       val result: (Int, Double, String) = (1, 6.0, "Sparkling").combineN(3)
       result should be(3, 18.0, "SparklingSparklingSparkling")
     }
 
-    it ("""Has much of the same collections, as list, like forall""".stripMargin) {
-        val bool = ("Foo", "Bar").forall(_.length == 3)
-        bool should be (true)
+    it("""Has much of the same collections, as list, like forall""".stripMargin) {
+      val bool = ("Foo", "Bar").forall(_.length == 3)
+      bool should be(true)
     }
   }
 }

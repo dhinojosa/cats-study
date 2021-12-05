@@ -8,29 +8,22 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.xyzcorp.typeclasses
+package com.xyzcorp.decorators
 
-import cats._
-import cats.data._
+import cats.data.Validated
+import cats.data.Validated.Invalid
 import cats.implicits._
 import org.scalatest.{FunSpec, Matchers}
-class AlignSpec extends FunSpec with Matchers {
-  describe("Align Spec, is a zip that can zip elements") {
-    it("""has a zip that returns Ior. Reminder, Ior represents
-         |  Left, Right, or Both""".stripMargin) {
-      val result = Align[List].align(List(1, 2, 3), List('a', 'b', 'c'))
-      result should be(List(    Ior.Both(1, 'a'), Ior.Both(2, 'b'), Ior.Both(3, 'c')))
+
+class NumberSpec extends FunSpec with Matchers {
+  describe("Other wrappers") {
+    it("contains combine that uses monoid to compare") {
+      val item = 12.combine(40)
+      item should be(52)
     }
-    it("""has a zip that will return Right if it is extending on the right""".stripMargin) {
-      val result = Align[List].align(List(1, 2, 3), List('a', 'b', 'c', 'd'))
-      result should be(List(Ior.Both(1, 'a'), Ior.Both(2, 'b'), Ior.Both(3, 'c'), Ior.Right('d')))
-    }
-    it("""has a zip that will return Left if it is extending on the left""".stripMargin) {
-      val result = Align[List].align(List(1, 2, 3, 4), List('a', 'b', 'c'))
-      result should be(List(Ior.Both(1, 'a'), Ior.Both(2, 'b'), Ior.Both(3, 'c'), Ior.Left(4)))
-    }
-    it("""has a """) {
-       pending
+    it("contains an invalid to create an invalid") {
+      val item:Validated[Int, String] = 12.invalid[String]
+      item should be(Invalid(12))
     }
   }
 }

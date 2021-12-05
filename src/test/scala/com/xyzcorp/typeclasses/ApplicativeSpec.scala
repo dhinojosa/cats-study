@@ -22,14 +22,12 @@
 
 package com.xyzcorp.typeclasses
 
-import java.time.LocalDate
-import java.time.temporal.{ChronoUnit, TemporalUnit}
-
 import cats._
-import cats.data.NonEmptyChain
 import cats.implicits._
 import org.scalatest.{FunSpec, Matchers}
 
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import scala.language.postfixOps
 
 class ApplicativeSpec extends FunSpec with Matchers {
@@ -49,8 +47,7 @@ class ApplicativeSpec extends FunSpec with Matchers {
       result should be(List(2, 3, 4))
     }
     it("extends Functor with pure that creates the Applicative") {
-      val intApplicative: List[Int => Int] = Applicative[List]
-        .pure((x: Int) => x + 1)
+      val intApplicative: List[Int => Int] = Applicative[List].pure((x: Int) => x + 1)
       val result = intApplicative.ap(List(1, 2, 3))
       result should be(List(2, 3, 4))
     }
@@ -106,8 +103,8 @@ class ApplicativeSpec extends FunSpec with Matchers {
   }
 
   describe("The purpose of an Applicative") {
-    import cats.data.Validated.{Invalid, Valid}
     import cats.data.Validated
+    import cats.data.Validated.{Invalid, Valid}
 
     def validatePerson(x: String): Validated[String, String] = {
       if (x.isEmpty) Invalid("Name cannot be blank")
@@ -137,9 +134,7 @@ class ApplicativeSpec extends FunSpec with Matchers {
 
     it("process the errors of what has been entered") {
       val result: Validated[String, Person] = Applicative[Validated[String, *]]
-        .map3(validatePerson(""),
-              validateSSN("123-44-3201"),
-              validateDateOfBirth(LocalDate.of(1982, 10, 11)))(
+        .map3(validatePerson(""), validateSSN("123-44-3201"), validateDateOfBirth(LocalDate.of(1982, 10, 11)))(
           (p, s, b) => Person(p, s, b)
         )
       result should be(Invalid("Name cannot be blank"))
@@ -147,9 +142,7 @@ class ApplicativeSpec extends FunSpec with Matchers {
 
     it("falls apart when multiple items are added") {
       val result: Validated[String, Person] = Applicative[Validated[String, *]]
-        .map3(validatePerson(""),
-             validateSSN("123-44-32013"),
-              validateDateOfBirth(LocalDate.of(1982, 10, 11)))(
+        .map3(validatePerson(""), validateSSN("123-44-32013"), validateDateOfBirth(LocalDate.of(1982, 10, 11)))(
           (p, s, b) => Person(p, s, b)
         )
       result should be(Invalid("Name cannot be blankNot a valid format"))

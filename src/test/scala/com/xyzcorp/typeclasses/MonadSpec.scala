@@ -32,7 +32,6 @@ class MonadSpec extends FunSpec with Matchers {
     it("is defined by the following typeclass") {
       trait Monad[F[_]] {
         def pure[A](value: A): F[A]
-
         def flatMap[A, B](value: F[A])(func: A => F[B]): F[B]
       }
     }
