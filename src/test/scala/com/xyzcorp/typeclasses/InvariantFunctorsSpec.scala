@@ -12,7 +12,7 @@ package com.xyzcorp.typeclasses
 
 import org.scalatest.{FunSpec, Matchers}
 
-class InvariantFunctors extends FunSpec with Matchers {
+class  InvariantFunctorsSpec extends FunSpec with Matchers {
   describe("Invariant Functors") {
     trait Codec[A] {
       self =>
