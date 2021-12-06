@@ -29,10 +29,9 @@ import matchers.should.*
 import funspec.AnyFunSpec
 
 class ShowSpec extends AnyFunSpec with Matchers:
-  it("is a type class that has the following definition") {
-    trait Show[T]:
-      def show(t: T): String
-  }
+  trait MyShow[T]:
+    def show(t: T): String
+
   it("is available with Cats via import") {
     import cats.Show
     import cats.instances.float.*

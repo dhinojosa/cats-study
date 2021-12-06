@@ -13,7 +13,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.
  * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
@@ -40,7 +40,7 @@ class TraverseSpec extends AnyFunSpec with Matchers:
 
       def getUptime(hostname: String): Future[Int] = Future(hostname.length * 60)
 
-      info("The following is less desireable, since this returns a Future[List[Int]]")
+      info("The following is less desirable, since this returns a Future[List[Int]]")
 
       val allUptimes: Future[List[Int]] = hostnames
         .foldLeft(Future(List.empty[Int])) { (accum, host) =>

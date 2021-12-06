@@ -14,25 +14,21 @@ import cats.*
 import cats.data.Nested
 import cats.implicits.*
 import org.scalatest.*
-import matchers.should.*
-import funspec.AnyFunSpec
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.*
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.*
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.*
 import scala.language.{postfixOps, reflectiveCalls}
 
 case class Box[A](contents: A)
 
+trait MyFunctor[M[_]]:
+  def myMap[A, B](m: M[A])(f: A => B): M[B]
+
 class FunctorSpec extends AnyFunSpec with Matchers:
-
   describe("Functor") {
-    it("is defined by the following typeclass") {
-      import scala.language.higherKinds
-      trait MyFunctor[M[_]]:
-        def myMap[A, B](m: M[A])(f: A => B): M[B]
-    }
-
     it("is a map that uses a type class") {
       val result = Functor[List].fmap(List(1, 2, 3, 4))(x => x + 30)
       result should be(List(31, 32, 33, 34))

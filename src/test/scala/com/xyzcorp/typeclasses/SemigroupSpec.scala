@@ -22,33 +22,28 @@
 
 package com.xyzcorp.typeclasses
 
-import org.scalatest.*
-import matchers.should.*
-import funspec.AnyFunSpec
 import cats.*
 import cats.implicits.*
+import org.scalatest.*
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.*
 
 class SemigroupSpec extends AnyFunSpec with Matchers:
-  describe("Semigroup combines contexts") {
-    it("""combines two containers F[A] and F[B] and brings together using
-         |  F[(A,B)] which uses a tuple and is defined with the
-         |  following type class.""".stripMargin) {
 
-      trait Semigroupal[F[_]]:
-        def product[A, B](fa: F[A], fb: F[B]): F[(A, B)]
-    }
-
+  describe("Semigroup combines items") {
     it("""uses the product method to combine the containers, here is an Option""") {
       val result = Semigroup[String].combine("All", " Right")
       result should be("All Right")
     }
 
     it("""can be brought into a method, to ensure that it applies to a signature""") {
-      def fact[F[_]: Foldable, A](xs: F[A])(implicit monoid: Monoid[A]): Option[A] =
-        xs.reduceLeftOption { case (x1, x2) => monoid.combine(x1, x2) }
-      implicit val mi: Monoid[Int] = new Monoid[Int]:
+      def fact[F[_]: Foldable, A](xs: F[A])(using monoid: Monoid[A]): Option[A] =
+        xs.reduceLeftOption(monoid.combine)
+
+      given Monoid[Int] with
         override def empty: Int = 0
         override def combine(x: Int, y: Int): Int = x * y
-      fact(List(1, 2, 3, 4)) should be(Some(10))
+
+      fact(List(1, 2, 3, 4)) should be(Some(24))
     }
   }

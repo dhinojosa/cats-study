@@ -11,29 +11,28 @@
 package com.xyzcorp.typeclasses
 import cats.data.Nested
 import cats.implicits
-import org.scalatest._
-import matchers.should._
+import com.xyzcorp.box.Box
+import org.scalatest.*
 import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.*
 
 import scala.concurrent
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration
 import scala.language.{postfixOps, reflectiveCalls}
-import com.xyzcorp.box.Box
 
 class InvariantFunctorsSpec extends AnyFunSpec with Matchers:
+  trait Codec[A]:
+    self =>
+    def encode(value: A): String
+
+    def decode(value: String): A
+
+    def imap[B](dec: A => B, enc: B => A): Codec[B] = new Codec[B]:
+      override def encode(value: B): String = self.encode(enc(value))
+      override def decode(value: String): B = dec(self.decode(value))
+
   describe("Invariant Functors") {
-    trait Codec[A]:
-      self =>
-      def encode(value: A): String
-
-      def decode(value: String): A
-
-      def imap[B](dec: A => B, enc: B => A): Codec[B] = new Codec[B]:
-        override def encode(value: B): String = self.encode(enc(value))
-
-        override def decode(value: String): B = dec(self.decode(value))
-
     def encode[A](value: A)(implicit c: Codec[A]): String =
       c.encode(value)
 

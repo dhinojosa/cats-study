@@ -21,23 +21,21 @@
 
 package com.xyzcorp.typeclasses
 
-import cats.*
+import cats.{*, given}
 import cats.implicits.*
 import org.scalatest.*
-import matchers.should.*
-import funspec.AnyFunSpec
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.*
 
 import scala.language.{postfixOps, reflectiveCalls}
 
 class MonadSpec extends AnyFunSpec with Matchers:
+
+  trait MyMonad[F[_]]:
+    def pure[A](value: A): F[A]
+    def flatMap[A, B](value: F[A])(func: A => F[B]): F[B]
+
   describe("Monad") {
-    it("is defined by the following typeclass") {
-      trait Monad[F[_]]:
-        def pure[A](value: A): F[A]
-
-        def flatMap[A, B](value: F[A])(func: A => F[B]): F[B]
-    }
-
     it("is defined for an option") {
       import cats.Monad
       import cats.instances.option.* // for Monad
@@ -56,8 +54,8 @@ class MonadSpec extends AnyFunSpec with Matchers:
     }
 
     it("is also defined for a future") {
-      import scala.concurrent.ExecutionContext.Implicits.global
       import scala.concurrent.*
+      import scala.concurrent.ExecutionContext.Implicits.global
       import scala.concurrent.duration.*
 
       val fm: Future[Int] = Monad[Future]
@@ -76,11 +74,9 @@ class MonadSpec extends AnyFunSpec with Matchers:
       10.pure[List] should be(List(10))
     }
 
-    it("""can be used in a for comprehension, since flatmaps and
+    it("""can be used in a for comprehension, since flatMaps and
          |  maps can convert""".stripMargin) {
-      import scala.language.higherKinds
-
-      def sumSquare[F[_]](a: F[Int], b: F[Int])(implicit mon: Monad[F]): F[Int] =
+      def sumSquare[F[_]: Monad](a: F[Int], b: F[Int]): F[Int] =
         for
           x <- a
           y <- b
@@ -118,13 +114,13 @@ class MonadSpec extends AnyFunSpec with Matchers:
 
     it("""can be used in a method signature to ensure that a
          |  higher-kinded type has flatMap""".stripMargin) {
-      def process[M[_]: Monad, A](x: M[A], y: M[A])(implicit monoid: Monoid[A]): M[A] =
+      def process[M[_]: Monad, A: Monoid](x: M[A], y: M[A]): M[A] =
         for
           i <- x
           j <- y
-        yield (monoid.combine(i, j))
+        yield i.combine(j)
 
-      val maybeInt = process(Option(1), (Option(2)))
+      val maybeInt = process(Option(1), Option(2))
       maybeInt
     }
 

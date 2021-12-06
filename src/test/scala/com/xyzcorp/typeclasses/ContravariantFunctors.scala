@@ -15,30 +15,30 @@ import matchers.should.*
 import funspec.AnyFunSpec
 
 class ContravariantFunctors extends AnyFunSpec with Matchers:
+
+  trait Printable[A]:
+    outer =>
+    def format(value: A): String
+    def contramap[B](func: B => A): Printable[B] = (value: B) => outer
+        .format(func(value))
+
   describe("Contravariant Functors") {
     it("""represents prepending of an operation in a chain.
          |  In other words, apply a function before creating
          |  the type class.""".stripMargin) {
 
-      trait Printable[A]:
-        outer =>
-        def format(value: A): String
 
-        def contramap[B](func: B => A): Printable[B] = new Printable[B]:
-          override def format(value: B): String =
-            outer.format(func(value))
 
       def format[A](value: A)(implicit p: Printable[A]): String =
         p.format(value)
 
-      implicit val stringPrintable: Printable[String] =
-        (value: String) => "\"" + value + "\""
+      given stringPrintable:Printable[String] with
+        override def format(value: String): String = "\"" + value + "\""
 
-      implicit val cm: Printable[Int] =
-        stringPrintable.contramap((x: Int) => x.toString)
+      given Printable[Int] = stringPrintable.contramap((x: Int) => x.toString)
 
-      implicit val booleanPrintable: Printable[Boolean] =
-        (value: Boolean) => if value then "yes" else "no"
+      given booleanPrintable: Printable[Boolean] with
+        override def format(value: Boolean): String = if value then "yes" else "no"
 
       format("Hello") should be("\"Hello\"")
       format(true) should be("yes")
@@ -92,7 +92,7 @@ class ContravariantFunctors extends AnyFunSpec with Matchers:
       import cats.syntax.invariant.*
       import cats.syntax.semigroup.* // for |+|
 
-      implicit val symbolMonoid: Monoid[Symbol] =
+      given symbolMonoid: Monoid[Symbol] =
         Monoid[String].imap(Symbol.apply)(_.name)
 
       info("establish the empty Monoid")
