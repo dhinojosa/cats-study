@@ -23,13 +23,17 @@
 
 package com.xyzcorp.typeclasses
 import cats.arrow.Arrow
-import cats.data.{Cokleisli, NonEmptyList}
-import cats.implicits._
-import org.scalatest.{FunSpec, Matchers}
+import cats.data.*
+import cats.*
+import cats.implicits.*
+import org.scalatest.*
+import matchers.should.*
+import funspec.AnyFunSpec
 
-class ArrowSpec extends FunSpec with Matchers {
+class ArrowSpec extends AnyFunSpec with Matchers {
   describe("""Arrows is a typeclass that supports
              |  Kleisli and Cokleisli and FancyFunction""".stripMargin) {
+
     it("has...") {
       val intToIntArrow = Arrow[Function].lift((x: Int) => x * 2)
     }

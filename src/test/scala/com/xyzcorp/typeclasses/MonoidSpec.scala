@@ -12,11 +12,13 @@ package com.xyzcorp.typeclasses
 
 import cats._
 import cats.implicits._
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
 import scala.language.reflectiveCalls
 
-class MonoidSpec extends FunSpec with Matchers {
+class MonoidSpec extends AnyFunSpec with Matchers {
   describe("""A Monoid is a type class that combines two things.
              | What do we naturally do when we combine two Strings together?
              | What do we do when we combine two Integers together?""".stripMargin) {

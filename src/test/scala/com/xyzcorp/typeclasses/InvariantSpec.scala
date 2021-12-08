@@ -10,30 +10,16 @@
 
 package com.xyzcorp.typeclasses
 
-import cats.*
-import cats.data.*
-import cats.implicits.*
+import cats.Invariant
 import org.scalatest.*
 import matchers.should.*
 import funspec.AnyFunSpec
+import cats.*
+import cats.implicits.*
 
-class AlignSpec extends AnyFunSpec with Matchers {
-  describe("Align Spec, is a zip that can zip elements") {
-    it("""has a zip that returns Ior. Reminder, Ior represents
-         |  Left, Right, or Both""".stripMargin) {
-      val result = Align[List].align(List(1, 2, 3), List('a', 'b', 'c'))
-      result should be(List(    Ior.Both(1, 'a'), Ior.Both(2, 'b'), Ior.Both(3, 'c')))
-    }
-    it("""has a zip that will return Right if it is extending on the right""".stripMargin) {
-      val result = Align[List].align(List(1, 2, 3), List('a', 'b', 'c', 'd'))
-      result should be(List(Ior.Both(1, 'a'), Ior.Both(2, 'b'), Ior.Both(3, 'c'), Ior.Right('d')))
-    }
-    it("""has a zip that will return Left if it is extending on the left""".stripMargin) {
-      val result = Align[List].align(List(1, 2, 3, 4), List('a', 'b', 'c'))
-      result should be(List(Ior.Both(1, 'a'), Ior.Both(2, 'b'), Ior.Both(3, 'c'), Ior.Left(4)))
-    }
-    it("""has a """) {
-       pending
+class InvariantSpec extends AnyFunSpec with Matchers:
+  describe("Invariant") {
+    it("has the following") {
+      Invariant[Id].imap(40)(i => String.valueOf(i))(s => s.toInt)
     }
   }
-}

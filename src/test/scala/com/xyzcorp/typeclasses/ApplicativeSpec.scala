@@ -13,7 +13,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.
  * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
  * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
@@ -22,15 +22,21 @@
 
 package com.xyzcorp.typeclasses
 
-import cats._
-import cats.implicits._
-import org.scalatest.{FunSpec, Matchers}
+import java.time.LocalDate
+import java.time.temporal.{ChronoUnit, TemporalUnit}
+
+import cats.*
+import cats.data.NonEmptyChain
+import cats.implicits.*
+import org.scalatest.*
+import matchers.should.*
+import funspec.AnyFunSpec
 
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import scala.language.postfixOps
 
-class ApplicativeSpec extends FunSpec with Matchers {
+class ApplicativeSpec extends AnyFunSpec with Matchers:
 
   describe("""Applicative like Apply, extends Functor with ap,
              |  where the first argument is F[A=>B]
@@ -46,31 +52,37 @@ class ApplicativeSpec extends FunSpec with Matchers {
       val result = Applicative[List].ap(List((x: Int) => x + 1))(List(1, 2, 3))
       result should be(List(2, 3, 4))
     }
+
     it("extends Functor with pure that creates the Applicative") {
       val intApplicative: List[Int => Int] = Applicative[List].pure((x: Int) => x + 1)
       val result = intApplicative.ap(List(1, 2, 3))
       result should be(List(2, 3, 4))
     }
+
     it("introduces a <*> operation that is the same as ap") {
-      val result = Applicative[Option].<*>(Some[Int => Int](4 *))(Some(3))
+      val result = Applicative[Option].<*>(Some[Int => Int](i => 4 * i))(Some(3))
       result should be(Some(12))
     }
+
     it("can be a variable that is extracted and used as an applicative") {
       val ao = Applicative[Option]
-      val result = ao.<*>(Some[Int => Int](4 *))(Some(3))
+      val result = ao.<*>(Some[Int => Int](i => 4 * i))(Some(3))
       result should be(Some(12))
     }
+
     it("can also be imported so as to just include the operator") {
       val ao = Applicative[Option]
       import ao.<*>
       val result = <*>(Option((x: Int) => 4 * x))(Some(3))
       result should be(Some(12))
     }
+
     it("can also be applied in as an infix operator") {
       val ao = Applicative[Option]
       val result = Option((x: Int) => 4 * x) <*> Some(3)
       result should be(Some(12))
     }
+
     it("""can do <*> with whatever kind of F[_].
          | The resulting list has every possible combination
          | of applying a function from the left list to a value in the right one.
@@ -103,28 +115,25 @@ class ApplicativeSpec extends FunSpec with Matchers {
   }
 
   describe("The purpose of an Applicative") {
-    import cats.data.Validated
     import cats.data.Validated.{Invalid, Valid}
+    import cats.data.Validated
 
-    def validatePerson(x: String): Validated[String, String] = {
-      if (x.isEmpty) Invalid("Name cannot be blank")
+    def validatePerson(x: String): Validated[String, String] =
+      if x.isEmpty then Invalid("Name cannot be blank")
       else Valid(x)
-    }
 
-    def validateDateOfBirth(localDate: LocalDate): Validated[String, LocalDate] = {
-      if (localDate.isBefore(LocalDate.now().minus(120, ChronoUnit.YEARS))) Invalid("Invalid Date")
+    def validateDateOfBirth(localDate: LocalDate): Validated[String, LocalDate] =
+      if localDate.isBefore(LocalDate.now().minus(120, ChronoUnit.YEARS)) then Invalid("Invalid Date")
       else Valid(localDate)
-    }
 
-    def validateSSN(s: String): Validated[String, String] = {
-      if ("""\d{3}-\d{2}-\d{4}""".r.matches(s)) Valid(s)
+    def validateSSN(s: String): Validated[String, String] =
+      if """\d{3}-\d{2}-\d{4}""".r.matches(s) then Valid(s)
       else Invalid("Not a valid format")
-    }
 
     case class Person(s: String, ssn: String, dob: LocalDate)
 
     it("can process the above algebra to combine messages") {
-      val result: Validated[String, Person] = Applicative[Validated[String, *]]
+      val result: Validated[String, Person] = Applicative[[A] =>> Validated[String, A]]
         .map3(validatePerson("Boomer Clownface"),
               validateSSN("123-44-3201"),
               validateDateOfBirth(LocalDate.of(1982, 10, 11))
@@ -133,7 +142,7 @@ class ApplicativeSpec extends FunSpec with Matchers {
     }
 
     it("process the errors of what has been entered") {
-      val result: Validated[String, Person] = Applicative[Validated[String, *]]
+      val result: Validated[String, Person] = Applicative[[A] =>> Validated[String, A]]
         .map3(validatePerson(""), validateSSN("123-44-3201"), validateDateOfBirth(LocalDate.of(1982, 10, 11)))(
           (p, s, b) => Person(p, s, b)
         )
@@ -141,11 +150,10 @@ class ApplicativeSpec extends FunSpec with Matchers {
     }
 
     it("falls apart when multiple items are added") {
-      val result: Validated[String, Person] = Applicative[Validated[String, *]]
+      val result: Validated[String, Person] = Applicative[[A] =>> Validated[String, A]]
         .map3(validatePerson(""), validateSSN("123-44-32013"), validateDateOfBirth(LocalDate.of(1982, 10, 11)))(
           (p, s, b) => Person(p, s, b)
         )
       result should be(Invalid("Name cannot be blankNot a valid format"))
     }
   }
-}

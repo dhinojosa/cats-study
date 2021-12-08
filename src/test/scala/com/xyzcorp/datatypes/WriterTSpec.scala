@@ -10,14 +10,16 @@
 
 package com.xyzcorp.datatypes
 
-import org.scalatest.{FunSpec, Matchers}
 import cats._
 import cats.data._
 import cats.implicits._
+import org.scalatest._
+import matchers.should._
+import funspec.AnyFunSpec
 
 import scala.concurrent.Future
 
-class WriterTSpec extends FunSpec with Matchers {
+class WriterTSpec extends AnyFunSpec with Matchers {
   describe("""WriterT is a writer transformer so that it can be
              |  combined in a flatMap style""".stripMargin) {
     describe("Creation") {

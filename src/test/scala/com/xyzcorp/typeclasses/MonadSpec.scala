@@ -21,24 +21,24 @@
 
 package com.xyzcorp.typeclasses
 
-import cats._
-import cats.implicits._
-import org.scalatest.{FunSpec, Matchers}
+import cats.{*, given}
+import cats.implicits.*
+import org.scalatest.*
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.*
 
 import scala.language.{postfixOps, reflectiveCalls}
 
-class MonadSpec extends FunSpec with Matchers {
-  describe("Monad") {
-    it("is defined by the following typeclass") {
-      trait Monad[F[_]] {
-        def pure[A](value: A): F[A]
-        def flatMap[A, B](value: F[A])(func: A => F[B]): F[B]
-      }
-    }
+class MonadSpec extends AnyFunSpec with Matchers:
 
+  trait MyMonad[F[_]]:
+    def pure[A](value: A): F[A]
+    def flatMap[A, B](value: F[A])(func: A => F[B]): F[B]
+
+  describe("Monad") {
     it("is defined for an option") {
       import cats.Monad
-      import cats.instances.option._ // for Monad
+      import cats.instances.option.* // for Monad
       val opt1 = Monad[Option].pure(3) //Some(3)
       val maybeInt: Option[Int] = Monad[Option]
         .flatMap(opt1)(x => Monad[Option].pure(2 * x))
@@ -47,16 +47,16 @@ class MonadSpec extends FunSpec with Matchers {
 
     it("is also defined for a list") {
       import cats.Monad
-      import cats.instances.list._ // for Monad
+      import cats.instances.list.* // for Monad
       val list1 = Monad[List].pure(3)
       val result = Monad[List].flatMap(list1)(x => List(-x, x, x + 1))
       result should be(List(-3, 3, 4))
     }
 
     it("is also defined for a future") {
+      import scala.concurrent.*
       import scala.concurrent.ExecutionContext.Implicits.global
-      import scala.concurrent._
-      import scala.concurrent.duration._
+      import scala.concurrent.duration.*
 
       val fm: Future[Int] = Monad[Future]
         .flatMap(Future.successful(5))(x => Future.successful(x * 3))
@@ -66,23 +66,21 @@ class MonadSpec extends FunSpec with Matchers {
 
     it("""has a pure that can be added implicitly to any type
          |  as long as it matches""".stripMargin) {
-      import cats.instances.list._
-      import cats.instances.option._
-      import cats.syntax.applicative._ // for pure
+      import cats.instances.list.*
+      import cats.instances.option.*
+      import cats.syntax.applicative.* // for pure
 
       1.pure[Option] should be(Some(1))
       10.pure[List] should be(List(10))
     }
 
-    it("""can be used in a for comprehension, since flatmaps and
+    it("""can be used in a for comprehension, since flatMaps and
          |  maps can convert""".stripMargin) {
-      import scala.language.higherKinds
-
-      def sumSquare[F[_]](a: F[Int], b: F[Int])(implicit mon: Monad[F]): F[Int] =
-        for {
+      def sumSquare[F[_]: Monad](a: F[Int], b: F[Int]): F[Int] =
+        for
           x <- a
           y <- b
-        } yield x * x + y * y
+        yield x * x + y * y
 
       sumSquare(List(1, 2, 3, 4), List(5, 6, 7, 8)) should be
       List(26, 37, 50, 65, 29, 40, 53, 68, 34, 45, 58, 73, 41, 52, 65, 80)
@@ -116,14 +114,13 @@ class MonadSpec extends FunSpec with Matchers {
 
     it("""can be used in a method signature to ensure that a
          |  higher-kinded type has flatMap""".stripMargin) {
-      def process[M[_]: Monad, A](x: M[A], y: M[A])(implicit monoid: Monoid[A]): M[A] = {
-        for {
+      def process[M[_]: Monad, A: Monoid](x: M[A], y: M[A]): M[A] =
+        for
           i <- x
           j <- y
-        } yield (monoid.combine(i, j))
-      }
+        yield i.combine(j)
 
-      val maybeInt = process(Option(1), (Option(2)))
+      val maybeInt = process(Option(1), Option(2))
       maybeInt
     }
 
@@ -151,11 +148,9 @@ class MonadSpec extends FunSpec with Matchers {
     }
     it("can be brought into a method, through an implicit with a monad") {
       pending
-      def testIterate[F[_]: Monad, A: Eq](f: F[A], a: A) = {
+      def testIterate[F[_]: Monad, A: Eq](f: F[A], a: A) =
         f.iterateUntil(a.eqv)
-      }
 
       testIterate(List(1, 2, 3, 4, 5), 4) should be(List(1, 2, 3))
     }
   }
-}

@@ -22,27 +22,25 @@
 
 package com.xyzcorp.typeclasses
 
-import org.scalatest.{FunSpec, Matchers}
-import cats.free.Free
+import org.scalatest.*
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 
-class FreeMonadSpec extends FunSpec with Matchers {
-  case class Student(id: Long, firstName: String, lastName: String)
-
-  trait StudentService[A]
-  case class Register(firstName: String, lastName: String) extends StudentService[Long]
-  case class FindById(id: Long) extends StudentService[Student]
-
-  type StudentServiceFree[A] = Free[StudentService, A]
-  import cats.free.Free.liftF
-
-  def register(firstName: String, lastName: String): StudentServiceFree[Long] = {
-    liftF[StudentService, Long](Register(firstName, lastName))
-  }
-
-  def findById(longId:Long): StudentServiceFree[Student] = {
-    liftF[StudentService, Student](FindById(longId))
-  }
-
-
-
+class FreeMonadSpec extends AnyFunSpec with Matchers {
+    //  case class Student(id: Long, firstName: String, lastName: String)
+    //
+    //  trait StudentService[A]
+    //  case class Register(firstName: String, lastName: String) extends StudentService[Long]
+    //  case class FindById(id: Long) extends StudentService[Student]
+    //
+    //  type StudentServiceFree[A] = Free[StudentService, A]
+    //  import cats.free.Free.liftF
+    //
+    //  def register(firstName: String, lastName: String): StudentServiceFree[Long] = {
+    //    liftF[StudentService, Long](Register(firstName, lastName))
+    //  }
+    //
+    //  def findById(longId:Long): StudentServiceFree[Student] = {
+    //    liftF[StudentService, Student](FindById(longId))
+    //  }
 }

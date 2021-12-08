@@ -13,7 +13,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.
  * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
  * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
@@ -22,31 +22,33 @@
 
 package com.xyzcorp.typeclasses
 
-import cats._
-import cats.implicits._
-import org.scalatest.{FunSpec, Matchers}
+import cats.*
+import cats.implicits.*
+import org.scalatest.*
+import matchers.should.*
+import funspec.AnyFunSpec
 
-class TraverseSpec extends FunSpec with Matchers {
+class TraverseSpec extends AnyFunSpec with Matchers:
 
   describe("""Traverse and Sequence in the Scala Standard Library""".stripMargin) {
     it("is used in the Scala Standard Library, like in the case of Future") {
       import scala.concurrent.ExecutionContext.Implicits.global
-      import scala.concurrent._
-      import scala.concurrent.duration._
+      import scala.concurrent.*
+      import scala.concurrent.duration.*
 
       val hostnames = List("alpha.example.com", "beta.example.com", "gamma.demo.com")
 
       def getUptime(hostname: String): Future[Int] = Future(hostname.length * 60)
 
-      info("The following is less desireable, since this returns a Future[List[Int]]")
+      info("The following is less desirable, since this returns a Future[List[Int]]")
 
       val allUptimes: Future[List[Int]] = hostnames
         .foldLeft(Future(List.empty[Int])) { (accum, host) =>
           val uptime = getUptime(host)
-          for {
+          for
             accum <- accum
             uptime <- uptime
-          } yield accum :+ uptime
+          yield accum :+ uptime
         }
 
       Await.result(allUptimes, 1.second) should be(List(1020, 960, 840))
@@ -69,10 +71,10 @@ class TraverseSpec extends FunSpec with Matchers {
       def traverse[A, B](values: List[A])(func: A => Future[B]): Future[List[B]] =
         values.foldLeft(Future(List.empty[B])) { (accum, host) =>
           val item: Future[B] = func(host)
-          for {
+          for
             a <- accum
             i <- item
-          } yield a :+ i
+          yield a :+ i
         }
     }
 
@@ -86,10 +88,10 @@ class TraverseSpec extends FunSpec with Matchers {
       def traverse[A, B](values: List[A])(func: A => Future[B]): Future[List[B]] =
         values.foldLeft(Future(List.empty[B])) { (accum, host) =>
           val item: Future[B] = func(host)
-          for {
+          for
             a <- accum
             i <- item
-          } yield a :+ i
+          yield a :+ i
         }
 
       info("NOTE: Identity function comes from Scala Predef")
@@ -107,8 +109,8 @@ class TraverseSpec extends FunSpec with Matchers {
     it("""can be used to perform a sequence. Sequence takes a F[G[A]]
          |  and converts it to G[F[B]].
          |""".stripMargin) {
-      import cats._
-      import cats.implicits._
+      import cats.*
+      import cats.implicits.*
       val original: Option[List[Int]] = List(1, 2, 3).some
       val result: Seq[Option[Int]] = Traverse[Option].sequence(original)
       result should be(List(1.some, 2.some, 3.some))
@@ -128,8 +130,8 @@ class TraverseSpec extends FunSpec with Matchers {
          |  is a transformation of A. The end result is G[F[B]], and given
          |  that G is an Option, F is a List, and B is a transformation.
          |""".stripMargin) {
-      import cats._
-      import cats.implicits._
+      import cats.*
+      import cats.implicits.*
       val actual = Traverse[List].traverse(List(1, 2, 3))(_.some)
       val expected = Some(List(1, 2, 3))
       actual should be(expected)
@@ -141,8 +143,8 @@ class TraverseSpec extends FunSpec with Matchers {
          |  Option, A is Int, and B is String. The result type is
          |  List[Option[String]]
          |""".stripMargin) {
-      import cats._
-      import cats.implicits._
+      import cats.*
+      import cats.implicits.*
       val actual = Traverse[List]
         .traverse(List(1, 2, 3))(_.toHexString.some)
       val expected = Some(List("1", "2", "3"))
@@ -153,8 +155,8 @@ class TraverseSpec extends FunSpec with Matchers {
   describe("""The difference between a sequence and a traverse""") {
     it("""doesn't require an nested Applicative for a traverse,
          |  but it does require a function""".stripMargin) {
-      import cats._
-      import cats.implicits._
+      import cats.*
+      import cats.implicits.*
       val list = List(1, 2, 3, 4)
       val actual = Traverse[List].traverse(list)(_.some)
       val expected = Some(List(1, 2, 3, 4))
@@ -162,8 +164,8 @@ class TraverseSpec extends FunSpec with Matchers {
     }
     it("""does require a nested Applicative for a sequence
          |  but no function""".stripMargin) {
-      import cats._
-      import cats.implicits._
+      import cats.*
+      import cats.implicits.*
       val list = List(1.some, 2.some, 3.some, 4.some)
       val actual = Traverse[List].sequence(list)
       val expected = Option(List(1, 2, 3, 4))
@@ -175,8 +177,8 @@ class TraverseSpec extends FunSpec with Matchers {
     it("""can be used with compose which composes two
          |  Traverse types. In the following example,
          |  we are composing a List with an Option""".stripMargin) {
-      import cats._
-      import cats.implicits._
+      import cats.*
+      import cats.implicits.*
       val original = List(List(1, 2).some, List(4, 5).some)
       val result = Traverse[List]
         .compose[Option]
@@ -210,4 +212,3 @@ class TraverseSpec extends FunSpec with Matchers {
       result should be(Some(List("0. 1", "1. 2", "2. 3", "3. 4")))
     }
   }
-}

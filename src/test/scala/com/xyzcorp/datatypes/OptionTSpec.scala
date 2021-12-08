@@ -22,61 +22,63 @@
 package com.xyzcorp.datatypes
 
 import cats.data.OptionT
-import cats.implicits._
-import org.scalatest.{FunSpec, Matchers}
+import cats.implicits.*
+import org.scalatest.*
+import matchers.should.*
+import funspec.AnyFunSpec
 
 import scala.concurrent.{Await, ExecutionContext}
 import scala.language.postfixOps
 import scala.util.{Failure, Success}
 
-class OptionTSpec extends FunSpec with Matchers {
+class OptionTSpec extends AnyFunSpec with Matchers:
 
-    import scala.concurrent.Future
+  import scala.concurrent.Future
 
-    case class Org(id: Int, name: String)
+  case class Org(id: Int, name: String)
 
-    case class User(id: Int, name: String)
+  case class User(id: Int, name: String)
 
-    case class Property(name: String)
+  case class Property(name: String)
 
-    def getOrg: Future[Option[Org]] = Future
-        .successful(Some(Org(1, "Accounting")))
+  def getOrg: Future[Option[Org]] = Future
+    .successful(Some(Org(1, "Accounting")))
 
-    def getUser(orgId: Int): Future[Option[User]] = Future
-        .successful(Some(User(2, "danno")))
+  def getUser(orgId: Int): Future[Option[User]] = Future
+    .successful(Some(User(2, "danno")))
 
-    def getUserProps(userId: Int): Future[List[Property]] = Future
-        .successful(List(Property("read"), Property("write")))
+  def getUserProps(userId: Int): Future[List[Property]] = Future
+    .successful(List(Property("read"), Property("write")))
 
-    describe("OptionT is a transformer") {
-        it("Inverse Cats Implicits") {
-            import ExecutionContext.Implicits.global
+  describe("OptionT is a transformer") {
+    it("Inverse Cats Implicits") {
+      import ExecutionContext.Implicits.global
 
-            val withFlatMap =
-                OptionT[Future, Org](getOrg)
-                    .flatMap(o => OptionT(getUser(o.id)))
-                    .flatMap(u => OptionT.liftF(getUserProps(u.id)))
+      val withFlatMap =
+        OptionT[Future, Org](getOrg)
+          .flatMap(o => OptionT(getUser(o.id)))
+          .flatMap(u => OptionT.liftF(getUserProps(u.id)))
 
-            val withForComprehension: OptionT[Future, List[Property]] =
-                for {
-                    o <- OptionT[Future, Org](getOrg)
-                    u <- OptionT(getUser(o.id))
-                    xs <- OptionT.liftF(getUserProps(u.id))
-                } yield xs
+      val withForComprehension: OptionT[Future, List[Property]] =
+        for
+          o <- OptionT[Future, Org](getOrg)
+          u <- OptionT(getUser(o.id))
+          xs <- OptionT.liftF(getUserProps(u.id))
+        yield xs
 
-            import scala.concurrent.duration._
+      import scala.concurrent.duration.*
 
-            List(withFlatMap, withForComprehension).foreach { res =>
-                Await.ready(res.value, 3 seconds).onComplete {
-                    case Success(o) =>
-                        o.fold(fail("empty option")){xs =>
-                            println(xs)
-                            xs should be (List(Property("read"), Property("write")))}
-
-                    case Failure(exception) =>
-                        exception.printStackTrace()
-                }
+      List(withFlatMap, withForComprehension).foreach { res =>
+        Await.ready(res.value, 3 seconds).onComplete {
+          case Success(o) =>
+            o.fold(fail("empty option")) { xs =>
+              println(xs)
+              xs should be(List(Property("read"), Property("write")))
             }
+
+          case Failure(exception) =>
+            exception.printStackTrace()
         }
+      }
     }
-}
+  }

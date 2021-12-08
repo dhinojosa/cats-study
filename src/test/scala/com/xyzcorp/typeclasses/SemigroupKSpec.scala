@@ -11,29 +11,15 @@
 package com.xyzcorp.typeclasses
 
 import cats.*
-import cats.data.*
 import cats.implicits.*
-import org.scalatest.*
-import matchers.should.*
-import funspec.AnyFunSpec
 
-class AlignSpec extends AnyFunSpec with Matchers {
-  describe("Align Spec, is a zip that can zip elements") {
-    it("""has a zip that returns Ior. Reminder, Ior represents
-         |  Left, Right, or Both""".stripMargin) {
-      val result = Align[List].align(List(1, 2, 3), List('a', 'b', 'c'))
-      result should be(List(    Ior.Both(1, 'a'), Ior.Both(2, 'b'), Ior.Both(3, 'c')))
-    }
-    it("""has a zip that will return Right if it is extending on the right""".stripMargin) {
-      val result = Align[List].align(List(1, 2, 3), List('a', 'b', 'c', 'd'))
-      result should be(List(Ior.Both(1, 'a'), Ior.Both(2, 'b'), Ior.Both(3, 'c'), Ior.Right('d')))
-    }
-    it("""has a zip that will return Left if it is extending on the left""".stripMargin) {
-      val result = Align[List].align(List(1, 2, 3, 4), List('a', 'b', 'c'))
-      result should be(List(Ior.Both(1, 'a'), Ior.Both(2, 'b'), Ior.Both(3, 'c'), Ior.Left(4)))
-    }
-    it("""has a """) {
-       pending
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
+
+class SemigroupKSpec extends AnyFunSpec with Matchers:
+  describe("SemigroupK combines items") {
+    it("""uses the product method to combine the containers, here is an Option""") {
+      val result = SemigroupK[Option].combineKEval(Some("Foo"), Later(Some("No")))
+      result should be (Now(Some("Foo")))
     }
   }
-}

@@ -24,9 +24,11 @@ package com.xyzcorp.datatypes
 
 import cats.{Eval, Monoid}
 import cats.data.State
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.*
+import matchers.should.*
+import funspec.AnyFunSpec
 
-class StateSpec extends FunSpec with Matchers {
+class StateSpec extends AnyFunSpec with Matchers:
   describe("""State Monad allows us to pass around state
              |  and a description of that state. The state
              |  is composed using map and flatMap.
@@ -110,37 +112,31 @@ class StateSpec extends FunSpec with Matchers {
           (a :: xs, ())
         }
 
-      val result: State[MyStack, Option[Int]] = for {
+      val result: State[MyStack, Option[Int]] = for
         _ <- push(3)
         x <- pop
         _ <- push(9)
         _ <- push(12)
         y <- pop
-      } yield y
+      yield y
 
       result.runA(Nil).value should be(Some(12))
     }
   }
   it("can also be used as the tennis puzzle") {
-    trait TennisScore {
+    trait TennisScore:
       def nextState(opponent: TennisScore): (TennisScore, TennisScore)
-    }
-    case object Love extends TennisScore {
+    case object Love extends TennisScore:
       def nextState(opponent: TennisScore): (TennisScore, TennisScore) = (fifteen, opponent)
-    }
-    case object Win extends TennisScore {
+    case object Win extends TennisScore:
       override def nextState(opponent: TennisScore): (TennisScore, TennisScore) = (this, opponent)
-    }
-    case object Advantage extends TennisScore {
+    case object Advantage extends TennisScore:
       override def nextState(opponent: TennisScore): (TennisScore, TennisScore) =
-        opponent match {
+        opponent match
           case Advantage    => (forty, forty)
           case x @ Score(_) => (Win, x)
-        }
-    }
-    case class Score(score: Int)(nextStateRule: TennisScore => (TennisScore, TennisScore)) extends TennisScore {
+    case class Score(score: Int)(nextStateRule: TennisScore => (TennisScore, TennisScore)) extends TennisScore:
       def nextState(opponent: TennisScore): (TennisScore, TennisScore) = nextStateRule(opponent)
-    }
 
     lazy val fifteen = Score(15) { o => (thirty, o) }
 
@@ -176,4 +172,3 @@ class StateSpec extends FunSpec with Matchers {
 //      }
 //    }
 //  }
-}

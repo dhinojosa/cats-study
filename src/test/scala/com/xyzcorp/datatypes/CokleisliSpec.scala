@@ -27,15 +27,19 @@
 
 package com.xyzcorp.datatypes
 
-import cats.data._
-import cats.implicits._
-import org.scalatest.{FunSpec, Matchers}
+import cats.*
+import cats.data.*
+import cats.implicits.*
+import org.scalatest.*
+import matchers.should.*
+import funspec.AnyFunSpec
 
-class CokleisliSpec extends FunSpec with Matchers {
+class CokleisliSpec extends AnyFunSpec with Matchers {
+  final case class MyCoKleisli[F[_], A, B](run: F[B] => A)
   describe("Cokleisli Data Type") {
 
     it("is a wrapper around the function F[B] => A") {
-      final case class MyCoKleisli[F[_], A, B](run: F[B] => A)
+
     }
 
     it("""When a cokleisli runs it produces the function.""") {

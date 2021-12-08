@@ -10,46 +10,45 @@
 
 package com.xyzcorp.datatypes
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.*
+import matchers.should.*
+import funspec.AnyFunSpec
 
-class EitherSpec extends FunSpec with Matchers {
+class EitherSpec extends AnyFunSpec with Matchers:
 
   describe("Either") {
-    it(
-      """is already a type that encapsulates whether
-        |  something fails of succeeds""".stripMargin) {
+    it("""is already a type that encapsulates whether
+         |  something fails of succeeds""".stripMargin) {
 
-      def div(numerator:Int, denominator:Int):Either[String, Int] = {
-        if (denominator == 0) Left("Div 0")
-        else Right(numerator/denominator)
-      }
+      def div(numerator: Int, denominator: Int): Either[String, Int] =
+        if denominator == 0 then Left("Div 0")
+        else Right(numerator / denominator)
 
-      div(3, 1) should be (Right(3))
-      div(3, 0) should be (Left("Div 0"))
+      div(3, 1) should be(Right(3))
+      div(3, 0) should be(Left("Div 0"))
     }
-    it ("""can be shortened using Cats smart constructors and aids in
-        |  type inference bugs""".stripMargin) {
+    it("""can be shortened using Cats smart constructors and aids in
+         |  type inference bugs""".stripMargin) {
 
-      import cats.syntax.either._
+      import cats.syntax.either.*
 
       val a: Either[String, Int] = 3.asRight[String]
       val b: Either[String, Int] = 4.asRight[String]
 
-      val result = for {
+      val result = for
         x <- a
         y <- b
-      } yield x*x + y*y
+      yield x * x + y * y
 
-      result should be (Right(25))
+      result should be(Right(25))
     }
-    it ("""contains a utility called biMap which will map for left,
-        |  and right""".stripMargin) {
-      import cats.syntax.either._
+    it("""contains a utility called biMap which will map for left,
+         |  and right""".stripMargin) {
+      import cats.syntax.either.*
       val r = 6.asRight[String].bimap(s => s + "!", i => i * 2)
-      r should be (Right(12))
+      r should be(Right(12))
 
       val s = "Hello".asLeft[Int].bimap(s => s + "!", i => i * 2)
-      s should be (Left("Hello!"))
+      s should be(Left("Hello!"))
     }
   }
-}

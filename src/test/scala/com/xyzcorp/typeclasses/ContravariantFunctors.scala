@@ -10,37 +10,35 @@
 
 package com.xyzcorp.typeclasses
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.*
+import matchers.should.*
+import funspec.AnyFunSpec
 
-class ContravariantFunctors extends FunSpec with Matchers {
+class ContravariantFunctors extends AnyFunSpec with Matchers:
+
+  trait Printable[A]:
+    outer =>
+    def format(value: A): String
+    def contramap[B](func: B => A): Printable[B] = (value: B) => outer
+        .format(func(value))
+
   describe("Contravariant Functors") {
-    it(
-      """represents prepending of an operation in a chain.
-        |  In other words, apply a function before creating
-        |  the type class.""".stripMargin) {
+    it("""represents prepending of an operation in a chain.
+         |  In other words, apply a function before creating
+         |  the type class.""".stripMargin) {
 
-      trait Printable[A] {
-        outer =>
-        def format(value: A): String
 
-        def contramap[B](func: B => A): Printable[B] = new Printable[B] {
-          override def format(value: B): String = {
-            outer.format(func(value))
-          }
-        }
-      }
 
       def format[A](value: A)(implicit p: Printable[A]): String =
         p.format(value)
 
-      implicit val stringPrintable: Printable[String] =
-        (value: String) => "\"" + value + "\""
+      given stringPrintable:Printable[String] with
+        override def format(value: String): String = "\"" + value + "\""
 
-      implicit val cm: Printable[Int] =
-        stringPrintable.contramap((x: Int) => x.toString)
+      given Printable[Int] = stringPrintable.contramap((x: Int) => x.toString)
 
-      implicit val booleanPrintable: Printable[Boolean] =
-        (value: Boolean) => if (value) "yes" else "no"
+      given booleanPrintable: Printable[Boolean] with
+        override def format(value: Boolean): String = if value then "yes" else "no"
 
       format("Hello") should be("\"Hello\"")
       format(true) should be("yes")
@@ -49,55 +47,52 @@ class ContravariantFunctors extends FunSpec with Matchers {
 
     it("can be summoned by use of imports") {
       import cats.{Contravariant, Show}
-      import cats.instances.string._
+      import cats.instances.string.*
 
       info("first we bring in the show typeclass")
       val showString = Show[String]
 
-      info(
-        """We then use Contravariant[Show] with the show type class and
-          |  present a function that is to be applied before.""".stripMargin)
-      val showSymbol = Contravariant[Show].
-        contramap(showString)((sym: Symbol) => s"'${sym.name}")
+      info("""We then use Contravariant[Show] with the show type class and
+             |  present a function that is to be applied before.""".stripMargin)
+      val showSymbol = Contravariant[Show].contramap(showString)((sym: Symbol) => s"'${sym.name}")
       showSymbol.show(Symbol("dave")) should be("'dave")
     }
 
     it("""can be summoned by use of imports, and this time with the use of
-        |  bringing one package that has everything needed""".stripMargin) {
+         |  bringing one package that has everything needed""".stripMargin) {
       import cats.Show
-      import cats.instances.string._
-      import cats.syntax.contravariant._
+      import cats.instances.string.*
+      import cats.syntax.contravariant.*
 
       info("first we bring in the show typeclass")
       val showString = Show[String]
 
-      info(
-        """We then use Contravariant[Show] with the show type class and
-          |  present a function that is to be applied before.""".stripMargin)
+      info("""We then use Contravariant[Show] with the show type class and
+             |  present a function that is to be applied before.""".stripMargin)
 
-      val showSymbol  = showString
-        .contramap((sym: Symbol) => s"'${sym.name}").show(Symbol("dave"))
+      val showSymbol = showString
+        .contramap((sym: Symbol) => s"'${sym.name}")
+        .show(Symbol("dave"))
       showSymbol should be("'dave")
     }
 
-    it (
-      """can be used to hitch onto another typeclass, say, a Monoid[A]
-        |  where the `combine` method does the following with Symbols
-        |  only providing a `Monoid` of `String`:
-        |
-        |  1. accept two Symbols as parameters;
-        |  2. convert the Symbols to Strings;
-        |  3. combine the Strings using Monoid[String];
-        |  4. convert the result back to a Symbol.
-        |
-        |  This can be implemented using `imap`""".stripMargin) {
+    it("""can be used to hitch onto another typeclass, say, a Monoid[A]
+         |  where the `combine` method does the following with Symbols
+         |  only providing a `Monoid` of `String`:
+         |
+         |  1. accept two Symbols as parameters;
+         |  2. convert the Symbols to Strings;
+         |  3. combine the Strings using Monoid[String];
+         |  4. convert the result back to a Symbol.
+         |
+         |  This can be implemented using `imap`""".stripMargin) {
 
       import cats.Monoid
-      import cats.instances.string._
-      import cats.syntax.invariant._
-      import cats.syntax.semigroup._ // for |+|
+      import cats.instances.string.*
+      import cats.syntax.invariant.*
+      import cats.syntax.semigroup.* // for |+|
 
-      implicit val symbolMonoid: Monoid[Symbol] =
+      given symbolMonoid: Monoid[Symbol] =
         Monoid[String].imap(Symbol.apply)(_.name)
 
       info("establish the empty Monoid")
@@ -107,4 +102,3 @@ class ContravariantFunctors extends FunSpec with Matchers {
       result shouldEqual Symbol("hellodoesthiswork")
     }
   }
-}

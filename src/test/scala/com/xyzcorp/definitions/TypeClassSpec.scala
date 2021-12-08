@@ -22,9 +22,11 @@
 
 package com.xyzcorp.definitions
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.*
+import matchers.should.*
+import funspec.AnyFunSpec
 
-class TypeClassSpec extends FunSpec with Matchers {
+class TypeClassSpec extends AnyFunSpec with Matchers:
 
   import scala.language.higherKinds
 
@@ -35,17 +37,14 @@ class TypeClassSpec extends FunSpec with Matchers {
 
       case class Employee(firstName: String, lastName: String, salary: Int)
 
-      object Employee {
-        implicit val sortByFirstName: Ordering[Employee] = new Ordering[Employee] {
+      object Employee:
+        implicit val sortByFirstName: Ordering[Employee] = new Ordering[Employee]:
           override def compare(x: Employee, y: Employee): Int =
             x.firstName.compareTo(y.firstName)
-        }
 
-        implicit val sortByLastName: Ordering[Employee] = new Ordering[Employee] {
+        implicit val sortByLastName: Ordering[Employee] = new Ordering[Employee]:
           override def compare(x: Employee, y: Employee): Int =
             x.lastName.compareTo(y.lastName)
-        }
-      }
 
       val employees = List(
         Employee("Dan", "Hinojosa", 40000),
@@ -65,4 +64,3 @@ class TypeClassSpec extends FunSpec with Matchers {
       )
     }
   }
-}

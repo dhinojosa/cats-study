@@ -10,11 +10,13 @@
 
 package com.xyzcorp.typeclasses
 
-import cats._
-import cats.implicits._
-import org.scalatest.{FunSpec, Matchers}
+import cats.*
+import cats.implicits.*
+import org.scalatest.*
+import matchers.should.*
+import funspec.AnyFunSpec
 
-class ApplySpec extends FunSpec with Matchers {
+class ApplySpec extends AnyFunSpec with Matchers:
   describe("""Apply extends Functor, with ap. Ap transforms a value in a
              |  context.  Except that instead of providing a A => B, you provide
              |  and F[A=>B] where F is the Apply or context""".stripMargin) {
@@ -45,9 +47,10 @@ class ApplySpec extends FunSpec with Matchers {
 
     it("""can also be used with a bi-function
          |  and be applied in parts using ap2""".stripMargin) {
+      import cats.*
+      import cats.implicits.*
       val subtractFunction = (x: Int, y: Int) => x - y
       val result = Apply[Option].ap2(Option(subtractFunction))(3.some, 2.some)
       result should be(1.some)
     }
   }
-}

@@ -10,11 +10,13 @@
 
 package com.xyzcorp.typeclasses
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.*
+import matchers.should.*
+import funspec.AnyFunSpec
 
-class FlatMapSpec extends FunSpec with Matchers {
-  import cats._
-  import cats.implicits._
+class FlatMapSpec extends AnyFunSpec with Matchers:
+  import cats.*
+  import cats.implicits.*
   describe("""FlatMapSpec which allows us to have a value in a context
              |  (F[A]) and then feed that into a function that takes a normal
              |  value and returns a value in a context (A => F[B]).
@@ -45,10 +47,9 @@ class FlatMapSpec extends FunSpec with Matchers {
          |  from within a container, until it finds a Right""".stripMargin) {
       val result: Seq[Int] = FlatMap[List].tailRecM(10) { i =>
         println(">>>" + i)
-        if (i < 0) List(Right(i))
+        if i < 0 then List(Right(i))
         else List(Left(i - 1))
       }
       result should be(List(-1))
     }
   }
-}

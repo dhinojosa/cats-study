@@ -9,24 +9,30 @@
  */
 
 package com.xyzcorp.typeclasses
+import cats.data.Nested
+import cats.implicits
+import com.xyzcorp.box.Box
+import org.scalatest.*
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.*
 
-import org.scalatest.{FunSpec, Matchers}
+import scala.concurrent
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration
+import scala.language.{postfixOps, reflectiveCalls}
 
-class  InvariantFunctorsSpec extends FunSpec with Matchers {
+class InvariantFunctorsSpec extends AnyFunSpec with Matchers:
+  trait Codec[A]:
+    self =>
+    def encode(value: A): String
+
+    def decode(value: String): A
+
+    def imap[B](dec: A => B, enc: B => A): Codec[B] = new Codec[B]:
+      override def encode(value: B): String = self.encode(enc(value))
+      override def decode(value: String): B = dec(self.decode(value))
+
   describe("Invariant Functors") {
-    trait Codec[A] {
-      self =>
-      def encode(value: A): String
-
-      def decode(value: String): A
-
-      def imap[B](dec: A => B, enc: B => A): Codec[B] = new Codec[B] {
-        override def encode(value: B): String = self.encode(enc(value))
-
-        override def decode(value: String): B = dec(self.decode(value))
-      }
-    }
-
     def encode[A](value: A)(implicit c: Codec[A]): String =
       c.encode(value)
 
@@ -34,11 +40,10 @@ class  InvariantFunctorsSpec extends FunSpec with Matchers {
       c.decode(value)
 
     implicit val stringCodec: Codec[String] =
-      new Codec[String] {
+      new Codec[String]:
         def encode(value: String): String = value
 
         def decode(value: String): String = value
-      }
 
     implicit val intCodec: Codec[Int] =
       stringCodec.imap(_.toInt, _.toString)
@@ -49,7 +54,6 @@ class  InvariantFunctorsSpec extends FunSpec with Matchers {
     implicit val doubleCodec: Codec[Double] =
       stringCodec.imap(_.toDouble, _.toString)
 
-
     it("""implements a method called imap that is informally
          |  equivalent to a combination of map and contramap. imap generates
          |  them via a pair of bidirectional transformations""".stripMargin) {
@@ -58,10 +62,11 @@ class  InvariantFunctorsSpec extends FunSpec with Matchers {
       doubleCodec.encode(1230.00) should be("1230.0")
     }
 
+
+
     it("""can be used for custom types of course, done so this time, by
          | using a method to extend where to find the codec.""".stripMargin) {
 
-      case class Box[A](value: A)
       implicit def boxCodec[A](implicit c: Codec[A]): Codec[Box[A]] =
         c.imap[Box[A]](Box(_), _.value)
 
@@ -69,11 +74,9 @@ class  InvariantFunctorsSpec extends FunSpec with Matchers {
 
       boxCodec[Int].encode(box) should be("40")
 
-      def foo[A](b:Box[A])(implicit c:Codec[Box[A]]): String = {
+      def foo[A](b: Box[A])(implicit c: Codec[Box[A]]): String =
         c.encode(b)
-      }
 
-      foo(box) should be ("40")
+      foo(box) should be("40")
     }
   }
-}

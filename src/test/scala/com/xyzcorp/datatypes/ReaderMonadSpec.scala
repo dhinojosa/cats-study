@@ -21,16 +21,19 @@
  */
 package com.xyzcorp.datatypes
 
-import org.scalatest.{FunSpec, Matchers}
-import cats.data.Reader
+import cats.*
+import cats.implicits.*
+import org.scalatest.*
+import matchers.should.*
+import funspec.AnyFunSpec
 
-class ReaderMonadSpec extends FunSpec with Matchers {
+class ReaderMonadSpec extends AnyFunSpec with Matchers:
   describe("Reader Monad") {
     it("""sequence operations that depend on input, and is created
          |  using an apply that takes a function which starts the chain
          |  of events
       """.stripMargin) {
-
+      import cats.data.Reader
       case class Cat(name: String, favoriteFood: String)
       val catReader: Reader[Cat, String] = Reader(cat => cat.name)
 
@@ -40,7 +43,8 @@ class ReaderMonadSpec extends FunSpec with Matchers {
     }
     it("""is great for configuration or dependency injection, and reading
          |  information from an outside source""".stripMargin) {
-      import cats.syntax.applicative._ // for pure
+      import cats.data.Reader
+      import cats.syntax.applicative.* // for pure
 
       case class Db(
         usernames: Map[Int, String],
@@ -55,15 +59,14 @@ class ReaderMonadSpec extends FunSpec with Matchers {
       def checkPassword(username: String, password: String): DbReader[Boolean] =
         Reader(_.passwords.exists(_ == (username, password)))
 
-      def checkLogin(userId: Int, password: String): DbReader[Boolean] = {
-        val result: DbReader[Boolean] = for {
+      def checkLogin(userId: Int, password: String): DbReader[Boolean] =
+        val result: DbReader[Boolean] =
+        for
           o <- findUsername(userId)
-          s <- o
-            .map(un => checkPassword(un, password))
-            .getOrElse(false.pure[DbReader])
-        } yield s
+          s <- o.map(un => checkPassword(un, password))
+              .getOrElse(false.pure[DbReader])
+        yield s
         result
-      }
 
       val users = Map(
         1 -> "dade",
@@ -77,4 +80,3 @@ class ReaderMonadSpec extends FunSpec with Matchers {
       checkLogin(4, "davinci").run(db) should be(false)
     }
   }
-}

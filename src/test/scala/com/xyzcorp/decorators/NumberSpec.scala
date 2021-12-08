@@ -12,10 +12,14 @@ package com.xyzcorp.decorators
 
 import cats.data.Validated
 import cats.data.Validated.Invalid
-import cats.implicits._
-import org.scalatest.{FunSpec, Matchers}
+import cats.*
+import cats.data.*
+import cats.implicits.*
+import org.scalatest.*
+import matchers.should.*
+import funspec.AnyFunSpec
 
-class NumberSpec extends FunSpec with Matchers {
+class NumberSpec extends AnyFunSpec with Matchers {
   describe("Other wrappers") {
     it("contains combine that uses monoid to compare") {
       val item = 12.combine(40)

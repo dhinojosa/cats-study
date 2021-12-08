@@ -21,35 +21,30 @@
  */
 package com.xyzcorp.definitions
 
-import org.scalatest.{FunSpec, Matchers}
+import org.scalatest.*
+import matchers.should.*
+import funspec.AnyFunSpec
+import com.xyzcorp.box.Box
 
-class HigherKindsSpec extends FunSpec with Matchers {
+trait MyFunctor[M[_]]:
+    def myMap[A, B](m: M[A])(f: A => B): M[B]
 
-    describe("Higher Kinds") {
-        it(
-            """is a parameterized type that represents the container or
-              |  collection. List[A] means that I have a generic A (if the
-              |  the type is not found in the classpath.  Imagine in Java
-              |  if we have M[A]? Where M can either represent a List, a
-              |  Set, a Future. But not a Map or a Function why?""".stripMargin)
-        {
-            case class Box[A](value: A)
+class HigherKindsSpec extends AnyFunSpec with Matchers:
+  describe("Higher Kinds") {
+    it("""is a parameterized type that represents the container or
+         |  collection. List[A] means that I have a generic A (if the
+         |  the type is not found in the classpath.  Imagine in Java
+         |  if we have M[A]? Where M can either represent a List, a
+         |  Set, a Future. But not a Map or a Function why?""".stripMargin) {
 
-            trait MyFunctor[M[_]] {
-                def myMap[A, B](m: M[A])(f: A => B): M[B]
-            }
 
-            object MyFunctor {
-                def apply[T[_]](implicit f: MyFunctor[T]): MyFunctor[T] = f
-            }
+      object MyFunctor:
+        def apply[T[_]](implicit f: MyFunctor[T]): MyFunctor[T] = f
 
-            implicit val functorForBox: MyFunctor[Box] = new MyFunctor[Box] {
-                override def myMap[A, B](m: Box[A])(f: A => B): Box[B] = Box(
-                    f(m.value))
-            }
+      implicit val functorForBox: MyFunctor[Box] = new MyFunctor[Box]:
+        override def myMap[A, B](m: Box[A])(f: A => B): Box[B] = Box(f(m.value))
 
-            val myBox = Box(200)
-            MyFunctor.apply[Box].myMap(myBox)(x => "Hello" * 3)
-        }
+      val myBox = Box(200)
+      MyFunctor.apply[Box].myMap(myBox)(x => "Hello" * 3)
     }
-}
+  }
