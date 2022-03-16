@@ -38,12 +38,13 @@ class ReaderSpec extends AnyFunSpec with Matchers:
         Reader[String, String](s => s.toUpperCase)
       val exclaim = Reader[String, String](s => s + "!")
 
-      val value2: Kleisli[Id, String, String] = for
+      val kleisli: Kleisli[Id, String, String] = for
         i <- upper
         l <- exclaim
       yield l
 
-      val result: Id[String] = value2.apply("Hello")
+      val result: Id[String] = kleisli.apply("Hello")
+      val result2 : String = kleisli.apply("Hello")
       println(result)
     }
   }
