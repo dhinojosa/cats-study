@@ -39,6 +39,7 @@ class ShowSpec extends AnyFunSpec with Matchers:
     implicitly[Show[Int]].show(100) should be("100")
     implicitly[Show[Float]].show(90.0f) should be("90.0")
   }
+
   it("""is absolutely flexible to do what you want
        | to do as you provide the context for whatever
        | use you have!""".stripMargin) {
