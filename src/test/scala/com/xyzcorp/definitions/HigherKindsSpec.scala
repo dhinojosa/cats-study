@@ -21,13 +21,19 @@
  */
 package com.xyzcorp.definitions
 
-import org.scalatest.*
-import matchers.should.*
-import funspec.AnyFunSpec
 import com.xyzcorp.box.Box
+import org.scalatest.*
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.*
 
 trait MyFunctor[M[_]]:
-    def myMap[A, B](m: M[A])(f: A => B): M[B]
+  def myMap[A, B](m: M[A])(f: A => B): M[B]
+
+object MyFunctor:
+  def apply[T[_]](implicit f: MyFunctor[T]): MyFunctor[T] = f
+
+implicit val functorForBox: MyFunctor[Box] = new MyFunctor[Box]:
+  override def myMap[A, B](m: Box[A])(f: A => B): Box[B] = Box(f(m.value))
 
 class HigherKindsSpec extends AnyFunSpec with Matchers:
   describe("Higher Kinds") {
@@ -36,13 +42,6 @@ class HigherKindsSpec extends AnyFunSpec with Matchers:
          |  the type is not found in the classpath.  Imagine in Java
          |  if we have M[A]? Where M can either represent a List, a
          |  Set, a Future. But not a Map or a Function why?""".stripMargin) {
-
-
-      object MyFunctor:
-        def apply[T[_]](implicit f: MyFunctor[T]): MyFunctor[T] = f
-
-      implicit val functorForBox: MyFunctor[Box] = new MyFunctor[Box]:
-        override def myMap[A, B](m: Box[A])(f: A => B): Box[B] = Box(f(m.value))
 
       val myBox = Box(200)
       MyFunctor.apply[Box].myMap(myBox)(x => "Hello" * 3)
