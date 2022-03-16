@@ -27,6 +27,9 @@ import matchers.should.*
 import funspec.AnyFunSpec
 
 class PartialUnificationSpec extends AnyFunSpec with Matchers:
+  object Foo:
+    def bar[M[_], A](x: M[A]): M[A] = x
+
   describe("Partial Unification") {
     it("""is supposed to work by default in Scala, note the following
          |  where we have the following object with a method bar
@@ -34,22 +37,12 @@ class PartialUnificationSpec extends AnyFunSpec with Matchers:
          |  with List and Set as we discussed in
          |  HigherKindedTypesSpec""".stripMargin) {
 
-      import scala.language.higherKinds
-
-      object Foo:
-        def bar[M[_], A](x: M[A]): M[A] = x
-
       Foo.bar(List(1, 2, 3, 4)) should be(List(1, 2, 3, 4))
     }
 
     it("""will work if we create a type with a right projection
          |  for things that have two parameterized types like a
          |  function and either types""".stripMargin) {
-
-      import scala.language.higherKinds
-
-      object Foo:
-        def bar[M[_], A](x: M[A]): M[A] = x
 
       type ExceptionEither[A] = Either[Exception, A]
 
@@ -63,11 +56,6 @@ class PartialUnificationSpec extends AnyFunSpec with Matchers:
          |  when inlined and this is stated here
          |  at https://github.com/scala/bug/issues/2712.
       """.stripMargin) {
-
-      import scala.language.higherKinds
-
-      object Foo:
-        def bar[M[_], A](x: M[A]): M[A] = x
 
       info("""Note the return function, it was able to resolve
              |  to Int by partially
