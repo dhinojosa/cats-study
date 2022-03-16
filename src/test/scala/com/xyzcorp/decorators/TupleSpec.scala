@@ -23,12 +23,11 @@
 package com.xyzcorp.decorators
 
 import cats.*
-import cats.implicits.*
 import cats.data.*
-
+import cats.implicits.*
 import org.scalatest.*
-import matchers.should.*
-import funspec.AnyFunSpec
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.*
 
 class TupleSpec extends AnyFunSpec with Matchers:
   describe("""Using cats.implicits._ utilities to give certain code more
@@ -38,7 +37,7 @@ class TupleSpec extends AnyFunSpec with Matchers:
          |  is probably not
          |  something involved with tuples per say, but
          |  it still works""".stripMargin) {
-      import cats.implicits._
+      import cats.implicits.*
       val tuple = (1, "Hello", 3.0)
       val result = tuple >= tuple
       result should be(true)
