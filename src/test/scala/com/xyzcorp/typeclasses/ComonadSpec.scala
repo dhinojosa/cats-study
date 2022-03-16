@@ -10,6 +10,7 @@
 
 package com.xyzcorp.typeclasses
 
+import cats.*
 import cats.data.NonEmptyList
 import org.scalatest.*
 import matchers.should.*
@@ -24,9 +25,9 @@ class ComonadSpec extends AnyFunSpec with Matchers:
 
     it("""has an extract that for a list will return the
          |  first element in a non-empty list""".stripMargin) {
-      import cats.*
+
       val nel = NonEmptyList.of(3, 1, 10, 40)
-      val result = Comonad.apply[NonEmptyList].extract(nel)
+      val result = Comonad[NonEmptyList].extract(nel)
       result should be(3)
     }
   }
