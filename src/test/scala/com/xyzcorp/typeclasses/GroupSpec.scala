@@ -11,22 +11,23 @@
 package com.xyzcorp.typeclasses
 
 import org.scalatest.*
-import matchers.should.*
-import funspec.AnyFunSpec
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.*
 
 class GroupSpec extends AnyFunSpec with Matchers:
 
   import cats.*
   import cats.implicits.*
 
-  describe("Grouped is a Monoid where there is an inverse, which depends on the monoid instance") {
-    def operate[A: Group](x: A, y: A) =
-      x.inverse().combine(y.inverse())
+  def operate[A: Group](x: A, y: A):A =
+    x.inverse().combine(y.inverse())
 
+  describe("Grouped is a Monoid where there is an inverse, which depends on the monoid instance") {
     it("contains remove which combines the first with the inverse of the second argument") {
-        val result = Group[Int].remove(5, 2)
-        result should be (3)
+      val result = Group[Int].remove(5, 2)
+      result should be(3)
     }
+
     it("has a Int instance") {
       operate(4, 10) should be(-14)
     }
