@@ -47,8 +47,6 @@ class ApplySpec extends AnyFunSpec with Matchers:
 
     it("""can also be used with a bi-function
          |  and be applied in parts using ap2""".stripMargin) {
-      import cats.*
-      import cats.implicits.*
       val subtractFunction = (x: Int, y: Int) => x - y
       val result = Apply[Option].ap2(Option(subtractFunction))(3.some, 2.some)
       result should be(1.some)
