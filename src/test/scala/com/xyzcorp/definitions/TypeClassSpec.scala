@@ -28,8 +28,6 @@ import funspec.AnyFunSpec
 
 class TypeClassSpec extends AnyFunSpec with Matchers:
 
-  import scala.language.higherKinds
-
   describe("Type classes") {
     it("""takes an abstraction and offers varying
          |  ways to implement that abstraction for
