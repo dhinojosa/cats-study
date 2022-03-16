@@ -24,7 +24,7 @@ name := "cats-study"
 
 version := "1.2"
 
-scalaVersion := "3.1.0"
+scalaVersion := "3.1.1"
 
 javaOptions += "-Xmx1G"
 
