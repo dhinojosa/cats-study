@@ -44,12 +44,25 @@ class ApplicativeSpec extends AnyFunSpec with Matchers:
              |  in that we can wrap a function in a context. As opposed to
              |  Apply, Applicative has pure""".stripMargin) {
 
-    //M[A]
-    //functor: [List(1,2,3,4)][x => x * 2]
-    //applicative: [List(x => x * 2)][List[1,2,3,4]]
+    // M[A]
+    // functor: [List(1,2,3,4)][x => x * 2]
+    // applicative: [List(x => x * 2)][List(1,2,3,4)]
+
+    it("Should have a diff between application and monad") {
+      val o1 = Option(102)
+      val o2 = Option(90)
+      val o3 = Option(10)
+
+      val maybeInt = o1.flatMap(x => o2.flatMap(y => o3.map(z => x + y + z)))
+        val option = Applicative[Option]
+            .ap(Option(x => String.valueOf(x) + "!"))(Option(30))
+        option should be (Option("30!"))
+    }
 
     it("""Applies an ap see Ap for more details""".stripMargin) {
-      val result = Applicative[List].ap(List((x: Int) => x + 1))(List(1, 2, 3))
+      val result =
+        Applicative[List]
+          .ap(List((x: Int) => x + 1))(List(1, 2, 3))
       result should be(List(2, 3, 4))
     }
 
@@ -98,16 +111,16 @@ class ApplicativeSpec extends AnyFunSpec with Matchers:
       result should
         be(List(5, 4, 6, 5, 7, 6, 6, 8, 7, 10, 8, 12, 7, 12, 8, 15, 9, 18))
 
-      //(1,4)
+      // (1,4)
       // 1 + 4 = 5
       // 1 * 4 = 4
-      //(1, 5)
+      // (1, 5)
       // 1 + 5 = 6
       // 1 * 5 = 5
-      //(1, 6)
+      // (1, 6)
       // 1 + 6 = 7
       // 1 * 6 = 6
-      //(2, 4)
+      // (2, 4)
       // 2 + 4 = 6
       // 2 * 4 = 8
       // etc.

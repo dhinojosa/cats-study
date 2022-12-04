@@ -27,8 +27,6 @@ class ContravariantFunctors extends AnyFunSpec with Matchers:
          |  In other words, apply a function before creating
          |  the type class.""".stripMargin) {
 
-
-
       def format[A](value: A)(implicit p: Printable[A]): String =
         p.format(value)
 
