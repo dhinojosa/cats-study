@@ -61,9 +61,7 @@ class InvariantFunctorsSpec extends AnyFunSpec with Matchers:
       intCodec.decode("10") should be(10)
       doubleCodec.encode(1230.00) should be("1230.0")
     }
-
-
-
+    
     it("""can be used for custom types of course, done so this time, by
          | using a method to extend where to find the codec.""".stripMargin) {
 

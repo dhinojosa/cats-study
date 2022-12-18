@@ -56,6 +56,7 @@ class FreeMonadSpec extends AnyFunSpec with Matchers:
       val result = resultFree.foldMap(compiler)
       result should be(70)
     }
+
     it("""has factory called Free[S[_], A] but this time I want
          |  to use it with an actual functor""".stripMargin) {
       case class Box[A](value: A)

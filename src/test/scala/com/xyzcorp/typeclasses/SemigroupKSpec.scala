@@ -17,9 +17,12 @@ import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
 class SemigroupKSpec extends AnyFunSpec with Matchers:
+
   describe("SemigroupK combines items") {
     it("""uses the product method to combine the containers, here is an Option""") {
       val result = SemigroupK[Option].combineKEval(Some("Foo"), Later(Some("No")))
       result should be (Now(Some("Foo")))
     }
   }
+
+
