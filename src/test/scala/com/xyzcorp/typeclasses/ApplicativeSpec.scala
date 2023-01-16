@@ -48,15 +48,37 @@ class ApplicativeSpec extends AnyFunSpec with Matchers:
     // functor: [List(1,2,3,4)][x => x * 2]
     // applicative: [List(x => x * 2)][List(1,2,3,4)]
 
+    it("""Should have a diff between application and monad, here is the monad.
+         | Notice that any moment there is an \"evil\" element, then the whole
+         | thing is that \"evil\" element""".stripMargin) {
+      val o1 = Option(102)
+      val o2 = Option(90)
+      val o3 = Option.empty[Int]
+
+      val maybeInt =
+        o1.flatMap(x => o2.flatMap(y => o3.map(z => x + y + z)))
+
+      maybeInt should be(empty)
+//      val option = Applicative[Option]
+//        .ap(Option(x => String.valueOf(x) + "!"))(Option(30))
+//      option should be(empty)
+    }
+
     it("Should have a diff between application and monad") {
       val o1 = Option(102)
       val o2 = Option(90)
       val o3 = Option(10)
+      val result = Applicative[Option].ap3(Option((a, b, c) => ("Point", a, b, c)))(o1, o2, o3)
+      result should be(Option("Point", 102, 90, 10))
+    }
 
-      val maybeInt = o1.flatMap(x => o2.flatMap(y => o3.map(z => x + y + z)))
-        val option = Applicative[Option]
-            .ap(Option(x => String.valueOf(x) + "!"))(Option(30))
-        option should be (Option("30!"))
+    it("Should have a diff between application and monad in what happens if there is an \"evil\" element") {
+      val o1 = Option(102)
+      val o2 = Option(90)
+      val o3 = Option.empty[Int]
+      val result = Applicative[Option]
+        .ap3(Option((a, b, c) => ("Point", a, b, c)))(o1, o2, o3)
+      result should be (empty)
     }
 
     it("""Applies an ap see Ap for more details""".stripMargin) {
@@ -124,6 +146,28 @@ class ApplicativeSpec extends AnyFunSpec with Matchers:
       // 2 + 4 = 6
       // 2 * 4 = 8
       // etc.
+    }
+  }
+
+  describe("mapX applies a map serially to contexts") {
+    it("can take any number of elements") {
+      case class MyItems(a: Int, b: Int, c: Int)
+      val o1 = Option(102)
+      val o2 = Option(90)
+      val o3 = Option(10)
+      val result = Applicative[Option]
+        .map3(o1, o2, o3)((a, b, c) => MyItems(a, b, c))
+      result should be(Option(MyItems(102, 90, 10)))
+    }
+
+    it("can take any number of elements, but if one is wrong...") {
+      case class MyItems(a: Int, b: Int, c: Int)
+      val o1 = Option(102)
+      val o2 = Option.empty[Int]
+      val o3 = Option(10)
+      val result = Applicative[Option]
+        .map3(o1, o2, o3)((a, b, c) => MyItems(a, b, c))
+      result should be(Option.empty[Int])
     }
   }
 

@@ -25,6 +25,7 @@ package com.xyzcorp.typeclasses
 import cats.*
 import cats.implicits.*
 import cats.data.*
+import cats.data.Validated.{Invalid, Valid}
 import org.scalatest.*
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.*
@@ -38,13 +39,29 @@ class SemigroupalSpec extends AnyFunSpec with Matchers:
     it("""combines two containers F[A] and F[B] and brings together using
          |  F[(A,B)] which uses a tuple and is defined with the
          |  following type class.""".stripMargin) {
-        val nonEmptyListInts = NonEmptyList.of(40, 10, 22, 44)
-        val nonEmptyListChars = NonEmptyList.of('a', 'b', 'c', 'd')
-        val result = Semigroupal[NonEmptyList]
-            .product(nonEmptyListInts, nonEmptyListChars)
-        result should be (NonEmptyList.of(
-            (40,'a'), (40,'b'), (40,'c'), (40,'d'), (10,'a'), (10,'b'), (10,'c'), (10,'d'),
-            (22,'a'), (22,'b'), (22,'c'), (22,'d'), (44,'a'), (44,'b'), (44,'c'), (44,'d')))
+      val nonEmptyListInts = NonEmptyList.of(40, 10, 22, 44)
+      val nonEmptyListChars = NonEmptyList.of('a', 'b', 'c', 'd')
+      val result = Semigroupal[NonEmptyList]
+        .product(nonEmptyListInts, nonEmptyListChars)
+      result should be(
+        NonEmptyList.of((40, 'a'),
+                        (40, 'b'),
+                        (40, 'c'),
+                        (40, 'd'),
+                        (10, 'a'),
+                        (10, 'b'),
+                        (10, 'c'),
+                        (10, 'd'),
+                        (22, 'a'),
+                        (22, 'b'),
+                        (22, 'c'),
+                        (22, 'd'),
+                        (44, 'a'),
+                        (44, 'b'),
+                        (44, 'c'),
+                        (44, 'd')
+        )
+      )
     }
 
     it("""uses the product method to combine the containers, here is an Option""") {
@@ -75,6 +92,30 @@ class SemigroupalSpec extends AnyFunSpec with Matchers:
       val opt2 = List.empty[String]
       val result = Semigroupal[List].product(opt1, opt2)
       result should be(List())
+    }
+
+    it("""will render something interesting for Valid?""".stripMargin) {
+      val valid1 = Valid("Nice")
+      val valid2 = Valid("Great")
+      val result = Semigroupal[[A] =>> Validated[String, A]].product(valid1, valid2)
+      result should be(Valid("Nice", "Great"))
+    }
+
+    it("""will render something interesting for any Invalid?""".stripMargin) {
+      val valid1 = Valid("Nice")
+      val valid2 = Invalid("Do not like")
+      val result = Semigroupal[[A] =>> Validated[String, A]]
+        .product(valid1, valid2)
+      result should be(Invalid("Do not like"))
+    }
+
+    it("""will render something interesting for any Invalid That is Layered?""".stripMargin) {
+      val valid1 = Valid("Nice")
+      val valid2 = Invalid(List("Do not like"))
+      val valid3 = Invalid(List("Do not like at all"))
+      val semigroupal = Semigroupal[[A] =>> Validated[List[String], A]]
+      val result = semigroupal.product(valid3, semigroupal.product(valid1, valid2))
+      result should be (Invalid(List("Do not like at all", "Do not like")))
     }
 
     it("""creating our own Semigroupal for Either""".stripMargin) {
