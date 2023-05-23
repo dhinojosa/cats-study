@@ -24,14 +24,15 @@ name := "cats-study"
 
 version := "1.2"
 
-scalaVersion := "3.2.1"
+scalaVersion := "3.2.2"
 
 javaOptions += "-Xmx1G"
 
 scalacOptions ++= Seq(
   "-Xfatal-warnings",
   "-feature",
-  "-deprecation"
+  "-deprecation",
+  "-Ykind-projector"
 )
 
 fork := true
