@@ -22,25 +22,25 @@
 
 name := "cats-study"
 
-version := "1.2"
+version := "1.3"
 
-scalaVersion := "3.2.2"
+scalaVersion := "3.3.0"
 
 javaOptions += "-Xmx1G"
 
 scalacOptions ++= Seq(
-  "-Xfatal-warnings",
-  "-feature",
-  "-deprecation",
-  "-Ykind-projector"
+  "-Xfatal-warnings"
+  , "-feature"
+  , "-deprecation"
+  ,"-Ykind-projector"
 )
 
 fork := true
 //autoCompilerPlugins := true
 
 libraryDependencies := Seq(
-  "org.scalatest" %% "scalatest" % "3.2.10" % Test,
-  "org.scalatest" %% "scalatest-funspec" % "3.2.10" % Test,
+  "org.scalatest" %% "scalatest" % "3.2.16" % Test,
+  "org.scalatest" %% "scalatest-funspec" % "3.2.16" % Test,
   ("org.typelevel" %% "cats-core" % "2.9.0").withSources().withJavadoc(),
   ("org.typelevel" %% "cats-free" % "2.9.0").withSources().withJavadoc(),
   ("org.typelevel" %% "cats-effect" % "3.4.2").withSources().withJavadoc()
