@@ -38,7 +38,7 @@ scalacOptions ++= Seq(
 fork := true
 //autoCompilerPlugins := true
 
-libraryDependencies := Seq(
+libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.2.16" % Test,
   "org.scalatest" %% "scalatest-funspec" % "3.2.16" % Test,
   ("org.typelevel" %% "cats-core" % "2.9.0").withSources().withJavadoc(),

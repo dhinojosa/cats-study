@@ -78,7 +78,7 @@ class ApplicativeSpec extends AnyFunSpec with Matchers:
       val o3 = Option.empty[Int]
       val result = Applicative[Option]
         .ap3(Option((a, b, c) => ("Point", a, b, c)))(o1, o2, o3)
-      result should be (empty)
+      result should be(empty)
     }
 
     it("""Applies an ap see Ap for more details""".stripMargin) {
@@ -113,7 +113,6 @@ class ApplicativeSpec extends AnyFunSpec with Matchers:
     }
 
     it("can also be applied in as an infix operator") {
-      val ao = Applicative[Option]
       val result = Option((x: Int) => 4 * x) <*> Some(3)
       result should be(Some(12))
     }
@@ -126,6 +125,7 @@ class ApplicativeSpec extends AnyFunSpec with Matchers:
       val result = axs.ap(List[Int => String](_.toString, _.toHexString))(List(1, 20, 30, 40))
       result should be(List("1", "20", "30", "40", "1", "14", "1e", "28"))
     }
+
     it("""can do also with Function[A,B] where we can apply both sides""") {
       val axs = Applicative[List]
       val functions = List[(Int, Int) => Int](_ + _, _ * _)
@@ -146,6 +146,23 @@ class ApplicativeSpec extends AnyFunSpec with Matchers:
       // 2 + 4 = 6
       // 2 * 4 = 8
       // etc.
+    }
+  }
+  extension[F[_]](t:Applicative[F])
+      def <*>:[A, B](y:F[A])(x:F[A => B]):F[B] = t.ap(x)(y)
+
+
+  describe("new idea for applicative"):
+    it("should have a <*>: so that we can apply with right association"):
+        val o1 = Option((x:Int) => x + 1)
+        val o3 = Option(3)
+        val result = o1 <*> o3
+        result should be (Some(4))
+
+  describe("chaining of Applicative") {
+    it("can be chained like in the learn you haskell book") {
+      val f = (x: Int, y: Int) => x * y
+      Applicative[Option].ap2(Option(f))(Option(3), Option(3))
     }
   }
 
