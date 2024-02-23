@@ -211,4 +211,8 @@ class TraverseSpec extends AnyFunSpec with Matchers:
         .traverseWithIndexM(List(1, 2, 3, 4))((a, i) => Option(s"${i}. $a"))
       result should be(Some(List("0. 1", "1. 2", "2. 3", "3. 4")))
     }
+
+    it("""hopefully has something for sorting""") {
+      Traverse[List]
+    }
   }
