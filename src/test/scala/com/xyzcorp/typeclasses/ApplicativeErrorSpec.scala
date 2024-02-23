@@ -18,7 +18,6 @@ import cats.*
 import org.scalatest.*
 import matchers.should.*
 import funspec.AnyFunSpec
-
 class ApplicativeErrorSpec extends AnyFunSpec with Matchers:
 
   describe("""ApplicativeError is an Applicative (see Applicative) that

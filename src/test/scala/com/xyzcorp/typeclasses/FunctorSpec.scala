@@ -22,12 +22,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.*
 import scala.language.{postfixOps, reflectiveCalls}
 
-case class Box[A](contents: A)
-
-trait MyFunctor[M[_]]:
-  def myMap[A, B](m: M[A])(f: A => B): M[B]
-
 class FunctorSpec extends AnyFunSpec with Matchers:
+  case class Box[A](contents: A)
+
+  trait MyFunctor[M[_]]:
+    def myMap[A, B](m: M[A])(f: A => B): M[B]
+
   describe("Functor") {
     it("is a map that uses a type class") {
       val result = Functor[List].fmap(List(1, 2, 3, 4))(x => x + 30)
@@ -73,12 +73,12 @@ class FunctorSpec extends AnyFunSpec with Matchers:
       result should be(Box(200))
     }
     it("can be be composed with other Functors") {
-      //These are the same
+      // These are the same
       type fun1 = Functor[List]
-      //type fun2 = Functor[List[?]] Requires type-projector
-      //type fun3 = Functor[λ[α => List[α]]] Requires type-projector
+      // type fun2 = Functor[List[?]] Requires type-projector
+      // type fun3 = Functor[λ[α => List[α]]] Requires type-projector
 
-      //Functor[List[Option[?]] is Functor[List[λ[α => Option[α]]]] which isn't
+      // Functor[List[Option[?]] is Functor[List[λ[α => Option[α]]]] which isn't
       // what you want. The type variable needs to range over the whole
       // type expression; i.e., Functor[λ[α => List[Option[α]]]]
 

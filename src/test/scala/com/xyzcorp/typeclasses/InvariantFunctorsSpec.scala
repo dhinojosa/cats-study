@@ -9,6 +9,7 @@
  */
 
 package com.xyzcorp.typeclasses
+
 import cats.data.Nested
 import cats.implicits
 import com.xyzcorp.box.Box
@@ -22,59 +23,62 @@ import scala.concurrent.duration
 import scala.language.{postfixOps, reflectiveCalls}
 
 class InvariantFunctorsSpec extends AnyFunSpec with Matchers:
-  trait Codec[A]:
-    self =>
-    def encode(value: A): String
+    trait Codec[A]:
+        self =>
+        def encode(value: A): String
 
-    def decode(value: String): A
+        def decode(value: String): A
 
-    def imap[B](dec: A => B, enc: B => A): Codec[B] = new Codec[B]:
-      override def encode(value: B): String = self.encode(enc(value))
-      override def decode(value: String): B = dec(self.decode(value))
+        def imap[B](dec: A => B, enc: B => A): Codec[B] = new Codec[B]:
+            override def encode(value: B): String = self.encode(enc(value))
 
-  describe("Invariant Functors") {
-    def encode[A](value: A)(implicit c: Codec[A]): String =
-      c.encode(value)
+            override def decode(value: String): B = dec(self.decode(value))
 
-    def decode[A](value: String)(implicit c: Codec[A]): A =
-      c.decode(value)
+    describe("Invariant Functors") {
+        def encode[A](value: A)(implicit c: Codec[A]): String =
+            c.encode(value)
 
-    implicit val stringCodec: Codec[String] =
-      new Codec[String]:
-        def encode(value: String): String = value
+        def decode[A](value: String)(implicit c: Codec[A]): A =
+            c.decode(value)
 
-        def decode(value: String): String = value
+        implicit val stringCodec: Codec[String] =
+            new Codec[String]:
+                def encode(value: String): String = value
 
-    implicit val intCodec: Codec[Int] =
-      stringCodec.imap(_.toInt, _.toString)
+                def decode(value: String): String = value
 
-    implicit val booleanCodec: Codec[Boolean] =
-      stringCodec.imap(_.toBoolean, _.toString)
+        implicit val intCodec: Codec[Int] =
+            stringCodec.imap(_.toInt, _.toString)
 
-    implicit val doubleCodec: Codec[Double] =
-      stringCodec.imap(_.toDouble, _.toString)
+        implicit val booleanCodec: Codec[Boolean] =
+            stringCodec.imap(_.toBoolean, _.toString)
 
-    it("""implements a method called imap that is informally
-         |  equivalent to a combination of map and contramap. imap generates
-         |  them via a pair of bidirectional transformations""".stripMargin) {
-      intCodec.encode(10) should be("10")
-      intCodec.decode("10") should be(10)
-      doubleCodec.encode(1230.00) should be("1230.0")
+        implicit val doubleCodec: Codec[Double] =
+            stringCodec.imap(_.toDouble, _.toString)
+
+        it(
+            """implements a method called imap that is informally
+              |  equivalent to a combination of map and contramap. imap generates
+              |  them via a pair of bidirectional transformations""".stripMargin) {
+            intCodec.encode(10) should be("10")
+            intCodec.decode("10") should be(10)
+            doubleCodec.encode(1230.00) should be("1230.0")
+        }
+
+        it(
+            """can be used for custom types of course, done so this time, by
+              | using a method to extend where to find the codec.""".stripMargin) {
+
+            implicit def boxCodec[A](implicit c: Codec[A]): Codec[Box[A]] =
+                c.imap[Box[A]](Box(_), _.value)
+
+            val box = Box(40)
+
+            boxCodec[Int].encode(box) should be("40")
+
+            def foo[A](b: Box[A])(implicit c: Codec[Box[A]]): String =
+                c.encode(b)
+
+            foo(box) should be("40")
+        }
     }
-    
-    it("""can be used for custom types of course, done so this time, by
-         | using a method to extend where to find the codec.""".stripMargin) {
-
-      implicit def boxCodec[A](implicit c: Codec[A]): Codec[Box[A]] =
-        c.imap[Box[A]](Box(_), _.value)
-
-      val box = Box(40)
-
-      boxCodec[Int].encode(box) should be("40")
-
-      def foo[A](b: Box[A])(implicit c: Codec[Box[A]]): String =
-        c.encode(b)
-
-      foo(box) should be("40")
-    }
-  }

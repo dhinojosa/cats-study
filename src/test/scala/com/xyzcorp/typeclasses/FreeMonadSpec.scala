@@ -23,10 +23,13 @@
 package com.xyzcorp.typeclasses
 
 import cats.*
+import cats.arrow.FunctionK
 import org.scalatest.*
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import cats.free.Free
+
+import scala.collection.mutable
 class FreeMonadSpec extends AnyFunSpec with Matchers:
 
   /**
@@ -75,21 +78,71 @@ class FreeMonadSpec extends AnyFunSpec with Matchers:
       val result = resultFree.foldMap(compiler)
       result should be(70)
     }
+
+    it("can create a new language") {
+      trait SQLOps[T]
+      case class Insert[T](name: String, address: String) extends SQLOps[T]
+      case class Update[T](t: T, name: String, address: String) extends SQLOps[Unit]
+      case class FindById[T, V](t: T) extends SQLOps[Option[V]]
+      case class FindByName[T, V](name: String) extends SQLOps[List[V]]
+
+      val program: Free[SQLOps, Long] = for
+        i <- Free.liftF[SQLOps, Long](Insert[Long]("Hello", "You"))
+        _ <- Free.liftF[SQLOps, Long](Insert[Long]("Hello", "Too"))
+        _ <- Free.liftF[SQLOps, Unit](Update[Long](i, "Hello", "Too"))
+      yield i
+
+      val value1: Free[Id, Long] = program.compile(
+        new (SQLOps ~> Id):
+
+          val kvs = mutable.Map.empty[Long, (String, String)]
+
+          override def apply[A](fa: SQLOps[A]): Id[A] =
+            fa match
+              case Insert(fn, ln) =>
+                println("Inserting your order")
+                2L.asInstanceOf[A]
+              case Update(id: A, name, address) =>
+                println("Updating your order")
+                ()
+              case FindById(id: A) =>
+                println(s"Finding By Id $id")
+                id
+              case FindByName(name: String) =>
+                println(s"Finding By Id $name")
+                val maybeTuple = kvs.values.find(t => t._1 == name)
+                Id(maybeTuple)
+      )
+    }
+    it("""has factory called Free[S[_], A] and the interesting thing is that it does not
+         | have a constraint for it to be a functor""".stripMargin) {
+      case class Box[A](a: A)
+
+      def compiler: Box ~> Id = new (Box ~> Id):
+        def apply[A](p: Box[A]): Id[A] =
+          Id(p.a)
+
+      val free: Free[Box, Int] = Free.pure(30)
+      val free2: Free[Box, Int] = Free.pure(40)
+      val resultFree: Free[Box, Int] = free.flatMap(i => free2.map(j => i + j))
+      val result = resultFree.foldMap(compiler)
+      result should be(70)
+    }
   }
 
-  //  case class Student(id: Long, firstName: String, lastName: String)
-  //
-  //  trait StudentService[A]
-  //  case class Register(firstName: String, lastName: String) extends StudentService[Long]
-  //  case class FindById(id: Long) extends StudentService[Student]
-  //
-  //  type StudentServiceFree[A] = Free[StudentService, A]
-  //  import cats.free.Free.liftF
-  //
-  //  def register(firstName: String, lastName: String): StudentServiceFree[Long] = {
-  //    liftF[StudentService, Long](Register(firstName, lastName))
-  //  }
-  //
-  //  def findById(longId:Long): StudentServiceFree[Student] = {
-  //    liftF[StudentService, Student](FindById(longId))
-  //  }
+//  case class Student(id: Long, firstName: String, lastName: String)
+//
+//  trait StudentService[A]
+//  case class Register(firstName: String, lastName: String) extends StudentService[Long]
+//  case class FindById(id: Long) extends StudentService[Student]
+//
+//  type StudentServiceFree[A] = Free[StudentService, A]
+//  import cats.free.Free.liftF
+//
+//  def register(firstName: String, lastName: String): StudentServiceFree[Long] = {
+//    liftF[StudentService, Long](Register(firstName, lastName))
+//  }
+//
+//  def findById(longId:Long): StudentServiceFree[Student] = {
+//    liftF[StudentService, Student](FindById(longId))
+//  }

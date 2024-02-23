@@ -115,7 +115,31 @@ class SemigroupalSpec extends AnyFunSpec with Matchers:
       val valid3 = Invalid(List("Do not like at all"))
       val semigroupal = Semigroupal[[A] =>> Validated[List[String], A]]
       val result = semigroupal.product(valid3, semigroupal.product(valid1, valid2))
-      result should be (Invalid(List("Do not like at all", "Do not like")))
+      result should be(Invalid(List("Do not like at all", "Do not like")))
+    }
+
+    it("""will do something if the E in F[E, A] is semigroupal? Let's try either""") {
+      type EitherList = [A] =>> Either[List[String], A]
+      val right1: EitherList[Int] = Right(30)
+      val right2: EitherList[Int] = Right(30)
+      val right3: EitherList[Int] = Left(List("Oh no"))
+      val semigroupal = Semigroupal[EitherList]
+      val result = semigroupal
+        .product(right1, semigroupal.product(right2, right3))
+      result should be(Left(List("Oh no")))
+    }
+
+    it("""will do something if the E in F[E, A] is semigroupal?
+         |  Let's try either and with two errors, and we find that it is
+         |  fail fast""".stripMargin) {
+      type EitherList = [A] =>> Either[List[String], A]
+      val right1: EitherList[Int] = Right(30)
+      val right2: EitherList[Int] = Left(List("Doesn't work"))
+      val right3: EitherList[Int] = Left(List("Oh no"))
+      val semigroupal = Semigroupal[EitherList]
+      val result = semigroupal
+        .product(right1, semigroupal.product(right2, right3))
+      result should be(Left(List("Doesn't work")))
     }
 
     it("""creating our own Semigroupal for Either""".stripMargin) {

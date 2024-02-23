@@ -201,7 +201,7 @@ class OptionTSpec extends AnyFunSpec with Matchers:
                   |  and if not available it would return a default""".stripMargin) {
                 val optionT = OptionT.apply(List(Some(30), None, Some(40)))
                 val result = optionT.getOrElse(-1)
-                result should be (List(30, -1, 40))
+                result should be(List(30, -1, 40))
             }
         }
 
@@ -211,7 +211,7 @@ class OptionTSpec extends AnyFunSpec with Matchers:
                   |  and if not available it would return a default""".stripMargin) {
                 val optionT = OptionT.liftF(Future.successful(20))
                 val result = optionT.getOrElse(-1)
-                Await.result(result, 2 seconds) should be (20)
+                Await.result(result, 2 seconds) should be(20)
             }
             it(
                 """catamorphism - general abstraction that enables you to handle multiple values,
@@ -221,13 +221,15 @@ class OptionTSpec extends AnyFunSpec with Matchers:
                 Await.result(result, 2 seconds) should be("20!")
             }
             it(
-                """catamorphism - general abstraction that enables you to handle multiple values,
-                  |  for example in order to reduce them to a single value""".stripMargin) {
+                """collect can take the value of the context and perform a match, if the match is
+                  |  resolved then it will perform a map on the value""".stripMargin) {
                 val optionT = OptionT.liftF(Future.successful(20))
-             
-                Await.result(result, 2 seconds) should be("20!")
+                val result = optionT.collect {
+                    case n if (1 to 3).contains(n) => "Three"
+                    case n if (4 to 100).contains(n) => "Four to One Hundred"
+                    case _ => "Another Number"
+                }
+                Await.result(result.getOrElse("Other"), 2 seconds) should be("Four to One Hundred")
             }
         }
-
-
     }
