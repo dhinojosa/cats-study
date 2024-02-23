@@ -30,4 +30,11 @@ class ComonadSpec extends AnyFunSpec with Matchers:
       val result = Comonad[NonEmptyList].extract(nel)
       result should be(3)
     }
+
+    it("""has a duplicate that can put one in another""".stripMargin) {
+
+      val nel = NonEmptyList.of(3, 1, 10, 40)
+      val result = Comonad[NonEmptyList]
+      result should be(3)
+    }
   }

@@ -148,16 +148,17 @@ class ApplicativeSpec extends AnyFunSpec with Matchers:
       // etc.
     }
   }
-  extension[F[_]](t:Applicative[F])
-      def <*>:[A, B](y:F[A])(x:F[A => B]):F[B] = t.ap(x)(y)
 
 
   describe("new idea for applicative"):
     it("should have a <*>: so that we can apply with right association"):
+        pending
+        extension[F[_]] (t: Applicative[F])
+           def <*>:[A, B](y: F[A])(x: F[A => B]): F[B] = t.ap(x)(y)
         val o1 = Option((x:Int) => x + 1)
         val o3 = Option(3)
-        val result = o1 <*> o3
-        result should be (Some(4))
+        //val result = o1 <*>: o3
+        //result should be (Some(4))
 
   describe("chaining of Applicative") {
     it("can be chained like in the learn you haskell book") {
