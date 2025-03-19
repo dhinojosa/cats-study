@@ -48,7 +48,7 @@ class MonadSpec extends AnyFunSpec with Matchers:
     it("is also defined for a list") {
       import cats.Monad
       import cats.instances.list.* // for Monad
-      val list1 = Monad[List].pure(3)   
+      val list1 = Monad[List].pure(3)
       val result = Monad[List].flatMap(list1)(x => List(-x, x, x + 1))
       result should be(List(-3, 3, 4))
     }
