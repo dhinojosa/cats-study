@@ -133,4 +133,12 @@ class FunctorSpec extends AnyFunSpec with Matchers:
       val xs = List(1, 2, 3, 4)
       leftCompose(xs) should be(rightCompose(xs))
     }
+
+    it("""can have extensions""") {
+
+      def doIt[F[_] : Functor, A : Numeric, B](f:F[A]): F[A] = {
+          import cats.syntax.functor.*
+          f.map(x => Numeric[A].minus(x, Numeric[A].one))
+      }
+    }
   }
