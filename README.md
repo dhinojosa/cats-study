@@ -47,5 +47,5 @@ for example,
 
 1. Each `Spec` should only encompass what it owns. In other words, `Apply` extends `Functor`, therefore `Apply` should only show what is new or different in `Apply`
 2. It should start with methods it contains with a sample how it should run.  
-3. Then it should show any extensions that may be used with Scala standard library
+3. Then it should show any extensions that may be used with Scala standard library.
 4. Any laws that are applicable.
