@@ -38,9 +38,46 @@ import scala.util.{Failure, Success, Try}
 
 class KleisliSpec extends AnyFunSpec with Matchers {
   describe("Kleisli Data Type") {
-
     it("is a wrapper around the function A => F[B]") {
-//      final case class MyKleisli[F[_], A, B](run: A => F[B])
+       final case class MyKleisli[F[_], A, B](run: A => F[B])
+    }
+
+    it("can be unwrapped once created, but that isn't really the point") {
+        val kleisli = Kleisli.apply[Option, Int, String](x => Option(x.toString))
+        val function = kleisli.run
+        val application = function(42)
+        application should be(Some("42"))
+    }
+    
+    it("is a different data structure, and it is unlike lift in a monad") {
+      
+        // Example to demonstrate how lift in a monad and Kleisli are different
+
+        // Lifting a function into a monad explicitly
+        val stringToIntFunction: String => Int = _.toInt
+        val liftedFunction: String => Option[Int] = x => Option(stringToIntFunction(x))
+        liftedFunction("42") should be(Some(42))
+        liftedFunction("oops").isEmpty should be(true) // results in None for invalid input
+
+        // Kleisli handles lifting and composition of monadic functions implicitly
+        val kleisliStringToInt: Kleisli[Option, String, Int] =
+            Kleisli(x => Option(x.toInt))
+
+        val kleisliAddFive: Kleisli[Option, Int, Int] =
+            Kleisli(x => Option(x + 5))
+
+        // Composing Kleisli functions directly (>>> operator or flatMap approach)
+        val kleisliComposed = kleisliStringToInt >>> kleisliAddFive
+
+        // Unlike lift, Kleisli simplifies composition for monadic functions
+        kleisliComposed.run("42") should be(Some(47))
+        kleisliComposed.run("oops") should be(None)
+
+        /*
+        Key difference:
+        - Lift simply wraps a function into a monad but doesn't allow composability in a clean way.
+        - Kleisli is a data structure designed for composing monadic functions easily.
+        */
     }
 
     /*
@@ -51,8 +88,7 @@ class KleisliSpec extends AnyFunSpec with Matchers {
      situations are where Kleisli is immensely helpful.
      */
 
-    it(
-      """is meant for composition, take the following functions that can compose,
+    it("""is meant for composition, take the following functions that can compose,
         |  this is the standard Scala function composition with `andThen`""".stripMargin
     ) {
 
@@ -72,13 +108,13 @@ class KleisliSpec extends AnyFunSpec with Matchers {
         Kleisli(t => List(t._1))
       val kleisliSubstring3: Kleisli[List, String, Try[String]] =
         Kleisli(s => List(Try(s.substring(3))))
-      val kleisliTryToSucessOrEmpty: Kleisli[List, Try[String], String] =
+      val kleisliTryToSuccessOrEmpty: Kleisli[List, Try[String], String] =
         Kleisli(ts => List(ts.getOrElse("")))
       val kleisliStringCaps: Kleisli[List, String, String] =
         Kleisli(s => List(s.toUpperCase))
 
       val composition = kleisliTakeFirst >>> kleisliSubstring3 >>>
-        kleisliTryToSucessOrEmpty >>> kleisliStringCaps
+        kleisliTryToSuccessOrEmpty >>> kleisliStringCaps
       val result = composition.run("Consider" -> 90)
       result should be(List("SIDER"))
     }
@@ -150,7 +186,7 @@ class KleisliSpec extends AnyFunSpec with Matchers {
       m("400") should be(Success(("400", 400)))
     }
 
-    it("""can contain an ap, like Applicative, weird""") {
+    it("""can contain an `ap`, like `Applicative` or `Apply`""") {
       val kleisliTakeFirst: Kleisli[List, (String, Int), Int => String] =
         Kleisli(t => List((x: Int) => s"$x${t._1}"))
       val f: Kleisli[List, (String, Int), Int] = Kleisli(_ => List(40))
