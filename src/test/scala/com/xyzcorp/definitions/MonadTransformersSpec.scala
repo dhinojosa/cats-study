@@ -69,6 +69,7 @@ class MonadTransformersSpec extends AnyFunSpec with Matchers:
         yield x + y
       println(result)
     }
+
     it("We can nest transformers together") {
       type Log = List[String]
       type Stack[A] = OptionT[WriterT[Id, Log, *], A]
