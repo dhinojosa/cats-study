@@ -93,9 +93,10 @@ class MonadTransformersSpec extends AnyFunSpec with Matchers:
       log.foreach(println)
       println(s"Result: $result")
     }
+
     it("We can nest transformers together using TypeLambdas") {
       type Log = List[String]
-      type Stack = [A] =>> OptionT[[Z] =>> WriterT[Id, Log, Z], A]
+      type Stack = [A] =>> OptionT[[B] =>> WriterT[Id, Log, B], A]
 
       def validateNonEmpty(input: String): Stack[String] =
         if input.nonEmpty then OptionT.liftF(WriterT.tell[Id, Log](List(s"Received valid input: $input")).as(input))
@@ -117,8 +118,7 @@ class MonadTransformersSpec extends AnyFunSpec with Matchers:
       log.foreach(println)
       println(s"Result: $result")
 
-      type MyList = List[_]
+      type MyList = List[?]
     }
-
 
   }
