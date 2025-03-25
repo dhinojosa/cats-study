@@ -28,4 +28,18 @@ class IdSpec extends AnyFunSpec with Matchers:
       val num: Id[Int] = 4
       Functor[Id].fmap(num)(x => x + 3) should be(7: Id[Int])
     }
+    it("""is automatically promoted to an Id context when in a method""") {
+      def add(x: Id[Int], y: Id[Int]): Id[Int] = x + y
+      val result = add(10, 20)
+      result should be(30)
+    }
+    it("""of course is used with flatMap which is the point of the Monad""") {
+      
+    }
+    it("can be used to create a stack safe function") {
+      def factorial(n: Int): Id[Int] =
+        if n <= 1 then 1
+        else n * factorial(n - 1)
+      factorial(10) should be(3628800)
+    }
   }
