@@ -19,6 +19,12 @@ import funspec.AnyFunSpec
 class PartialOrderSpec extends AnyFunSpec with Matchers:
 
   describe("PartialOrderSpec is a type class with comparison operators") {
+    describe("the methods") {
+      it ("has lteqv which is less than or equal to") {
+          PartialOrder[Int].lteqv(1, 2) should be(true)
+      }
+
+    }
     describe("Tuple implementation that comes from catsSyntaxPartialOrder") {
       it("contains less than") {
         (3, 1.0, "Hello") < (2, 2.0, "Scout")

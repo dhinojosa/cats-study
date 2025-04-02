@@ -10,13 +10,13 @@
 
 package com.xyzcorp.typeclasses
 
-import cats._
-import cats.implicits._
-import org.scalatest._
-import matchers.should._
+import cats.*
+import cats.implicits.*
+import org.scalatest.*
+import matchers.should.*
 import funspec.AnyFunSpec
 
-class FoldableSpec extends AnyFunSpec with Matchers {
+class FoldableSpec extends AnyFunSpec with Matchers:
 
   describe("Foldable abstracts the familiar foldLeft and foldRight operations") {
     it("""folds elements like fold in the standard library,
@@ -83,12 +83,12 @@ class FoldableSpec extends AnyFunSpec with Matchers {
   describe("Implicit wrappers for Foldable") {
     it("""can use an implicit wrapper to include all the features
          |  of a Foldable around the collection""".stripMargin) {
-      import cats.syntax.foldable._
+      import cats.syntax.foldable.*
       val result: Int = List(1, 2, 3, 4).combineAll
       result should be(10)
     }
     it("""will use the native method on std library and
-         |  not use cats' version to avoid any conflict""".stripMargin) { //useless import
+         |  not use cats' version to avoid any conflict""".stripMargin) { // useless import
       val result = List(1, 2, 3, 4, 5).foldRight(1)(_ + _)
       result should be(16)
     }
@@ -134,13 +134,15 @@ class FoldableSpec extends AnyFunSpec with Matchers {
          |  like the first example but with applying an
          |  a => Option(b) function""".stripMargin) {
       val result = Foldable[List]
-        .collectFirstSome(List(1, 2, 3, 4)) { a => if (a % 2 == 0) Some(a * 2) else None }
+        .collectFirstSome(List(1, 2, 3, 4)) { a => if a % 2 == 0 then Some(a * 2) else None }
       result should be(Some(4))
     }
     it("""can collect on the first element extracting from some context,
          |  here with Id""".stripMargin) {
       val result: Id[Option[Int]] =
-        Foldable[List].collectFirstSomeM[Id, Int, Int](List(1, 2, 3, 4))(a => if (a % 2 == 0)(Some(a * 2)) else None)
+        Foldable[List].collectFirstSomeM[Id, Int, Int](List(1, 2, 3, 4))(a =>
+          if a % 2 == 0 then (Some(a * 2)) else None
+        )
       result should be(4.some)
     }
     it("""can collect on the first element extracting from some context,
@@ -150,31 +152,26 @@ class FoldableSpec extends AnyFunSpec with Matchers {
       type MyEither[A] = Either[String, A]
 
       def processValue(a: Int) =
-        if (a % 2 == 0)
-          Right(Option(a * 10))
-        else
-          Left("Unable to do so")
+        if a % 2 == 0 then Right(Option(a * 10))
+        else Left("Unable to do so")
 
       val result: MyEither[Option[Int]] =
         Foldable[List].collectFirstSomeM[MyEither, Int, Int](List(1, 2, 3, 4))(processValue)
       result should be(Left("Unable to do so"))
     }
 
-      it("""can collect on the first element extracting from some context,
-           |  here with Either. This time either with a right
-           |  is triggered with option""".stripMargin) {
+    it("""can collect on the first element extracting from some context,
+         |  here with Either. This time either with a right
+         |  is triggered with option""".stripMargin) {
 
-          type MyEither[A] = Either[String, A]
+      type MyEither[A] = Either[String, A]
 
-          def processValue(a: Int) =
-              if (a % 2 == 0)
-                  Right(Option(a * 10))
-              else
-                  Left("Unable to do so")
+      def processValue(a: Int) =
+        if a % 2 == 0 then Right(Option(a * 10))
+        else Left("Unable to do so")
 
-          val result: MyEither[Option[Int]] =
-              Foldable[List].collectFirstSomeM[MyEither, Int, Int](List(2, 3, 4, 5))(processValue)
-          result should be(Right(20.some))
-      }
+      val result: MyEither[Option[Int]] =
+        Foldable[List].collectFirstSomeM[MyEither, Int, Int](List(2, 3, 4, 5))(processValue)
+      result should be(Right(20.some))
+    }
   }
-}

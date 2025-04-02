@@ -58,18 +58,6 @@ class MonadTransformersSpec extends AnyFunSpec with Matchers:
         yield x + y
       println(result)
     }
-    it("would be rather a bit complicated to do with even more layers of nesting") {
-      val result: Try[Option[Int]] =
-        for
-          a <- Try(Some(12 / 3)) // Try[Option[Int]]
-          b <- Try(Some(24 / 3)) // Try[Option[Int]]
-        yield for
-          x <- a
-          y <- b
-        yield x + y
-      println(result)
-    }
-
     it("We can nest transformers together") {
       type Log = List[String]
       type Stack[A] = OptionT[WriterT[Id, Log, *], A]
@@ -95,7 +83,7 @@ class MonadTransformersSpec extends AnyFunSpec with Matchers:
       println(s"Result: $result")
     }
 
-    it("We can nest transformers together using TypeLambdas") {
+    it("We can nest transformers together using type lambdas, a feature of Scala 3") {
       type Log = List[String]
       type Stack = [A] =>> OptionT[[B] =>> WriterT[Id, Log, B], A]
 
@@ -118,8 +106,5 @@ class MonadTransformersSpec extends AnyFunSpec with Matchers:
       println("Log:")
       log.foreach(println)
       println(s"Result: $result")
-
-      type MyList = List[?]
     }
-
   }

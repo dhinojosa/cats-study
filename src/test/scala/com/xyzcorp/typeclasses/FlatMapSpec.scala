@@ -52,4 +52,30 @@ class FlatMapSpec extends AnyFunSpec with Matchers:
       }
       result should be(List(-1))
     }
+
+    describe("extensions") {
+      import cats.syntax.flatMap.*
+      it("""has the flatTap""") {
+        val maybeInt = Option(10).flatTap(i => Option(i * 10))
+        maybeInt should be(Option(10))
+      }
+      it("""has the flatMap""") {
+        val maybeInt = Id(10).flatMap(i => Id(i * 10))
+        maybeInt should be(Id(100))
+        maybeInt should be(100)
+      }
+      it("""has the flatMap which would allow us to use it in a for comprehension""") {
+        val result = for
+          i <- Id(10)
+          j <- Id(i + 1)
+        yield i + j
+        result should be(1200)
+      }
+      it("""will use the flatMap of the intrinsic Option since the
+           |  method of the intrinsic function wins over the extension""".stripMargin) {
+        val maybeInt = Option(10).flatMap(i => Option(i * 10))
+        maybeInt should be(Option(100))
+      }
+
+    }
   }
